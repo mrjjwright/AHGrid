@@ -14,18 +14,14 @@
     
     NSMutableArray *cells;
 
-    // The nsView for TUIKit that fits into the AppKit view hierarchy
-    TUINSView *nsView;
+    // The TUINSView for TUIKit to wrap the listView
+    TUINSView *listViewNSView;
+    
+    // Detail views
+    NSView *detailView;
+    NSScrollView *detailScrollView;
+    NSImageView *largeImageView;
 
-    // A container TUIScrollView to hold the expanded cell.
-    // Scrollable because some cells might have long content.
-    // Lazily created.
-    TUIScrollView *cellScrollView;
-    
-    //A container TUIView to hold the cellScrollView and the listView
-    TUIView *containerView;
-    
-    TUIImageView *largeImageView;
 }
 
 @synthesize grid;
@@ -51,19 +47,17 @@
     listView.horizontalScrolling = YES;
     listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
     
-    containerView = [[TUIView alloc] initWithFrame:CGRectZero];    
-    [containerView addSubview:listView];
 
-    nsView = [[TUINSView alloc] initWithFrame:CGRectZero];
-    //nsView.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
-    nsView.rootView = containerView;
-    [self addSubview:nsView];
+    listViewNSView = [[TUINSView alloc] initWithFrame:CGRectZero];
+    //listViewNSView.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
+    listViewNSView.rootView = listView;
+    [self addSubview:listViewNSView];
     [listView reloadData];
 }
 
 -(void) setGrid:(AHGrid *)g {
     grid = g;
-    nsView.scrollingInterceptor = self;
+    listViewNSView.scrollingInterceptor = self;
 }
 
 #pragma mark - Layout
@@ -75,8 +69,7 @@
     if (self.expanded) {
         listRect.size.height = 250;
     }
-    nsView.frame = b; 
-    containerView.frame = b;
+    listViewNSView.frame = listRect; 
     listView.frame = listRect;
 }
 
@@ -149,24 +142,19 @@
 -(void) setExpandedWithAnimation:(BOOL)e {
     expanded = e;
     
-    if (!cellScrollView) {
-        cellScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 400)];
-        cellScrollView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
-        cellScrollView.backgroundColor = [TUIColor blueColor];
-        cellScrollView.contentSize = CGSizeMake(self.bounds.size.width, 800);
-        [containerView addSubview:cellScrollView];
+    if (!detailScrollView) {
+        detailScrollView = [[NSScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 400)];
+        detailView = [[NSView alloc] initWithFrame:detailScrollView.bounds];
+        detailScrollView.documentView = detailView;
+        [self addSubview:detailScrollView];
         
-        largeImageView = [[TUIImageView alloc] initWithImage:[TUIImage imageNamed:@"pet_plumes.jpg"]];
-        largeImageView.frame = cellScrollView.bounds;
-        largeImageView.clipsToBounds = YES;
-        [cellScrollView addSubview:largeImageView];
-        cellScrollView.alpha = 0;
-        [containerView sendSubviewToBack:cellScrollView];
-    }
-    [TUIView animateWithDuration:0.7 animations:^{
-        cellScrollView.alpha = 0.2;
-    }];
-    
+        largeImageView = [[NSImageView alloc] initWithFrame:detailScrollView.bounds];
+        largeImageView.image = [NSImage imageNamed:@"pet_plumes.jpg"];
+        [detailView addSubview:largeImageView];
+        [detailScrollView setAlphaValue:0];
+    }  
+    CGFloat alpha = expanded ? 1.0 : 0;
+    [[detailScrollView animator] setAlphaValue:alpha];
 }
 
 -(BOOL) isVerticalScroll:(NSEvent*) event {
