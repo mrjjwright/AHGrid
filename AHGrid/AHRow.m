@@ -13,15 +13,12 @@
 @implementation AHRow {
     
     NSMutableArray *cells;
-
-    // The TUINSView for TUIKit to wrap the listView
-    TUINSView *listViewNSView;
     
-    // Detail views
-    NSView *detailView;
-    NSScrollView *detailScrollView;
-    NSImageView *largeImageView;
-
+    TUIView *detailView;
+    TUIScrollView *detailScrollView;
+    TUIImageView *largeImageView;
+    BOOL dataLoaded;
+    
 }
 
 @synthesize grid;
@@ -30,73 +27,58 @@
 @synthesize expanded;
 @synthesize animating;
 
-- (void)awakeFromNib {
-    
-    cells = [NSMutableArray array];
-    
-    for (int i = 0; i < 100; i++) {
-        [cells addObject:[NSMutableDictionary dictionary]];
-    }
-    
-    // The horizontal table view
-    listView = [[TUITableView alloc] initWithFrame:CGRectZero];
-    listView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
-    listView.delegate = self;
-    listView.backgroundColor = [TUIColor redColor];
-    listView.dataSource = self;
-    listView.horizontalScrolling = YES;
-    listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
-    
 
-    listViewNSView = [[TUINSView alloc] initWithFrame:CGRectZero];
-    listViewNSView.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
-    listViewNSView.rootView = listView;
-    [self addSubview:listViewNSView];
-    [listView reloadData];
+- (id)initWithFrame:(CGRect)frame
+{
+	if((self = [super initWithFrame:frame])) {
+        
+        cells = [NSMutableArray array];
+        
+        for (int i = 0; i < 100; i++) {
+            [cells addObject:[NSMutableDictionary dictionary]];
+        }
+        
+        listView = [[TUILayout alloc] initWithFrame:CGRectZero];
+        listView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+        listView.dataSource = self;
+        listView.typeOfLayout = TUILayoutHorizontal;
+        listView.backgroundColor = [TUIColor clearColor];
+        listView.horizontalScrolling = YES;
+        listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
+        listView.viewClass = [AHCell class];
+    }
+    return self;
 }
 
 -(void) setGrid:(AHGrid *)g {
     grid = g;
-    listViewNSView.scrollingInterceptor = self;
 }
 
 #pragma mark - Layout
 
--(void) viewWillDraw {
-    if (animating) return [super viewWillDraw];
+-(void) layoutSubviews {
+    if (!dataLoaded) {
+        [listView reloadData];
+        dataLoaded = YES;
+    }
+    if (animating) return [super layoutSubviews];
     CGRect b = self.bounds;
     CGRect listRect = b;
     if (self.expanded) {
         listRect.size.height = 250;
     }
-    listViewNSView.frame = listRect; 
     listView.frame = listRect;
 }
 
-#pragma mark -
-#pragma mark TUITableView Delegate Methods
+#pragma mark  - TUILayout DataSource Methods
 
 
-- (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(TUIFastIndexPath *)indexPath {
-    return 350;
-}
 
-- (NSInteger)numberOfSectionsInTableView:(TUITableView *)tableView
-{
-	return 1;
-}
-
-- (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section
-{
-	return [cells count];
-}
-
-
-- (TUITableViewCell *)tableView:(TUITableView *)tableView cellForRowAtIndexPath:(TUIFastIndexPath *)indexPath
-{
-	AHCell *cell = reusableTableCellOfClass(tableView, AHCell);
+-(TUIView*) layout:(TUILayout *)l viewForObjectAtIndex:(NSInteger)i {
+    
+    AHCell *cell = (AHCell*) [listView dequeueReusableView];
 	
-	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", indexPath.row]];
+	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", i]];
 	s.color = [TUIColor blackColor];
 	s.font = [TUIFont systemFontOfSize:11];
 	cell.attributedString = s;
@@ -105,12 +87,16 @@
 	return cell;
 }
 
-- (void)tableView:(TUITableView *)tableView didClickRowAtIndexPath:(TUIFastIndexPath *)indexPath withEvent:(NSEvent *)event
-{
-	if([event clickCount] == 1) {
-		// do something cool
-	}
+- (NSUInteger)numberOfObjectsInLayout:(TUILayout *)l {
+    return [cells count];
 }
+
+- (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {
+    CGSize size = self.bounds.size;
+    size.width = 350;
+    return size;
+}
+
 
 
 #pragma mark - Events
@@ -136,68 +122,29 @@
 #pragma mark - Expansion
 
 -(void) toggleExpanded {
-    [grid togglExpansionForRow:self.index];
-}
-
--(void) setExpandedWithAnimation:(BOOL)e {
-    expanded = e;
+    CGFloat height = expanded  ? 50 : grid.visibleRect.size.height;
+    [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) completion:^{
+        expanded = !expanded;
+        [grid scrollRectToVisible:self.frame animated:YES];
+    }];
     
     if (!detailScrollView) {
-        detailScrollView = [[NSScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 100)];
-        detailScrollView.backgroundColor = [NSColor colorWithDeviceRed:0.79 green:0.79 blue:0.79 alpha:1.0];
-        detailView = [[NSView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 400)];
-        detailScrollView.documentView = detailView;
+        detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 100)];
+        detailScrollView.backgroundColor = [TUIColor clearColor];
+        detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 400)];
+        [detailScrollView addSubview:detailView];
         [self addSubview:detailScrollView];
         
-        largeImageView = [[NSImageView alloc] initWithFrame:detailView.bounds];
+        largeImageView = [[TUIImageView alloc] initWithFrame:detailView.bounds];
         largeImageView.image = [NSImage imageNamed:@"pet_plumes.jpg"];
         [detailView addSubview:largeImageView];
-        [detailScrollView setAlphaValue:0];
+        detailScrollView.alpha = 1;
     }  
     CGFloat alpha = expanded ? 1.0 : 0;
-    [[detailScrollView animator] setAlphaValue:alpha];
+    detailScrollView.alpha = alpha;
+    
 }
 
--(BOOL) isVerticalScroll:(NSEvent*) event {
-    
-    // Get the amount of scrolling
-    double dx = 0.0;
-    double dy = 0.0;
-    
-    CGEventRef cgEvent = [event CGEvent];
-    const int64_t isContinuous = CGEventGetIntegerValueField(cgEvent, kCGScrollWheelEventIsContinuous);
-    
-    if(isContinuous) {
-        dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis2);
-        dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis1);
-    } else {
-        CGEventSourceRef source = CGEventCreateSourceFromEvent(cgEvent);
-        if(source) {
-            const double pixelsPerLine = CGEventSourceGetPixelsPerLine(source);
-            dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis2) * pixelsPerLine;
-            dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis1) * pixelsPerLine;
-            CFRelease(source);
-        } else {
-            NSLog(@"Critical: NULL source from CGEventCreateSourceFromEvent");
-        }
-    }
-    
-    if (fabsf(dx) > fabsf(dy)) return NO;
-    return YES;
-}
-
-- (BOOL)shouldScrollWheel:(NSEvent *)event {
-    if ([self isVerticalScroll:event]) {
-        if (expanded) {
-            [detailScrollView scrollWheel:event];
-        } else {
-            [self.grid scrollWheel:event];
-        }
-    } else { 
-        [listView scrollWheel:event];
-    }
-    return NO;
-}
 
 
 @end

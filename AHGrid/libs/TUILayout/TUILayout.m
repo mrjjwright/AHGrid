@@ -757,7 +757,7 @@ typedef enum {
         object.indexString = [NSString stringWithFormat:@"%d", i];
     }
     self.executingTransaction = nil;
-    [self setNeedsLayout];
+    [self layoutSubviews];
 }
 
 - (TUIView*) dequeueReusableView

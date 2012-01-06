@@ -16,11 +16,11 @@
 @synthesize attributedString;
 @synthesize row;
 @synthesize grid;
+@synthesize index;
 
-
-- (id)initWithStyle:(TUITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+- (id)initWithFrame:(CGRect)frame
 {
-	if((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
+	if((self = [super initWithFrame:frame])) {
 		
         self.clipsToBounds = YES;
         textRenderer = [[TUITextRenderer alloc] init];
