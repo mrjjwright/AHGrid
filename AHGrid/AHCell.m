@@ -38,7 +38,7 @@
 		self.textRenderers = [NSArray arrayWithObjects:textRenderer, nil];
         
         imageView = [[TUIImageView alloc] initWithImage:[TUIImage imageNamed:@"pet_plumes.jpg"]];
-        imageView.layer.contentsGravity = kCAGravityResizeAspect;
+        //imageView.layer.contentsGravity = kCAGravityResizeAspect;
         imageView.clipsToBounds = YES;
         [self addSubview:imageView];
 	}
@@ -66,7 +66,6 @@
 	[self setNeedsDisplay];
 }
 
-
 - (void)drawRect:(CGRect)rect
 {
 	CGRect b = self.bounds;
@@ -77,7 +76,6 @@
 		CGContextSetRGBFillColor(ctx, .87, .87, .87, 1);
 		CGContextFillRect(ctx, b);
         
-    
         imageView.layer.cornerRadius = 6;
         imageView.layer.borderWidth = 2;
         imageView.layer.borderColor = [TUIColor  yellowColor].CGColor;

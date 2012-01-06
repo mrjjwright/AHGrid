@@ -74,6 +74,8 @@
 		9A363E9B14B6533C004F31C7 /* TUIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E6214B6533B004F31C7 /* TUIViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A363E9C14B6533C004F31C7 /* TUIViewNSViewContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E6414B6533B004F31C7 /* TUIViewNSViewContainer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A363E9E14B65350004F31C7 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A363E9D14B65350004F31C7 /* QuartzCore.framework */; };
+		9A363EAC14B6B302004F31C7 /* girl_bubble.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A363EAB14B6B302004F31C7 /* girl_bubble.jpg */; };
+		9A363EB514B78A6C004F31C7 /* TUILayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363EB414B78A6C004F31C7 /* TUILayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -205,6 +207,9 @@
 		9A363E6314B6533B004F31C7 /* TUIViewNSViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUIViewNSViewContainer.h; path = libs/TUIKit/TUIViewNSViewContainer.h; sourceTree = "<group>"; };
 		9A363E6414B6533B004F31C7 /* TUIViewNSViewContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TUIViewNSViewContainer.m; path = libs/TUIKit/TUIViewNSViewContainer.m; sourceTree = "<group>"; };
 		9A363E9D14B65350004F31C7 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		9A363EAB14B6B302004F31C7 /* girl_bubble.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = girl_bubble.jpg; sourceTree = "<group>"; };
+		9A363EB314B78A6C004F31C7 /* TUILayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TUILayout.h; path = libs/TUILayout/TUILayout.h; sourceTree = "<group>"; };
+		9A363EB414B78A6C004F31C7 /* TUILayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TUILayout.m; path = libs/TUILayout/TUILayout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +283,7 @@
 		9A363DD714B65262004F31C7 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9A363EAB14B6B302004F31C7 /* girl_bubble.jpg */,
 				9A363DF314B6531E004F31C7 /* pet_plumes.jpg */,
 				9A363DD814B65262004F31C7 /* AHGrid-Info.plist */,
 				9A363DD914B65262004F31C7 /* InfoPlist.strings */,
@@ -291,6 +297,7 @@
 		9A363DF814B65324004F31C7 /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				9A363EB214B78A43004F31C7 /* TUILayout */,
 				9A363DF914B6532A004F31C7 /* TUIKit */,
 			);
 			name = libs;
@@ -410,6 +417,15 @@
 			name = TUIKit;
 			sourceTree = "<group>";
 		};
+		9A363EB214B78A43004F31C7 /* TUILayout */ = {
+			isa = PBXGroup;
+			children = (
+				9A363EB314B78A6C004F31C7 /* TUILayout.h */,
+				9A363EB414B78A6C004F31C7 /* TUILayout.m */,
+			);
+			name = TUILayout;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -465,6 +481,7 @@
 				9A363DE114B65262004F31C7 /* Credits.rtf in Resources */,
 				9A363DE714B65263004F31C7 /* MainMenu.xib in Resources */,
 				9A363DF714B6531E004F31C7 /* pet_plumes.jpg in Resources */,
+				9A363EAC14B6B302004F31C7 /* girl_bubble.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -536,6 +553,7 @@
 				9A363E9A14B6533C004F31C7 /* TUIView+Private.m in Sources */,
 				9A363E9B14B6533C004F31C7 /* TUIViewController.m in Sources */,
 				9A363E9C14B6533C004F31C7 /* TUIViewNSViewContainer.m in Sources */,
+				9A363EB514B78A6C004F31C7 /* TUILayout.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -657,6 +675,7 @@
 				9A363DEC14B65263004F31C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

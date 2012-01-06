@@ -12,7 +12,6 @@
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
-@property (assign) IBOutlet AHGrid *grid;
 
 -(IBAction)toggleConfigurationMode:(id)sender;
 @end

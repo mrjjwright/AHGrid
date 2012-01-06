@@ -28,6 +28,8 @@
 {
     configurationModeRowHeight = 100;
     
+    self.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
+
     // Initialization code here.
     rows = [NSMutableArray array];
     for (int i = 0; i < 10; i++) {
@@ -100,7 +102,7 @@
 }
 
 #pragma mark - Key Navigation
-- (BOOL)performKeyEquivalent:(NSEvent *)event
+- (BOOL)performKeyAction:(NSEvent *)event
 {    
     [self selectFirstRowIfNeeded];
     
@@ -155,7 +157,7 @@
             //        }
     }    
     
-    return [super performKeyEquivalent:event];
+    return [super performKeyAction:event];
 }
 
 

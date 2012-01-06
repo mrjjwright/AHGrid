@@ -9,11 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import "AHRow.h"
 #import "AHCell.h"
+#import "TUIKit.h"
+#import "TUILayout.h"
 
 @class AHRow;
 @class AHCell;
 
-@interface AHGrid : NSTableView  <NSTableViewDelegate, NSTableViewDataSource>
+@interface AHGrid : TUILayout  <TUILayoutDataSource>
 
 @property (nonatomic, readonly) AHRow *selectedAHRow;
 @property (nonatomic, readonly) AHCell *selectedAHCell;

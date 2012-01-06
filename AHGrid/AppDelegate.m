@@ -17,8 +17,9 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    grid.superview.wantsLayer = YES;
-    grid.wantsLayer = YES;
+    TUINSView *nsView = [[TUINSView alloc] initWithFrame:[window.contentView frame]];
+    AHGrid *grid = [[AHGrid alloc] initWithFrame:nsView.bounds];
+    nsView.rootView = grid;
     // Insert code here to initialize your application
     [grid reloadData];
 }

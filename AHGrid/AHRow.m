@@ -40,7 +40,7 @@
     
     // The horizontal table view
     listView = [[TUITableView alloc] initWithFrame:CGRectZero];
-    //listView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+    listView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     listView.delegate = self;
     listView.backgroundColor = [TUIColor redColor];
     listView.dataSource = self;
@@ -49,7 +49,7 @@
     
 
     listViewNSView = [[TUINSView alloc] initWithFrame:CGRectZero];
-    //listViewNSView.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
+    listViewNSView.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
     listViewNSView.rootView = listView;
     [self addSubview:listViewNSView];
     [listView reloadData];
@@ -143,12 +143,13 @@
     expanded = e;
     
     if (!detailScrollView) {
-        detailScrollView = [[NSScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 400)];
-        detailView = [[NSView alloc] initWithFrame:detailScrollView.bounds];
+        detailScrollView = [[NSScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 100)];
+        detailScrollView.backgroundColor = [NSColor colorWithDeviceRed:0.79 green:0.79 blue:0.79 alpha:1.0];
+        detailView = [[NSView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 400)];
         detailScrollView.documentView = detailView;
         [self addSubview:detailScrollView];
         
-        largeImageView = [[NSImageView alloc] initWithFrame:detailScrollView.bounds];
+        largeImageView = [[NSImageView alloc] initWithFrame:detailView.bounds];
         largeImageView.image = [NSImage imageNamed:@"pet_plumes.jpg"];
         [detailView addSubview:largeImageView];
         [detailScrollView setAlphaValue:0];
@@ -187,7 +188,11 @@
 
 - (BOOL)shouldScrollWheel:(NSEvent *)event {
     if ([self isVerticalScroll:event]) {
-        [self.grid scrollWheel:event];
+        if (expanded) {
+            [detailScrollView scrollWheel:event];
+        } else {
+            [self.grid scrollWheel:event];
+        }
     } else { 
         [listView scrollWheel:event];
     }
