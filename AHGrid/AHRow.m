@@ -124,24 +124,30 @@
 -(void) toggleExpanded {
     CGFloat height = expanded  ? 250 : grid.visibleRect.size.height;
     animating = YES;
+    
+     
 
-    if (!detailScrollView) {
-        detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 300)];
-        detailScrollView.backgroundColor = [TUIColor clearColor];
-        [self addSubview:detailScrollView];
-        detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 400)];
-        detailView.backgroundColor = [TUIColor blueColor];
-        largeImageView = [[TUIImageView alloc] initWithFrame:detailView.bounds];
-        largeImageView.backgroundColor = [TUIColor greenColor];
-        largeImageView.image = [TUIImage imageNamed:@"pet_plumes.jpg"];
-        [detailView addSubview:largeImageView];
-        [detailScrollView addSubview:detailView];
-        detailScrollView.alpha = 0;
-        [detailScrollView scrollToTopAnimated:NO];
-    }  
 
+    
+    
     [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         // Fade in the detail view
+        
+        if (!detailScrollView) {
+            detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 300)];
+            detailScrollView.backgroundColor = [TUIColor clearColor];
+            [self addSubview:detailScrollView];
+            detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 400)];
+            detailView.backgroundColor = [TUIColor blueColor];
+            largeImageView = [[TUIImageView alloc] initWithFrame:detailView.bounds];
+            largeImageView.backgroundColor = [TUIColor greenColor];
+            largeImageView.image = [TUIImage imageNamed:@"pet_plumes.jpg"];
+            [detailView addSubview:largeImageView];
+            [detailScrollView addSubview:detailView];
+            detailScrollView.alpha = 0;
+            [detailScrollView scrollToTopAnimated:NO];
+        } 
+        
         CGFloat alpha = expanded ? 0 : 1.0;
         detailScrollView.alpha = alpha;
         
@@ -167,6 +173,8 @@
         animating = NO;
         [self setNeedsLayout];
     }];
+
+
         
     
     
