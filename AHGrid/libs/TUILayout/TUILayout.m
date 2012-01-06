@@ -757,7 +757,7 @@ typedef enum {
         object.indexString = [NSString stringWithFormat:@"%d", i];
     }
     self.executingTransaction = nil;
-    [self layoutSubviews];
+    [self setNeedsLayout];
 }
 
 - (TUIView*) dequeueReusableView
@@ -787,9 +787,10 @@ typedef enum {
     [self endUpdates];
 }
 
-- (void) resizeObjectAtIndex:(NSUInteger) index toSize:(CGSize) size  completion:(void (^)())completion {
+- (void) resizeObjectAtIndex:(NSUInteger) index toSize:(CGSize) size animationBlock:(void (^)())animationBlock  completionBlock:(void (^)())completionBlock {
     [self beginUpdates];
-    [self.updatingTransaction addCompletionBlock:completion];
+    [self.updatingTransaction addCompletionBlock:completionBlock];
+    self.updatingTransaction.animationBlock = animationBlock;
     TUILayoutObject *object = [[TUILayoutObject alloc] init];
     object.size = size;
     object.markedForUpdate = YES;

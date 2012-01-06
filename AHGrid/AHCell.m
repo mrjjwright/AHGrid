@@ -17,6 +17,7 @@
 @synthesize row;
 @synthesize grid;
 @synthesize index;
+@synthesize selected;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -100,6 +101,43 @@
 	[textRenderer draw];
 	
 }
+
+-(BOOL) isVerticalScroll:(NSEvent*) event {
+    
+    // Get the amount of scrolling
+    double dx = 0.0;
+    double dy = 0.0;
+    
+    CGEventRef cgEvent = [event CGEvent];
+    const int64_t isContinuous = CGEventGetIntegerValueField(cgEvent, kCGScrollWheelEventIsContinuous);
+    
+    if(isContinuous) {
+        dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis2);
+        dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis1);
+    } else {
+        CGEventSourceRef source = CGEventCreateSourceFromEvent(cgEvent);
+        if(source) {
+            const double pixelsPerLine = CGEventSourceGetPixelsPerLine(source);
+            dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis2) * pixelsPerLine;
+            dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis1) * pixelsPerLine;
+            CFRelease(source);
+        } else {
+            NSLog(@"Critical: NULL source from CGEventCreateSourceFromEvent");
+        }
+    }
+    
+    if (fabsf(dx) > fabsf(dy)) return NO;
+    return YES;
+}
+
+- (BOOL)shouldScrollWheel:(NSEvent *)event {
+    if ([self isVerticalScroll:event]) {
+        [grid scrollWheel:event];
+        return NO;
+    }
+    return YES;
+}
+
 
 
 @end

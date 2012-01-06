@@ -49,7 +49,7 @@ typedef enum {
 
 #pragma mark - Resizing
 - (void) resizeObjectsToSize:(CGSize) size animated:(BOOL) animated completion:(void (^)())completion;
--(void) resizeObjectAtIndex:(NSUInteger) index toSize:(CGSize) size  completion:(void (^)())completion;
+- (void) resizeObjectAtIndex:(NSUInteger) index toSize:(CGSize) size animationBlock:(void (^)())animationBlock  completionBlock:(void (^)())completionBlock;
 
 #pragma mark - Adding and removing views
 -(void) insertObjectAtIndex:(NSUInteger) index;

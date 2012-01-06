@@ -8,14 +8,15 @@
 
 #import <AppKit/AppKit.h>
 #import "AHGrid.h"
-#import "TUITableViewCell.h"
+#import "TUIKit.h"
 
 @class AHGrid;
 @class AHRow;
-@interface AHCell : TUITableViewCell
+@interface AHCell : TUIView
 
 @property (nonatomic, copy) NSAttributedString *attributedString;
 @property (nonatomic, strong) AHRow *row;
 @property (nonatomic, weak) AHGrid *grid;
 @property (nonatomic) NSUInteger *index;
+@property (nonatomic) BOOL selected;
 @end

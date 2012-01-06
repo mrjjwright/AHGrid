@@ -18,9 +18,13 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     TUINSView *nsView = [[TUINSView alloc] initWithFrame:[_window.contentView frame]];
+    nsView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     grid = [[AHGrid alloc] initWithFrame:nsView.bounds];
-    nsView.rootView = grid;
-    grid.backgroundColor = [TUIColor redColor];
+    TUIView *containerView = [[TUIView alloc] initWithFrame:nsView.bounds];
+    [containerView addSubview:grid];
+    nsView.rootView = containerView;
+    grid.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
+    grid.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     nsView.scrollingInterceptor = self;
     // Insert code here to initialize your application
     [grid reloadData];

@@ -29,6 +29,7 @@
 	if((self = [super initWithFrame:frame])) {
         configurationModeRowHeight = 100;
         
+        self.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
         self.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
         // Initialization code here.
         rows = [NSMutableArray array];

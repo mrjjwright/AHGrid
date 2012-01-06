@@ -31,8 +31,8 @@
 - (id)initWithFrame:(CGRect)frame
 {
 	if((self = [super initWithFrame:frame])) {
-        
         cells = [NSMutableArray array];
+        self.autoresizingMask = TUIViewAutoresizingFlexibleSize;
         
         for (int i = 0; i < 100; i++) {
             [cells addObject:[NSMutableDictionary dictionary]];
@@ -46,6 +46,7 @@
         listView.horizontalScrolling = YES;
         listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
         listView.viewClass = [AHCell class];
+        [self addSubview:listView];
     }
     return self;
 }
@@ -57,10 +58,6 @@
 #pragma mark - Layout
 
 -(void) layoutSubviews {
-    if (!dataLoaded) {
-        [listView reloadData];
-        dataLoaded = YES;
-    }
     if (animating) return [super layoutSubviews];
     CGRect b = self.bounds;
     CGRect listRect = b;
@@ -68,6 +65,10 @@
         listRect.size.height = 250;
     }
     listView.frame = listRect;
+    if (!dataLoaded) {
+        [listView reloadData];
+        dataLoaded = YES;
+    }
 }
 
 #pragma mark  - TUILayout DataSource Methods
@@ -98,7 +99,6 @@
 }
 
 
-
 #pragma mark - Events
 
 -(NSMenu*) menuForEvent:(NSEvent *)event {
@@ -122,26 +122,53 @@
 #pragma mark - Expansion
 
 -(void) toggleExpanded {
-    CGFloat height = expanded  ? 50 : grid.visibleRect.size.height;
-    [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) completion:^{
-        expanded = !expanded;
-        [grid scrollRectToVisible:self.frame animated:YES];
-    }];
-    
+    CGFloat height = expanded  ? 250 : grid.visibleRect.size.height;
+    animating = YES;
+
     if (!detailScrollView) {
-        detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 100)];
+        detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 300)];
         detailScrollView.backgroundColor = [TUIColor clearColor];
-        detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 400)];
-        [detailScrollView addSubview:detailView];
         [self addSubview:detailScrollView];
-        
+        detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 400)];
+        detailView.backgroundColor = [TUIColor blueColor];
         largeImageView = [[TUIImageView alloc] initWithFrame:detailView.bounds];
-        largeImageView.image = [NSImage imageNamed:@"pet_plumes.jpg"];
+        largeImageView.backgroundColor = [TUIColor greenColor];
+        largeImageView.image = [TUIImage imageNamed:@"pet_plumes.jpg"];
         [detailView addSubview:largeImageView];
-        detailScrollView.alpha = 1;
+        [detailScrollView addSubview:detailView];
+        detailScrollView.alpha = 0;
+        [detailScrollView scrollToTopAnimated:NO];
     }  
-    CGFloat alpha = expanded ? 1.0 : 0;
-    detailScrollView.alpha = alpha;
+
+    [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
+        // Fade in the detail view
+        CGFloat alpha = expanded ? 0 : 1.0;
+        detailScrollView.alpha = alpha;
+        
+        // Move the listView
+        CGRect b = self.bounds; 
+        CGRect listRect = b;
+        listRect.size.height = 250;
+        listView.frame = listRect;
+        
+        detailScrollView.frame = CGRectMake(0, 250, self.bounds.size.width, 300);
+        detailView.frame =  detailScrollView.bounds;
+        
+        // scroll the grid into place
+        [grid scrollRectToVisible:self.frame animated:YES];
+    }  completionBlock:^{
+        expanded = !expanded;
+        grid.scrollEnabled = !expanded;
+        if (expanded) {
+            grid.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
+        } else {
+            grid.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
+        }
+        animating = NO;
+        [self setNeedsLayout];
+    }];
+        
+    
     
 }
 
