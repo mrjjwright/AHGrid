@@ -103,6 +103,7 @@
             newCellIndex -= 1;
             newCellIndex = MAX(newCellIndex, 0);
             if (oldCellIndex != newCellIndex && newCellIndex < numberOfCellsInSelectedRow) {
+                
                 self.selectedCell = (AHCell*) [selectedRow.listView viewForIndex:newCellIndex];
                 return YES;
             }
@@ -111,6 +112,7 @@
         case NSRightArrowFunctionKey:  {
             newCellIndex +=1;
             if (oldCellIndex != newCellIndex && (newCellIndex < numberOfCellsInSelectedRow)) {
+                [selectedRow.listView scrollToObjectAtIndex:newCellIndex atScrollPosition:TUILayoutScrollPositionToVisible animated:YES];
                 self.selectedCell = (AHCell*) [selectedRow.listView viewForIndex:newCellIndex];
                 return YES;
             }

@@ -20,6 +20,15 @@
 #define kTUILayoutAnimation @"TUILayoutAnimation"
 
 
+typedef enum {
+	TUILayoutScrollPositionNone,        
+	TUILayoutScrollPositionTop,    
+	TUILayoutScrollPositionMiddle,   
+	TUILayoutScrollPositionBottom,
+	TUILayoutScrollPositionToVisible, // currently the only supported arg
+} TUILayoutScrollPosition;
+
+
 // a callback handler to be used in various layout operations
 typedef void(^TUILayoutHandler)();
 typedef enum {
@@ -43,6 +52,8 @@ typedef enum {
 - (TUIView *)dequeueReusableView;
 - (void)reloadData;
 - (TUIView*) viewForIndex:(NSUInteger) index;
+- (void)scrollToObjectAtIndex:(NSUInteger)index atScrollPosition:(TUILayoutScrollPosition)scrollPosition animated:(BOOL)animated;
+- (CGRect) rectForObjectAtIndex:(NSUInteger) index;
 
 #pragma mark - Layout transactions
 -(void) beginUpdates;

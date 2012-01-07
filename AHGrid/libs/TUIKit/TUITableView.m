@@ -1212,74 +1212,74 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
 	return lastIndexPath;
 }
 
-//- (BOOL)performKeyAction:(NSEvent *)event
-//{
-//	// no selection or selected cell not visible and this is not repeative key press
-//	BOOL noCurrentSelection = (_selectedIndexPath == nil || ([self cellForRowAtIndexPath:_selectedIndexPath] == nil && ![event isARepeat]));;
-//	
-//	switch([[event charactersIgnoringModifiers] characterAtIndex:0]) {
-//		case NSUpArrowFunctionKey: {
-//			TUIFastIndexPath *newIndexPath;
-//			if(noCurrentSelection) {
-//				newIndexPath = [self indexPathForLastVisibleRow];
-//			} else {
-//				NSUInteger section = _selectedIndexPath.section;
-//				NSUInteger row = _selectedIndexPath.row;
-//				if(row > 0) {
-//					row--;
-//				} else {
-//					while(section > 0) {
-//						section--;
-//						NSUInteger rowsInSection = [self numberOfRowsInSection:section];
-//						if(rowsInSection > 0) {
-//							row = rowsInSection - 1;
-//							break;
-//						}
-//					}
-//				}
-//				newIndexPath = [TUIFastIndexPath indexPathForRow:row inSection:section];
-//			}
-//			if(![_delegate respondsToSelector:@selector(tableView:shouldSelectRowAtIndexPath:forEvent:)] || [_delegate tableView:self shouldSelectRowAtIndexPath:newIndexPath forEvent:event]){
-//				[self selectRowAtIndexPath:newIndexPath animated:self.animateSelectionChanges scrollPosition:TUITableViewScrollPositionToVisible];
-//			}
-//            
-//			return YES;
-//		}
-//            
-//		case NSDownArrowFunctionKey:  {
-//			TUIFastIndexPath *newIndexPath;
-//			if(noCurrentSelection) {
-//				newIndexPath = [self indexPathForFirstVisibleRow]; 
-//			} else {
-//				NSUInteger section = _selectedIndexPath.section;
-//				NSUInteger row = _selectedIndexPath.row;
-//				NSUInteger rowsInSection = [self numberOfRowsInSection:section];
-//				if(row + 1 < rowsInSection) {
-//					row++;
-//				} else {
-//					NSUInteger sections = [self numberOfSections];
-//					while(section + 1 < sections) {
-//						section++;
-//						NSUInteger rowsInSection = [self numberOfRowsInSection:section];
-//						if(rowsInSection > 0) {
-//							row = 0;
-//							break;
-//						}
-//					}
-//				}
-//				newIndexPath = [TUIFastIndexPath indexPathForRow:row inSection:section];
-//			}
-//			
-//			if(![_delegate respondsToSelector:@selector(tableView:shouldSelectRowAtIndexPath:forEvent:)] || [_delegate tableView:self shouldSelectRowAtIndexPath:newIndexPath forEvent:event]){
-//				[self selectRowAtIndexPath:newIndexPath animated:self.animateSelectionChanges scrollPosition:TUITableViewScrollPositionToVisible];
-//			}
-//			
-//			return YES;
-//		}
-//	}
-//	
-//	return [super performKeyAction:event];
-//}
+- (BOOL)performKeyAction:(NSEvent *)event
+{
+	// no selection or selected cell not visible and this is not repeative key press
+	BOOL noCurrentSelection = (_selectedIndexPath == nil || ([self cellForRowAtIndexPath:_selectedIndexPath] == nil && ![event isARepeat]));;
+	
+	switch([[event charactersIgnoringModifiers] characterAtIndex:0]) {
+		case NSUpArrowFunctionKey: {
+			TUIFastIndexPath *newIndexPath;
+			if(noCurrentSelection) {
+				newIndexPath = [self indexPathForLastVisibleRow];
+			} else {
+				NSUInteger section = _selectedIndexPath.section;
+				NSUInteger row = _selectedIndexPath.row;
+				if(row > 0) {
+					row--;
+				} else {
+					while(section > 0) {
+						section--;
+						NSUInteger rowsInSection = [self numberOfRowsInSection:section];
+						if(rowsInSection > 0) {
+							row = rowsInSection - 1;
+							break;
+						}
+					}
+				}
+				newIndexPath = [TUIFastIndexPath indexPathForRow:row inSection:section];
+			}
+			if(![_delegate respondsToSelector:@selector(tableView:shouldSelectRowAtIndexPath:forEvent:)] || [_delegate tableView:self shouldSelectRowAtIndexPath:newIndexPath forEvent:event]){
+				[self selectRowAtIndexPath:newIndexPath animated:self.animateSelectionChanges scrollPosition:TUITableViewScrollPositionToVisible];
+			}
+            
+			return YES;
+		}
+            
+		case NSDownArrowFunctionKey:  {
+			TUIFastIndexPath *newIndexPath;
+			if(noCurrentSelection) {
+				newIndexPath = [self indexPathForFirstVisibleRow]; 
+			} else {
+				NSUInteger section = _selectedIndexPath.section;
+				NSUInteger row = _selectedIndexPath.row;
+				NSUInteger rowsInSection = [self numberOfRowsInSection:section];
+				if(row + 1 < rowsInSection) {
+					row++;
+				} else {
+					NSUInteger sections = [self numberOfSections];
+					while(section + 1 < sections) {
+						section++;
+						NSUInteger rowsInSection = [self numberOfRowsInSection:section];
+						if(rowsInSection > 0) {
+							row = 0;
+							break;
+						}
+					}
+				}
+				newIndexPath = [TUIFastIndexPath indexPathForRow:row inSection:section];
+			}
+			
+			if(![_delegate respondsToSelector:@selector(tableView:shouldSelectRowAtIndexPath:forEvent:)] || [_delegate tableView:self shouldSelectRowAtIndexPath:newIndexPath forEvent:event]){
+				[self selectRowAtIndexPath:newIndexPath animated:self.animateSelectionChanges scrollPosition:TUITableViewScrollPositionToVisible];
+			}
+			
+			return YES;
+		}
+	}
+	
+	return [super performKeyAction:event];
+}
 
 - (BOOL)maintainContentOffsetAfterReload
 {

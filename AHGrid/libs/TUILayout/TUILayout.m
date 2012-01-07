@@ -122,9 +122,6 @@ typedef enum {
 -(void) processChangeList;
 -(void) cleanup;
 -(void) moveObjectsAfterPoint:(CGPoint) point byIndexAmount:(NSInteger) indexAmount;
-
--(CGFloat) offsetAtIndex:(NSInteger) index;
-
 @end
 
 @implementation TUILayoutTransaction {
@@ -549,23 +546,6 @@ typedef enum {
     return nil;
 }
 
--(CGRect) rectOfViewAtIndex:(NSInteger) index {
-    TUILayoutObject *object = [layout.objects objectAtIndex:index];
-    if (self.typeOfLayout == TUILayoutVertical) {
-        return CGRectMake(0, [self offsetAtIndex:index], layout.bounds.size.width, object.size.height);
-    }
-    return CGRectMake([self offsetAtIndex:index], 0, object.size.width, layout.bounds.size.height);;
-}
-
--(CGFloat) offsetAtIndex:(NSInteger) index {
-    CGFloat offset = 0;
-    int i = 0;
-    for (TUILayoutObject *object in layout.objects) {
-        offset += (self.typeOfLayout == TUILayoutVertical) ?  object.size.height : object.size.width;
-        if (i == index) continue;
-    }
-    return offset;
-}
 
 - (TUIView*) viewAtPoint:(CGPoint) point {
     for (TUIView *view in layout.subviews) {
@@ -769,7 +749,41 @@ typedef enum {
 }
 
 -(TUIView*) viewForIndex:(NSUInteger)index {
-    return [objectViewsMap objectForKey:[NSString stringWithFormat:@"%d", index]];
+    NSString *indexKey = [NSString stringWithFormat:@"%d", index];
+    TUIView *v = [objectViewsMap objectForKey:indexKey];
+    if (!v) {
+        TUILayoutObject *object = [objects objectAtIndex:index];
+        [self.executingTransaction addSubviewForObject:object atIndex:[NSString stringWithFormat:@"%d", index]];
+        v = [objectViewsMap objectForKey:indexKey];
+    }
+    return v;
+}
+
+
+- (CGRect) rectForObjectAtIndex:(NSUInteger) index {
+    TUILayoutObject *object = [objects objectAtIndex:index];
+    return object.calculatedFrame;
+}
+
+- (void)scrollToObjectAtIndex:(NSUInteger)index atScrollPosition:(TUILayoutScrollPosition)scrollPosition animated:(BOOL)animated
+{
+	CGRect v = [self visibleRect];
+	CGRect r = [self rectForObjectAtIndex:index];
+		
+	switch(scrollPosition) {
+		case TUITableViewScrollPositionNone:
+			// do nothing
+			break;
+		case TUITableViewScrollPositionTop:
+			r.origin.x -= (v.size.width - r.size.width);
+			r.size.width += (v.size.width - r.size.width);
+			[self scrollRectToVisible:r animated:animated];
+			break;
+		case TUITableViewScrollPositionToVisible:
+		default:
+			[self scrollRectToVisible:r animated:animated];
+			break;
+	}
 }
 
 
