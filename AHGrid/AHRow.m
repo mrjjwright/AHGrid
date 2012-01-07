@@ -30,14 +30,14 @@
 {
 	if((self = [super initWithFrame:frame])) {
         cells = [NSMutableArray array];
-        self.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+        self.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
         
         for (int i = 0; i < 100; i++) {
             [cells addObject:[NSMutableDictionary dictionary]];
         }
         
         listView = [[TUILayout alloc] initWithFrame:CGRectZero];
-        listView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+        listView.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
         listView.dataSource = self;
         listView.typeOfLayout = TUILayoutHorizontal;
         listView.backgroundColor = [TUIColor clearColor];
@@ -78,10 +78,12 @@
     
     AHCell *cell = (AHCell*) [listView dequeueReusableView];
 	
-	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", i]];
-	s.color = [TUIColor blackColor];
-	s.font = [TUIFont systemFontOfSize:11];
-	cell.attributedString = s;
+//	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", i]];
+//	s.color = [TUIColor blackColor];
+//	s.font = [TUIFont systemFontOfSize:11];
+//	cell.attributedString = s;
+    
+    
 	cell.row = self;
     cell.selected = NO;
     cell.selected = (index == grid.selectedRowIndex) && (i == grid.selectedCellIndex);

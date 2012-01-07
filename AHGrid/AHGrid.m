@@ -216,6 +216,15 @@
 
 # pragma mark - Configuration
 
+
+//- (void) saveConfiguration {
+//    NSMutableArray *currentRows = [NSMutableArray array];
+//    for (TUILayoutObject *object in self.objects) {
+//        [currentRows addObject:object.dictionary];
+//    }
+//    [[NSUserDefaults standardUserDefaults] setValue:currentRows forKey:CrewScreenSave]; 
+//}
+
 //-(void) toggleConfigurationMode {
 //    inConfigurationMode = !inConfigurationMode;
 //    [NSAnimationContext beginGrouping];

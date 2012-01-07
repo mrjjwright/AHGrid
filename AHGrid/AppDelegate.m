@@ -37,8 +37,6 @@
     [grid toggleConfigurationMode];
 }
 
-
-
 - (BOOL)shouldScrollWheel:(NSEvent *)event {
     
     if ([event phase] == NSEventPhaseBegan) {

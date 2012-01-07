@@ -13,11 +13,30 @@
     TUIImageView *imageView;
 }
 
-@synthesize attributedString;
 @synthesize row;
 @synthesize grid;
 @synthesize index;
 @synthesize selected;
+
+
+// Text
+@synthesize userString;
+@synthesize dateString;
+@synthesize mainString;
+@synthesize likesString;
+@synthesize commentsString;
+@synthesize commentsTextInputPlaceholderString;
+
+// Images
+@synthesize profileImage;
+@synthesize smallPhotoImage;
+@synthesize largePhotoImage;
+
+// Action buttons
+@synthesize firstButtonImage;
+@synthesize secondButtonImage;
+@synthesize thirdButtonImage;
+
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -56,16 +75,6 @@
     imageView.frame = self.bounds;
 }
 
-- (NSAttributedString *)attributedString
-{
-	return textRenderer.attributedString;
-}
-
-- (void)setAttributedString:(NSAttributedString *)a
-{
-	attributedString = a;
-	[self setNeedsDisplay];
-}
 
 - (void)drawRect:(CGRect)rect
 {
