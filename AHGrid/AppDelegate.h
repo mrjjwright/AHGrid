@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "AHGrid.h"
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate, TUIScrollingInterceptor>
 
 @property (assign) IBOutlet NSWindow *window;
 

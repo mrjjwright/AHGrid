@@ -22,8 +22,6 @@
 @protocol TUIScrollingInterceptor<NSObject>
 @required
 -(BOOL) shouldScrollWheel:(NSEvent*) event;
-//-(BOOL) shouldBeginGestureWithEvent:(NSEvent*) event;
-//-(BOOL) shouldEndGestureWithEvent:(NSEvent*) event;
 @end
 
 /**

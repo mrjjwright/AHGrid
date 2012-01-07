@@ -124,12 +124,7 @@
 -(void) toggleExpanded {
     CGFloat height = expanded  ? 250 : grid.visibleRect.size.height;
     animating = YES;
-    
-     
 
-
-    
-    
     [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         // Fade in the detail view
         
@@ -173,9 +168,9 @@
         animating = NO;
         [self setNeedsLayout];
     }];
-
-
-        
+    
+    
+    
     
     
 }

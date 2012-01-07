@@ -941,6 +941,7 @@ static float clampBounce(float x) {
 		_throw.throwing = 0;
 		_scrollViewFlags.gestureBegan = 1; // this won't happen if window isn't key on 10.6, lame
 	}
+    [self.superview beginGestureWithEvent:event];
 	
 }
 
@@ -1006,7 +1007,7 @@ static float clampBounce(float x) {
 			_scrollViewFlags.ignoreNextScrollPhaseNormal_10_7 = 1;
 		}
 	}
-	
+	[self.superview endGestureWithEvent:event];
 }
 
 #pragma mark - Scrolling

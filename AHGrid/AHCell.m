@@ -23,7 +23,7 @@
 {
 	if((self = [super initWithFrame:frame])) {
 		
-        self.clipsToBounds = YES;
+        self.clipsToBounds = NO;
         textRenderer = [[TUITextRenderer alloc] init];
 		
 		/*

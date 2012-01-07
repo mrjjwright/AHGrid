@@ -292,21 +292,11 @@
 
 - (void)beginGestureWithEvent:(NSEvent *)event
 {
-//    if (self.scrollingInterceptor) {
-//        if (![self.scrollingInterceptor shouldBeginGestureWithEvent:event]) {
-//            return;
-//        }
-//    }
 	[[self viewForEvent:event] beginGestureWithEvent:event];
 }
 
 - (void)endGestureWithEvent:(NSEvent *)event
 {
-//    if (self.scrollingInterceptor) {
-//        if (![self.scrollingInterceptor shouldEndGestureWithEvent:event]) {
-//            return;
-//        }
-//    }
 	[[self viewForEvent:event] endGestureWithEvent:event];
 }
 
