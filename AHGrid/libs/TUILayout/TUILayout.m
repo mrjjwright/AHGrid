@@ -768,6 +768,10 @@ typedef enum {
 	return v;
 }
 
+-(TUIView*) viewForIndex:(NSUInteger)index {
+    return [objectViewsMap objectForKey:[NSString stringWithFormat:@"%d", index]];
+}
+
 
 -(TUILayoutType) typeOfLayout {
     return self.updatingTransaction.typeOfLayout;

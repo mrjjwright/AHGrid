@@ -12,21 +12,19 @@
 
 @implementation AHRow {
     
-    NSMutableArray *cells;
-    
     TUIView *detailView;
     TUIScrollView *detailScrollView;
     TUIImageView *largeImageView;
     BOOL dataLoaded;
-    
 }
 
+@synthesize cells;
 @synthesize grid;
 @synthesize index;
 @synthesize listView;
 @synthesize expanded;
 @synthesize animating;
-
+@synthesize selected;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -85,6 +83,7 @@
 	cell.attributedString = s;
 	cell.row = self;
     cell.grid = grid;
+    cell.index = i;
 	return cell;
 }
 
@@ -168,12 +167,9 @@
         animating = NO;
         [self setNeedsLayout];
     }];
-    
-    
-    
-    
-    
 }
+
+
 
 
 

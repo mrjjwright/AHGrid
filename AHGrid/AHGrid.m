@@ -24,6 +24,9 @@
 @synthesize expandedRowIndex;
 @synthesize inConfigurationMode;
 
+@synthesize selectedRow;
+@synthesize selectedCell;
+
 - (id)initWithFrame:(CGRect)frame
 {
 	if((self = [super initWithFrame:frame])) {
@@ -84,88 +87,96 @@
 
 
 #pragma mark - Key Navigation
-//- (BOOL)performKeyAction:(NSEvent *)event
-//{    
-//    [self selectFirstRowIfNeeded];
-//    
-//    if (!self.selectedAHRow.listView.indexPathForSelectedRow) {
-//        [self.selectedAHRow.listView selectRowAtIndexPath:[self.selectedAHRow.listView.indexPathsForVisibleRows objectAtIndex:0] animated:YES scrollPosition:TUITableViewScrollPositionToVisible];
-//    }
-//    
-//    TUIFastIndexPath *selectedCellIndexPath = [self.selectedAHRow.listView indexPathForSelectedRow];
-//    
-//    NSUInteger oldCellIndex = selectedCellIndexPath.row;
-//    NSUInteger newCellIndex = selectedCellIndexPath.row;
-//    NSUInteger numberOfCellsInSelectedRow = [self.selectedAHRow.listView numberOfRowsInSection:0];
-//    
-//    switch([[event charactersIgnoringModifiers] characterAtIndex:0]) {
-//        case NSLeftArrowFunctionKey: {
-//            newCellIndex -= 1;
-//            newCellIndex = MAX(newCellIndex, 0);
-//            if (oldCellIndex != newCellIndex && newCellIndex < numberOfCellsInSelectedRow) {
-//                [self.selectedAHRow.listView selectRowAtIndexPath:[TUIFastIndexPath indexPathForRow:newCellIndex inSection:0] animated:YES scrollPosition:TUITableViewScrollPositionToVisible];
-//                return YES;
-//            }
-//            break;
-//        }
-//        case NSRightArrowFunctionKey:  {
-//            newCellIndex +=1;
-//            NSLog(@"%ld", newCellIndex);
-//            if (oldCellIndex != newCellIndex && (newCellIndex < numberOfCellsInSelectedRow)) {
-//                [self.selectedAHRow.listView selectRowAtIndexPath:[TUIFastIndexPath indexPathForRow:newCellIndex inSection:0] animated:YES scrollPosition:TUITableViewScrollPositionToVisible];
-//                return YES;
-//            }
-//            break;
-//        }
-//            //        case NSDownArrowFunctionKey: {
-//            //            AHRow *nextRow = [self rowViewAtRow:newIndex + 1 makeIfNecessary:NO];
-//            //            if (self.selectedRow != nil) {
-//            //                NSInteger rowIndex = [self.objects indexOfObject:self.selectedRow];
-//            //                if (rowIndex + 2 >= [self.objects count]) return YES;
-//            //                nextRow = [self.objects objectAtIndex:rowIndex + 2];
-//            //            }
-//            //            [self selectCellInAdjacentRow:nextRow];
-//            //            return YES;
-//            //        }
-//            //        case NSUpArrowFunctionKey: {
-//            //            Row *nextRow = [self.objects objectAtIndex:1];
-//            //            if (self.selectedRow != nil) {
-//            //                NSInteger rowIndex = [self.objects indexOfObject:self.selectedRow];
-//            //                if ((rowIndex - 2) < 0) return YES;
-//            //                nextRow = [self.objects objectAtIndex:rowIndex - 2];
-//            //            } 
-//            //            [self selectCellInAdjacentRow:nextRow];
-//            //            return YES;
-//            //        }
-//    }    
-//    
-//    return [super performKeyAction:event];
-//}
-//
-//
-//-(AHRow*) selectedAHRow {
-//    [self selectFirstRowIfNeeded];
-//    return [[self rowViewAtRow:0 makeIfNecessary:NO] viewAtColumn:0];
-//}
-//
-//-(AHCell*) selectedAHCell {
-//    if (!self.selectedAHRow) return nil;
-//    return (AHCell*) [self.selectedAHRow.listView cellForRowAtIndexPath:[self.selectedAHRow.listView indexPathForSelectedRow]];
-//}
+
+- (BOOL)performKeyAction:(NSEvent *)event
+{    
+    if (!selectedRow || !selectedCell) return YES;
+
+    
+    NSUInteger oldCellIndex = selectedCell.index;
+    NSUInteger newCellIndex = selectedCell.index;
+    
+    NSUInteger numberOfCellsInSelectedRow = [self.selectedRow.cells count];
+    
+    switch([[event charactersIgnoringModifiers] characterAtIndex:0]) {
+        case NSLeftArrowFunctionKey: {
+            newCellIndex -= 1;
+            newCellIndex = MAX(newCellIndex, 0);
+            if (oldCellIndex != newCellIndex && newCellIndex < numberOfCellsInSelectedRow) {
+                self.selectedCell = (AHCell*) [selectedRow.listView viewForIndex:newCellIndex];
+                return YES;
+            }
+            break;
+        }
+        case NSRightArrowFunctionKey:  {
+            newCellIndex +=1;
+            if (oldCellIndex != newCellIndex && (newCellIndex < numberOfCellsInSelectedRow)) {
+                self.selectedCell = (AHCell*) [selectedRow.listView viewForIndex:newCellIndex];
+                return YES;
+            }
+            break;
+        }
+            //        case NSDownArrowFunctionKey: {
+            //            AHRow *nextRow = [self rowViewAtRow:newIndex + 1 makeIfNecessary:NO];
+            //            if (self.selectedRow != nil) {
+            //                NSInteger rowIndex = [self.objects indexOfObject:self.selectedRow];
+            //                if (rowIndex + 2 >= [self.objects count]) return YES;
+            //                nextRow = [self.objects objectAtIndex:rowIndex + 2];
+            //            }
+            //            [self selectCellInAdjacentRow:nextRow];
+            //            return YES;
+            //        }
+            //        case NSUpArrowFunctionKey: {
+            //            Row *nextRow = [self.objects objectAtIndex:1];
+            //            if (self.selectedRow != nil) {
+            //                NSInteger rowIndex = [self.objects indexOfObject:self.selectedRow];
+            //                if ((rowIndex - 2) < 0) return YES;
+            //                nextRow = [self.objects objectAtIndex:rowIndex - 2];
+            //            } 
+            //            [self selectCellInAdjacentRow:nextRow];
+            //            return YES;
+            //        }
+    }    
+    
+    return [super performKeyAction:event];
+}
 
 
+- (void) setSelectedRow:(AHRow *) row 
+{
+    if (row == selectedRow) return;
+    if (selectedRow) {
+        selectedRow.selected = NO;
+        [selectedRow setNeedsDisplay];
+    }
+    selectedRow = row;
+    if (selectedRow) {
+        selectedRow.selected = YES;
+        [selectedRow  setNeedsDisplay];
+        
+        //Scroll to this object
+        [self scrollRectToVisible:selectedRow.frame animated:YES];
+        [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedRow];
+    }
+}
 
-//- (void) setSelectedRow:(AHRow *) row 
-//{
-//    if (selectedRow) [selectedRow setNeedsDisplay:YES];
-//    selectedRow = row;
-//    [selectedRow  setNeedsDisplay:YES];
-//    
-//    //Scroll to this object
-//    [self scrollRectToVisible:selectedRow.frame];
-//    [self.window makeFirstResponderIfNotAlreadyInResponderChain:self.selectedRow];
-//}
-
+- (void) setSelectedCell:(AHCell *) cell 
+{
+    if (cell == selectedCell) return;
+    if (selectedCell) {
+        selectedCell.selected = NO;
+       [selectedCell setNeedsDisplay]; 
+    }
+    selectedCell = cell;
+    if (selectedCell) {
+        selectedCell.selected = YES;
+        [selectedCell  setNeedsDisplay];
+        
+        //Scroll to this object
+        [selectedRow.listView scrollRectToVisible:selectedCell.frame animated:YES];
+        [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedCell];
+    }
+}
 
 
 //-(void) selectCellInAdjacentRow:(AHRow*) row {

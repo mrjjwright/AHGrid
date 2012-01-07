@@ -42,6 +42,7 @@ typedef enum {
 
 - (TUIView *)dequeueReusableView;
 - (void)reloadData;
+- (TUIView*) viewForIndex:(NSUInteger) index;
 
 #pragma mark - Layout transactions
 -(void) beginUpdates;

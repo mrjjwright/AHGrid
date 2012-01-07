@@ -17,8 +17,8 @@
 
 @interface AHGrid : TUILayout  <TUILayoutDataSource>
 
-@property (nonatomic, readonly) AHRow *selectedAHRow;
-@property (nonatomic, readonly) AHCell *selectedAHCell;
+@property (nonatomic, weak) AHRow *selectedRow;
+@property (nonatomic, weak) AHCell *selectedCell;
 @property (nonatomic) BOOL inConfigurationMode;
 
 //-(IBAction)configure:(id)sender;

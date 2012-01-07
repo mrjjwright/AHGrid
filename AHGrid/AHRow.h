@@ -20,5 +20,7 @@
 @property (nonatomic, strong) TUILayout *listView;
 @property (nonatomic) BOOL expanded;
 @property (nonatomic) BOOL animating;
+@property (nonatomic, strong) NSMutableArray *cells;
+@property (nonatomic) BOOL selected;
 
 @end

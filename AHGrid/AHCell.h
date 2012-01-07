@@ -17,6 +17,6 @@
 @property (nonatomic, copy) NSAttributedString *attributedString;
 @property (nonatomic, strong) AHRow *row;
 @property (nonatomic, weak) AHGrid *grid;
-@property (nonatomic) NSUInteger *index;
+@property (nonatomic) NSUInteger index;
 @property (nonatomic) BOOL selected;
 @end
