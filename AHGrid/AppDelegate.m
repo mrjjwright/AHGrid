@@ -21,6 +21,7 @@
     nsView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     grid = [[AHGrid alloc] initWithFrame:nsView.bounds];
     TUIView *containerView = [[TUIView alloc] initWithFrame:nsView.bounds];
+    containerView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     [containerView addSubview:grid];
     nsView.rootView = containerView;
     grid.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];

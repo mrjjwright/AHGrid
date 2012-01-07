@@ -13,12 +13,14 @@
 @interface AHGrid()
 
 @property (nonatomic) NSInteger expandedRowIndex;
+-(void) selectCellInAdjacentRow:(AHRow*) row;
 
 @end
 
 @implementation AHGrid {
     NSMutableArray *rows;
     CGFloat configurationModeRowHeight;
+    NSMutableArray *rowViews;
 }
 
 @synthesize expandedRowIndex;
@@ -39,9 +41,14 @@
         self.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
         // Initialization code here.
         rows = [NSMutableArray array];
+        rowViews = [NSMutableArray array];
         for (int i = 0; i < 10; i++) {
             NSDictionary *rowInfo = [NSDictionary dictionary];
             [rows addObject:rowInfo];
+            AHRow *rowView = (AHRow*) [[AHRow alloc] initWithFrame:CGRectZero];
+            rowView.index = i;
+            rowView.grid = self;
+            [rowViews addObject:rowView];
         }
         expandedRowIndex = -1;
         self.dataSource = self;
@@ -51,22 +58,18 @@
 }
 
 
-# pragma mark NSTableViewDelegate methods
-
-
 #pragma mark - TUILayoutDataSource methods
 
 -(TUIView*) layout:(TUILayout *)l viewForObjectAtIndex:(NSInteger)index {
-    
-    AHRow *rowView = (AHRow*) [self dequeueReusableView];
+    AHRow *rowView = [rowViews objectAtIndex:index];
     rowView.index = index;
     rowView.grid = self;
+    
     if (expandedRowIndex >=0 && index == expandedRowIndex) {
         rowView.expanded = YES;
     } else {
         rowView.expanded = NO;
     }
-    
     return rowView;
 }
 
@@ -94,12 +97,15 @@
 - (BOOL)performKeyAction:(NSEvent *)event
 {    
     if (!self.selectedRow || !self.selectedCell) return YES;
-
+    
     
     NSUInteger oldCellIndex = selectedCellIndex;
     NSUInteger newCellIndex = selectedCellIndex;
+    NSUInteger oldRowIndex = selectedRowIndex;
+    NSUInteger newRowIndex = selectedRowIndex;
     
     NSUInteger numberOfCellsInSelectedRow = [self.selectedRow.cells count];
+    NSUInteger numberOfRows = [rows count];
     
     switch([[event charactersIgnoringModifiers] characterAtIndex:0]) {
         case NSLeftArrowFunctionKey: {
@@ -119,26 +125,23 @@
             }
             break;
         }
-            //        case NSDownArrowFunctionKey: {
-            //            AHRow *nextRow = [self rowViewAtRow:newIndex + 1 makeIfNecessary:NO];
-            //            if (self.selectedRow != nil) {
-            //                NSInteger rowIndex = [self.objects indexOfObject:self.selectedRow];
-            //                if (rowIndex + 2 >= [self.objects count]) return YES;
-            //                nextRow = [self.objects objectAtIndex:rowIndex + 2];
-            //            }
-            //            [self selectCellInAdjacentRow:nextRow];
-            //            return YES;
-            //        }
-            //        case NSUpArrowFunctionKey: {
-            //            Row *nextRow = [self.objects objectAtIndex:1];
-            //            if (self.selectedRow != nil) {
-            //                NSInteger rowIndex = [self.objects indexOfObject:self.selectedRow];
-            //                if ((rowIndex - 2) < 0) return YES;
-            //                nextRow = [self.objects objectAtIndex:rowIndex - 2];
-            //            } 
-            //            [self selectCellInAdjacentRow:nextRow];
-            //            return YES;
-            //        }
+        case NSDownArrowFunctionKey: {
+            newRowIndex += 1;
+            if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
+                [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
+                return YES;
+            }
+            break;
+        }
+        case NSUpArrowFunctionKey: {
+            newRowIndex -= 1;
+            newRowIndex = MAX(newRowIndex, 0);
+            if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
+                [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
+                return YES;
+            }
+            break;
+        }
     }    
     
     return [super performKeyAction:event];
@@ -158,7 +161,7 @@
     }
     return nil;
 }
-            
+
 - (void) setSelectedRow:(AHRow *) row 
 {
     if (row.index == selectedRowIndex) return;
@@ -166,7 +169,7 @@
         self.selectedRow.selected = NO;
         [self.selectedRow setNeedsDisplay];
     }
-
+    
     selectedRowIndex = row.index;
     
     if (self.selectedRow) {
@@ -184,14 +187,12 @@
     if (cell.index == selectedCellIndex && cell.row.index == selectedRowIndex) return;
     if (self.selectedCell) {
         self.selectedCell.selected = NO;
-       [self.selectedCell setNeedsDisplay]; 
-    } else {
-        NSLog(@"hello");
-    }
-
+        [self.selectedCell setNeedsDisplay]; 
+    } 
+    
     selectedCellIndex = cell.index;
-    selectedRowIndex = cell.row.index;
-
+    self.selectedRow = cell.row;
+    
     if (self.selectedCell) {
         self.selectedCell.selected = YES;
         [self.selectedCell setNeedsDisplay];
@@ -203,22 +204,15 @@
 }
 
 
-//-(void) selectCellInAdjacentRow:(AHRow*) row {
-//    if (row != nil) {
-//        CGPoint point = CGPointMake(0, 0);
-//        if (self.selectedRow && self.selectedCell) {
-//            CGRect v = self.selectedAHRow.listView.visibleRect;
-//            CGRect r = self.selectedAHCell.frame;
-//            // Adjust the point for the scroll position
-//            CGFloat relativeOffset = r.origin.x - (v.origin.x - roundf(self.selectedAHCell.bounds.size.width/2));
-//            CGRect rowVisible = row.listView.visibleRect;
-//            point = CGPointMake(NSMinX(rowVisible) + relativeOffset, 0);
-//        }
-//        
-//        // TODO
-//        AHCell *cellToSelect; //(AHCell*) [self.selectedRow.listView viewAtPoint:point];
-//    }
-//}
+-(void) selectCellInAdjacentRow:(AHRow*) row {
+    CGRect v = self.selectedRow.listView.visibleRect;
+    CGRect r = self.selectedCell.frame;
+    // Adjust the point for the scroll position
+    CGFloat relativeOffset = r.origin.x - (v.origin.x - roundf(self.selectedCell.bounds.size.width/2));
+    CGRect rowVisible = row.listView.visibleRect;
+    CGPoint point = CGPointMake(NSMinX(rowVisible) + relativeOffset, 0);
+    self.selectedCell = (AHCell*) [row.listView viewAtPoint:point];
+}
 
 # pragma mark - Configuration
 

@@ -67,6 +67,7 @@
         [listView reloadData];
         dataLoaded = YES;
     }
+    [super layoutSubviews];
 }
 
 #pragma mark  - TUILayout DataSource Methods

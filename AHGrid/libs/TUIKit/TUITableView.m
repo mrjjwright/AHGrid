@@ -1073,7 +1073,6 @@ static NSInteger SortCells(TUITableViewCell *a, TUITableViewCell *b, void *ctx)
     self.contentSize = CGSizeMake(_contentHeight, self.bounds.size.height);
 }
 
-
 - (void)layoutSubviews
 {
     if (self.animating) return [super layoutSubviews];

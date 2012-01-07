@@ -52,6 +52,7 @@ typedef enum {
 - (TUIView *)dequeueReusableView;
 - (void)reloadData;
 - (TUIView*) viewForIndex:(NSUInteger) index;
+- (TUIView*) viewAtPoint:(CGPoint) point;
 - (void)scrollToObjectAtIndex:(NSUInteger)index atScrollPosition:(TUILayoutScrollPosition)scrollPosition animated:(BOOL)animated;
 - (CGRect) rectForObjectAtIndex:(NSUInteger) index;
 

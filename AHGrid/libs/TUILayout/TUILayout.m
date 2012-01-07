@@ -301,7 +301,7 @@ typedef enum {
             }
         }
         [layout.objectViewsMap setObject:v forKey:objectIndex];
-        [v setNeedsLayout]; 
+        [v layoutSubviews]; 
     }
 }
 
@@ -547,15 +547,6 @@ typedef enum {
 }
 
 
-- (TUIView*) viewAtPoint:(CGPoint) point {
-    for (TUIView *view in layout.subviews) {
-        if (CGRectContainsPoint(view.frame, point)) {
-            return view;
-        }
-    }
-    return nil;
-}
-
 - (CGPoint) fixContentOffset:(CGPoint)offset forSize:(CGSize) size
 {
 	CGRect b = layout.bounds;
@@ -737,7 +728,7 @@ typedef enum {
         object.indexString = [NSString stringWithFormat:@"%d", i];
     }
     self.executingTransaction = nil;
-    [self setNeedsLayout];
+    [self layoutSubviews];
 }
 
 - (TUIView*) dequeueReusableView
@@ -750,6 +741,7 @@ typedef enum {
 
 -(TUIView*) viewForIndex:(NSUInteger)index {
     NSString *indexKey = [NSString stringWithFormat:@"%d", index];
+    
     TUIView *v = [objectViewsMap objectForKey:indexKey];
     if (!v) {
         TUILayoutObject *object = [objects objectAtIndex:index];
@@ -758,6 +750,17 @@ typedef enum {
     }
     return v;
 }
+
+
+- (TUIView*) viewAtPoint:(CGPoint) point {
+    for (TUIView *view in [objectViewsMap allValues]) {
+        if (CGRectContainsPoint(view.frame, point)) {
+            return view;
+        }
+    }
+    return nil;
+}
+
 
 -(void) setSpaceBetweenViews:(CGFloat)s {
     executingTransaction.spaceBetweenViews = s;
