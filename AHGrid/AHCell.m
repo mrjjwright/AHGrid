@@ -112,7 +112,6 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
-    grid.selectedRow = self.row;
     grid.selectedCell = self;
 	[super mouseDown:event]; // may make the text renderer first responder, so we want to do the selection before this	
 }

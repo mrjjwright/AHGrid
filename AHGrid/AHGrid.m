@@ -33,7 +33,8 @@
 {
 	if((self = [super initWithFrame:frame])) {
         configurationModeRowHeight = 100;
-        
+        selectedRowIndex = -1;
+        selectedCellIndex = -1;
         self.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
         self.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
         // Initialization code here.
@@ -92,11 +93,11 @@
 
 - (BOOL)performKeyAction:(NSEvent *)event
 {    
-    if (!selectedRow || !selectedCell) return YES;
+    if (!self.selectedRow || !self.selectedCell) return YES;
 
     
-    NSUInteger oldCellIndex = selectedCell.index;
-    NSUInteger newCellIndex = selectedCell.index;
+    NSUInteger oldCellIndex = selectedCellIndex;
+    NSUInteger newCellIndex = selectedCellIndex;
     
     NSUInteger numberOfCellsInSelectedRow = [self.selectedRow.cells count];
     
@@ -105,7 +106,7 @@
             newCellIndex -= 1;
             newCellIndex = MAX(newCellIndex, 0);
             if (oldCellIndex != newCellIndex && newCellIndex < numberOfCellsInSelectedRow) {
-                self.selectedCell = (AHCell*) [selectedRow.listView viewForIndex:newCellIndex];
+                self.selectedCell = (AHCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
                 return YES;
             }
             break;
@@ -113,7 +114,7 @@
         case NSRightArrowFunctionKey:  {
             newCellIndex +=1;
             if (oldCellIndex != newCellIndex && (newCellIndex < numberOfCellsInSelectedRow)) {
-                self.selectedCell = (AHCell*) [selectedRow.listView viewForIndex:newCellIndex];
+                self.selectedCell = (AHCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
                 return YES;
             }
             break;
@@ -144,40 +145,59 @@
 }
 
 
+-(AHRow*) selectedRow {
+    if (selectedRowIndex >=0) {
+        return (AHRow*) [self viewForIndex:selectedRowIndex];        
+    }
+    return  nil;
+}
+
+-(AHCell*) selectedCell {
+    if (selectedCellIndex >= 0) {
+        return (AHCell*) [self.selectedRow.listView viewForIndex:selectedCellIndex];
+    }
+    return nil;
+}
+            
 - (void) setSelectedRow:(AHRow *) row 
 {
-    if (row == selectedRow) return;
-    if (selectedRow) {
-        selectedRow.selected = NO;
-        [selectedRow setNeedsDisplay];
+    if (row.index == selectedRowIndex) return;
+    if (self.selectedRow) {
+        self.selectedRow.selected = NO;
+        [self.selectedRow setNeedsDisplay];
     }
-    selectedRow = row;
+
     selectedRowIndex = row.index;
-    if (selectedRow) {
+    
+    if (self.selectedRow) {
         selectedRow.selected = YES;
-        [selectedRow  setNeedsDisplay];
+        [self.selectedRow  setNeedsDisplay];
         
         //Scroll to this object
-        [self scrollRectToVisible:selectedRow.frame animated:YES];
+        [self scrollRectToVisible:self.selectedRow.frame animated:YES];
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedRow];
     }
 }
 
 - (void) setSelectedCell:(AHCell *) cell 
 {
-    if (cell == selectedCell) return;
-    if (selectedCell) {
-        selectedCell.selected = NO;
-       [selectedCell setNeedsDisplay]; 
+    if (cell.index == selectedCellIndex && cell.row.index == selectedRowIndex) return;
+    if (self.selectedCell) {
+        self.selectedCell.selected = NO;
+       [self.selectedCell setNeedsDisplay]; 
+    } else {
+        NSLog(@"hello");
     }
-    selectedCell = cell;
+
     selectedCellIndex = cell.index;
-    if (selectedCell) {
-        selectedCell.selected = YES;
-        [selectedCell setNeedsDisplay];
+    selectedRowIndex = cell.row.index;
+
+    if (self.selectedCell) {
+        self.selectedCell.selected = YES;
+        [self.selectedCell setNeedsDisplay];
         
         //Scroll to this object
-        [selectedRow.listView scrollRectToVisible:selectedCell.frame animated:YES];
+        [self.selectedRow.listView scrollRectToVisible:self.selectedCell.frame animated:YES];
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedCell];
     }
 }
