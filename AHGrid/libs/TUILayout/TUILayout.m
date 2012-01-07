@@ -759,6 +759,15 @@ typedef enum {
     return v;
 }
 
+-(void) setSpaceBetweenViews:(CGFloat)s {
+    executingTransaction.spaceBetweenViews = s;
+    defaultTransaction.spaceBetweenViews = s;
+}
+
+-(CGFloat) spaceBetweenViews {
+    return executingTransaction.spaceBetweenViews;
+}
+
 
 - (CGRect) rectForObjectAtIndex:(NSUInteger) index {
     TUILayoutObject *object = [objects objectAtIndex:index];

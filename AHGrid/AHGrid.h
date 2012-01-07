@@ -19,6 +19,9 @@
 
 @property (nonatomic, weak) AHRow *selectedRow;
 @property (nonatomic, weak) AHCell *selectedCell;
+@property (nonatomic) NSUInteger selectedRowIndex;
+@property (nonatomic) NSUInteger selectedCellIndex;
+
 @property (nonatomic) BOOL inConfigurationMode;
 
 //-(IBAction)configure:(id)sender;

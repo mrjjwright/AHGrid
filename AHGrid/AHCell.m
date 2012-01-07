@@ -84,7 +84,7 @@
 		// light gray background
 		CGContextSetRGBFillColor(ctx, .97, .97, .97, 1);
 		CGContextFillRect(ctx, b);
-
+        
         imageView.layer.cornerRadius = 0;
         imageView.layer.borderWidth = 0;
 

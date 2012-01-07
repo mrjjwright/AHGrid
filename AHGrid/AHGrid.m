@@ -26,6 +26,8 @@
 
 @synthesize selectedRow;
 @synthesize selectedCell;
+@synthesize selectedRowIndex;
+@synthesize selectedCellIndex;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -103,7 +105,6 @@
             newCellIndex -= 1;
             newCellIndex = MAX(newCellIndex, 0);
             if (oldCellIndex != newCellIndex && newCellIndex < numberOfCellsInSelectedRow) {
-                
                 self.selectedCell = (AHCell*) [selectedRow.listView viewForIndex:newCellIndex];
                 return YES;
             }
@@ -112,7 +113,6 @@
         case NSRightArrowFunctionKey:  {
             newCellIndex +=1;
             if (oldCellIndex != newCellIndex && (newCellIndex < numberOfCellsInSelectedRow)) {
-                [selectedRow.listView scrollToObjectAtIndex:newCellIndex atScrollPosition:TUILayoutScrollPositionToVisible animated:YES];
                 self.selectedCell = (AHCell*) [selectedRow.listView viewForIndex:newCellIndex];
                 return YES;
             }
@@ -152,6 +152,7 @@
         [selectedRow setNeedsDisplay];
     }
     selectedRow = row;
+    selectedRowIndex = row.index;
     if (selectedRow) {
         selectedRow.selected = YES;
         [selectedRow  setNeedsDisplay];
@@ -170,9 +171,10 @@
        [selectedCell setNeedsDisplay]; 
     }
     selectedCell = cell;
+    selectedCellIndex = cell.index;
     if (selectedCell) {
         selectedCell.selected = YES;
-        [selectedCell  setNeedsDisplay];
+        [selectedCell setNeedsDisplay];
         
         //Scroll to this object
         [selectedRow.listView scrollRectToVisible:selectedCell.frame animated:YES];

@@ -82,6 +82,7 @@
 	s.font = [TUIFont systemFontOfSize:11];
 	cell.attributedString = s;
 	cell.row = self;
+    cell.selected = (index == grid.selectedRowIndex) && (i == grid.selectedCellIndex);
     cell.grid = grid;
     cell.index = i;
 	return cell;

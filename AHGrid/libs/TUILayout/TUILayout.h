@@ -45,7 +45,7 @@ typedef enum {
 
 @property (nonatomic, weak) Class viewClass;
 @property (nonatomic) TUILayoutType typeOfLayout;
-
+@property (nonatomic) CGFloat spaceBetweenViews;
 
 #pragma mark - General
 
