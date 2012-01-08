@@ -21,6 +21,7 @@
     NSMutableArray *rows;
     CGFloat configurationModeRowHeight;
     NSMutableArray *rowViews;
+    CGRect lastBounds;
 }
 
 @synthesize expandedRowIndex;
@@ -57,6 +58,15 @@
     return self;
 }
 
+-(void) layoutSubviews {
+    if (!CGSizeEqualToSize(lastBounds.size, self.bounds.size)) {
+        lastBounds = self.bounds;
+        [self reloadData];
+    }
+    lastBounds = self.bounds;
+    [super layoutSubviews];
+}
+
 
 #pragma mark - TUILayoutDataSource methods
 
@@ -72,6 +82,7 @@
     }
     return rowView;
 }
+
 
 - (NSUInteger)numberOfObjectsInLayout:(TUILayout *)l {
     return [rows count];
@@ -97,7 +108,7 @@
 - (BOOL)performKeyAction:(NSEvent *)event
 {    
     if (!self.selectedRow || !self.selectedCell) return YES;
-    
+   
     
     NSUInteger oldCellIndex = selectedCellIndex;
     NSUInteger newCellIndex = selectedCellIndex;
@@ -126,6 +137,7 @@
             break;
         }
         case NSDownArrowFunctionKey: {
+             if (self.selectedRow.expanded) return YES;
             newRowIndex += 1;
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
                 [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
@@ -134,6 +146,7 @@
             break;
         }
         case NSUpArrowFunctionKey: {
+             if (self.selectedRow.expanded) return YES;
             newRowIndex -= 1;
             newRowIndex = MAX(newRowIndex, 0);
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
@@ -202,7 +215,6 @@
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedCell];
     }
 }
-
 
 -(void) selectCellInAdjacentRow:(AHRow*) row {
     CGRect v = self.selectedRow.listView.visibleRect;

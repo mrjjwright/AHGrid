@@ -44,21 +44,10 @@
 		
         self.clipsToBounds = NO;
         textRenderer = [[TUITextRenderer alloc] init];
-		
-		/*
-		 Add the text renderer to the view so events get routed to it properly.
-		 Text selection, dictionary popup, etc should just work.
-		 You can add more than one.
-		 
-		 The text renderer encapsulates an attributed string and a frame.
-		 The attributed string in this case is set by setAttributedString:
-		 which is configured by the table view delegate.  The frame needs to be 
-		 set before it can be drawn, we do that in drawRect: below.
-		 */
-		self.textRenderers = [NSArray arrayWithObjects:textRenderer, nil];
+        self.textRenderers = [NSArray arrayWithObjects:textRenderer, nil];
         
         imageView = [[TUIImageView alloc] initWithImage:[TUIImage imageNamed:@"pet_plumes.jpg"]];
-        //imageView.layer.contentsGravity = kCAGravityResizeAspect;
+        imageView.layer.contentsGravity = kCAGravityResizeAspect;
         imageView.clipsToBounds = YES;
         [self addSubview:imageView];
 	}
@@ -66,15 +55,9 @@
 }
 
 
-//- (BOOL)performKeyAction:(NSEvent *)event{
-//    [grid performKeyAction:event];
-//}
-
-
 -(void) layoutSubviews {
     imageView.frame = self.bounds;
 }
-
 
 - (void)drawRect:(CGRect)rect
 {
@@ -96,7 +79,7 @@
         
         imageView.layer.cornerRadius = 0;
         imageView.layer.borderWidth = 0;
-
+        
 		// emboss
 		CGContextSetRGBFillColor(ctx, 1, 1, 1, 0.9); // light at the top
 		CGContextFillRect(ctx, CGRectMake(0, b.size.height-1, b.size.width, 1));

@@ -132,6 +132,7 @@ typedef enum {
     BOOL calculated;
     BOOL shouldChangeContentOffset;
     BOOL preLayoutPass;
+    CGRect lastBounds;
 }
 
 @synthesize layout;
@@ -179,13 +180,16 @@ typedef enum {
 
 -(void) applyLayout {
     
-    if (!calculated) {
+    CGRect bounds = layout.bounds;
+    if (!calculated || !CGSizeEqualToSize(bounds.size, lastBounds.size)) {
         [self calculateContentSize];
         [self calculateContentOffset];
         [self processChangeList];
         [self calculateObjectOffsets]; 
         calculated = YES;
     }
+    lastBounds = bounds;
+    
         
     if (self.shouldAnimate && state != TUILayoutTransactionStateDoneAnimating) {
         if (state == TUILayoutTransactionStateNormal) {

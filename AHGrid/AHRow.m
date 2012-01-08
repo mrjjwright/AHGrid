@@ -31,7 +31,7 @@
 	if((self = [super initWithFrame:frame])) {
         cells = [NSMutableArray array];
         self.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
-        
+        self.backgroundColor = [TUIColor blueColor];
         for (int i = 0; i < 100; i++) {
             [cells addObject:[NSMutableDictionary dictionary]];
         }
@@ -56,6 +56,8 @@
 #pragma mark - Layout
 
 -(void) layoutSubviews {
+    NSLog(@"%f", self.bounds.size.width);
+
     if (animating) return [super layoutSubviews];
     CGRect b = self.bounds;
     CGRect listRect = b;
@@ -150,7 +152,6 @@
         CGFloat alpha = expanded ? 0 : 1.0;
         detailScrollView.alpha = alpha;
         
-        // Move the listView
         CGRect b = self.bounds; 
         CGRect listRect = b;
         listRect.size.height = 250;
