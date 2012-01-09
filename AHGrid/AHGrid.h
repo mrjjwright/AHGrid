@@ -30,4 +30,6 @@
 -(void) togglExpansionForRow:(NSInteger) rowIndex;
 -(void) toggleConfigurationMode;
 
+-(void)showCommentEditorForCell:(AHCell*) cell;
+
 @end

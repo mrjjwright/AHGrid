@@ -23,4 +23,7 @@
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic) BOOL selected;
 
+
+-(void) toggleExpanded;
+
 @end

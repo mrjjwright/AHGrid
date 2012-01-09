@@ -22,6 +22,7 @@
     CGFloat configurationModeRowHeight;
     NSMutableArray *rowViews;
     CGRect lastBounds;
+    NSTextView *commentsEditor;
 }
 
 @synthesize expandedRowIndex;
@@ -246,6 +247,29 @@
 //    [self endUpdates];
 //    [NSAnimationContext endGrouping];
 //}
+
+
+# pragma mark - Actions
+
+-(void)showCommentEditorForCell:(AHCell*) cell {
+    if (!commentsEditor) {
+        commentsEditor = [[NSTextView alloc] initWithFrame:cell.frame];
+        [self.nsView addSubview:commentsEditor];
+    }
+    
+    CGRect commentEditorFrame = [cell frameInNSView];
+    commentEditorFrame.size.height -= 150;
+    commentEditorFrame.origin.y += 0;
+    commentsEditor.frame = commentEditorFrame;
+    [commentsEditor setAlphaValue:0];
+    
+    [NSAnimationContext beginGrouping];
+    [[NSAnimationContext currentContext] setDuration:0.7f]; 
+    [[commentsEditor animator] setAlphaValue:1.0];
+    [NSAnimationContext endGrouping];
+}
+
+
 
 
 @end

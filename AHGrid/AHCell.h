@@ -18,6 +18,7 @@
 @property (nonatomic, weak) AHGrid *grid;
 @property (nonatomic) NSUInteger index;
 @property (nonatomic) BOOL selected;
+@property (nonatomic, strong) TUITextView *commentEditor;
 
 // Text
 @property (nonatomic, copy) NSAttributedString *userString;
@@ -37,5 +38,7 @@
 @property (nonatomic, strong) TUIImage *secondButtonImage;
 @property (nonatomic, strong) TUIImage *thirdButtonImage;
 
+-(void) prepareForReuse;
+-(void) showCommentEditor;
 
 @end

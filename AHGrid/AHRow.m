@@ -31,7 +31,6 @@
 	if((self = [super initWithFrame:frame])) {
         cells = [NSMutableArray array];
         self.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
-        self.backgroundColor = [TUIColor blueColor];
         for (int i = 0; i < 100; i++) {
             [cells addObject:[NSMutableDictionary dictionary]];
         }
@@ -56,8 +55,6 @@
 #pragma mark - Layout
 
 -(void) layoutSubviews {
-    NSLog(@"%f", self.bounds.size.width);
-
     if (animating) return [super layoutSubviews];
     CGRect b = self.bounds;
     CGRect listRect = b;
@@ -87,7 +84,7 @@
     
     
 	cell.row = self;
-    cell.selected = NO;
+    [cell prepareForReuse];
     cell.selected = (index == grid.selectedRowIndex) && (i == grid.selectedCellIndex);
     cell.grid = grid;
     cell.index = i;
@@ -139,7 +136,6 @@
             detailScrollView.backgroundColor = [TUIColor clearColor];
             [self addSubview:detailScrollView];
             detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 400)];
-            detailView.backgroundColor = [TUIColor blueColor];
             largeImageView = [[TUIImageView alloc] initWithFrame:detailView.bounds];
             largeImageView.backgroundColor = [TUIColor greenColor];
             largeImageView.image = [TUIImage imageNamed:@"pet_plumes.jpg"];
@@ -174,9 +170,6 @@
         [self setNeedsLayout];
     }];
 }
-
-
-
 
 
 @end
