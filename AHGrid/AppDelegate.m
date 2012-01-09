@@ -37,6 +37,11 @@
     [grid toggleConfigurationMode];
 }
 
+-(IBAction)showCommentEditor:(id)sender {
+    [grid showCommentEditorOnSelectedCell];
+}
+
+
 - (BOOL)shouldScrollWheel:(NSEvent *)event {
     
     if ([event phase] == NSEventPhaseBegan) {

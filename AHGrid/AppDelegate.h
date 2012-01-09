@@ -14,4 +14,6 @@
 @property (assign) IBOutlet NSWindow *window;
 
 -(IBAction)toggleConfigurationMode:(id)sender;
+-(IBAction)showCommentEditor:(id)sender;
+
 @end

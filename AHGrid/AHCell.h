@@ -40,5 +40,7 @@
 
 -(void) prepareForReuse;
 -(void) showCommentEditor;
+- (void) hideCommentEditor;
+- (void) toggleCommentEditor;
 
 @end

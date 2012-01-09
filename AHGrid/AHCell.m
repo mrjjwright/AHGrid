@@ -9,6 +9,7 @@
 #import "AHCell.h"
 #import "TUIKit.h"
 
+
 @implementation AHCell {
     TUITextRenderer *textRenderer;
     BOOL showingCommentEditor;
@@ -123,6 +124,11 @@
     return TRUE;
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+{
+    return YES;
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
     grid.selectedCell = self;
@@ -132,7 +138,7 @@
 
 -(NSMenu*) menuForEvent:(NSEvent *)event {
     NSMenu *menu = [[NSMenu alloc] init];
-    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Comment",nil) action:@selector(toggleCommentEditor) keyEquivalent:@""];
+    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Comment",nil) action:@selector(toggleCommentEditor) keyEquivalent:@"j"];
     item.target =self;
     [menu addItem:item];
     
@@ -149,7 +155,7 @@
 
 -(BOOL) textView:(TUITextView*) textView doCommandBySelector:(SEL) commandSelector {
     if (commandSelector == @selector(cancelOperation:)) {
-        [self showCommentEditor];
+        [self hideCommentEditor];
         return YES;
     } else if (commandSelector == @selector(insertNewline:)) {
         // The user pressed enter, fire off the comment
@@ -168,6 +174,7 @@
     if (!self.selected) {
         grid.selectedCell = self;
     }
+    showingCommentEditor = YES;
     if (!commentEditor) {
         CGRect frame = self.bounds;
         frame.size.height *= 0.2;
@@ -199,6 +206,7 @@
 }
 
 - (void) hideCommentEditor {
+    showingCommentEditor = NO;
     if (commentEditor && !commentEditor.hidden) {
         [[self nsWindow] tui_makeFirstResponder:self];
         [TUIView animateWithDuration:0.3 animations:^{
