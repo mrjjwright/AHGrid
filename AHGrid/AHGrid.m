@@ -124,26 +124,23 @@
             newCellIndex = MAX(newCellIndex, 0);
             if (oldCellIndex != newCellIndex && newCellIndex < numberOfCellsInSelectedRow) {
                 self.selectedCell = (AHCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
-                return YES;
             }
-            break;
+            return YES;;
         }
         case NSRightArrowFunctionKey:  {
             newCellIndex +=1;
             if (oldCellIndex != newCellIndex && (newCellIndex < numberOfCellsInSelectedRow)) {
                 self.selectedCell = (AHCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
-                return YES;
             }
-            break;
+            return YES;
         }
         case NSDownArrowFunctionKey: {
              if (self.selectedRow.expanded) return YES;
             newRowIndex += 1;
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
                 [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
-                return YES;
             }
-            break;
+            return YES;
         }
         case NSUpArrowFunctionKey: {
              if (self.selectedRow.expanded) return YES;
@@ -151,9 +148,8 @@
             newRowIndex = MAX(newRowIndex, 0);
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
                 [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
-                return YES;
             }
-            break;
+            return YES;
         }
     }    
     
