@@ -694,6 +694,7 @@ typedef enum {
     TUILayoutTransaction *transaction = [[TUILayoutTransaction alloc] init];
     transaction.shouldAnimate = YES;
     transaction.layout = self;
+    transaction.spaceBetweenViews = [self spaceBetweenViews];
     [updateStack addObject:transaction];
 }
 
