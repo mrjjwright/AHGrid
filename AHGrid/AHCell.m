@@ -67,6 +67,7 @@
 
 
 -(void) layoutSubviews {
+
     CGRect b = self.bounds;
 
     // Default position for all items
@@ -171,6 +172,8 @@
 
 
 - (void) showCommentEditor {
+    if (animating) return;
+
     if (!self.selected) {
         grid.selectedCell = self;
     }
@@ -195,23 +198,28 @@
     }
     
     commentEditor.hidden = NO;
+    animating = YES;
     [TUIView animateWithDuration:0.3 animations:^{
         CGRect frame = smallPhotoImageView.frame;
         frame.origin.y = NSMaxY(commentEditor.frame);
         smallPhotoImageView.frame = frame;
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:commentEditor];
     } completion:^(BOOL finished) {
+        animating = NO;
         [self setNeedsLayout];
     }];
 }
 
 - (void) hideCommentEditor {
+    if (animating) return;
     showingCommentEditor = NO;
+    animating = YES;
     if (commentEditor && !commentEditor.hidden) {
         [[self nsWindow] tui_makeFirstResponder:self];
         [TUIView animateWithDuration:0.3 animations:^{
             smallPhotoImageView.frame = self.bounds;
         } completion:^(BOOL finished) {
+            animating = NO;
             commentEditor.hidden = YES;
             [self setNeedsLayout];
         }];
