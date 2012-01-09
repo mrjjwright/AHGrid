@@ -41,6 +41,7 @@
         listView.typeOfLayout = TUILayoutHorizontal;
         listView.backgroundColor = [TUIColor clearColor];
         listView.horizontalScrolling = YES;
+        listView.spaceBetweenViews = 15;
         listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
         listView.viewClass = [AHCell class];
         [self addSubview:listView];

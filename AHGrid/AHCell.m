@@ -48,6 +48,7 @@
 {
 	if((self = [super initWithFrame:frame])) {
 		
+        
         self.clipsToBounds = YES;
         textRenderer = [[TUITextRenderer alloc] init];
         self.textRenderers = [NSArray arrayWithObjects:textRenderer, nil];
@@ -55,6 +56,7 @@
         smallPhotoImageView = [[TUIImageView alloc] initWithImage:[TUIImage imageNamed:@"pet_plumes.jpg"]];
         smallPhotoImageView.layer.contentsGravity = kCAGravityResizeAspect;
         smallPhotoImageView.clipsToBounds = YES;
+        smallPhotoImageView.layer.cornerRadius = 6;
         [self addSubview:smallPhotoImageView];
 	}
 	return self;
@@ -65,6 +67,16 @@
     showingCommentEditor = NO;
 }
 
+-(CGRect) commentEditorFrame {
+    CGRect b = self.bounds;
+    CGRect frame = b;
+    frame.size.height *= 0.2;
+    frame.size.width *= 0.9;
+    frame.origin.x = (b.size.width - frame.size.width)/2;
+    frame.origin.y = (b.size.width - frame.size.width)/2;
+    return frame;
+}
+
 
 -(void) layoutSubviews {
 
@@ -72,51 +84,38 @@
 
     // Default position for all items
     CGRect commentEditorFrame = b;
-    commentEditorFrame.size.height = 100;
     CGRect smallPhotoFrame = b;
     
     if (showingCommentEditor) {
+        commentEditorFrame = [self commentEditorFrame];
         // Move everything else up
         smallPhotoFrame.origin.y = NSMaxY(commentEditorFrame);
+        commentEditor.frame = commentEditorFrame;
     }
-    commentEditor.frame = commentEditorFrame;
-    smallPhotoImageView.frame = smallPhotoFrame;
-}
-
-- (void)drawRect:(CGRect)rect
-{
-	CGRect b = self.bounds;
-	CGContextRef ctx = TUIGraphicsGetCurrentContext();
-	
-	if(self.selected) {
-		// selected background
-		CGContextSetRGBFillColor(ctx, .87, .87, .87, 1);
-		CGContextFillRect(ctx, b);
-        
-        smallPhotoImageView.layer.cornerRadius = 6;
+    
+    if(self.selected) {
         smallPhotoImageView.layer.borderWidth = 2;
         smallPhotoImageView.layer.borderColor = [TUIColor  yellowColor].CGColor;
 	} else {
-		// light gray background
-		CGContextSetRGBFillColor(ctx, .97, .97, .97, 1);
-		CGContextFillRect(ctx, b);
-        
-        smallPhotoImageView.layer.cornerRadius = 0;
         smallPhotoImageView.layer.borderWidth = 0;
-        
-		// emboss
-		CGContextSetRGBFillColor(ctx, 1, 1, 1, 0.9); // light at the top
-		CGContextFillRect(ctx, CGRectMake(0, b.size.height-1, b.size.width, 1));
-		CGContextSetRGBFillColor(ctx, 0, 0, 0, 0.08); // dark at the bottom
-		CGContextFillRect(ctx, CGRectMake(0, 0, b.size.width, 1));
 	}
-	
-	// text
-	CGRect textRect = CGRectOffset(b, 15, -15);
-	textRenderer.frame = textRect; // set the frame so it knows where to draw itself
-	[textRenderer draw];
-	
+
+    
+    smallPhotoImageView.frame = smallPhotoFrame;
 }
+
+
+//- (void)drawRect:(CGRect)rect
+//{
+//	CGRect b = self.bounds;
+//	//CGContextRef ctx = TUIGraphicsGetCurrentContext();
+//	
+//	
+//	// text
+//	CGRect textRect = CGRectOffset(b, 15, -15);
+//	textRenderer.frame = textRect; // set the frame so it knows where to draw itself
+//	[textRenderer draw];
+//}
 
 
 #pragma mark - Selection
@@ -179,13 +178,9 @@
     }
     showingCommentEditor = YES;
     if (!commentEditor) {
-        CGRect frame = self.bounds;
-        frame.size.height *= 0.2;
-        commentEditor = [[TUITextView alloc] initWithFrame:frame];
-        commentEditor.backgroundColor = [TUIColor whiteColor];
-        commentEditor.layer.borderColor = [TUIColor yellowColor].CGColor;
-        commentEditor.layer.borderWidth = 1;
-        commentEditor.layer.cornerRadius = 4;
+
+        commentEditor = [[TUITextView alloc] initWithFrame:[self commentEditorFrame]];
+        commentEditor.backgroundColor = [TUIColor whiteColor];     
         commentEditor.layer.shadowColor = [TUIColor blackColor].CGColor;
         commentEditor.layer.shadowOffset = CGSizeMake(2, 2);
         commentEditor.delegate =  (__strong id) self;

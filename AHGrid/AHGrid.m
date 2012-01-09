@@ -53,6 +53,7 @@
         }
         expandedRowIndex = -1;
         self.dataSource = self;
+        self.spaceBetweenViews = 15;
         self.viewClass = [AHRow class];
     }
     return self;
@@ -196,7 +197,7 @@
     if (cell.index == selectedCellIndex && cell.row.index == selectedRowIndex) return;
     if (self.selectedCell) {
         self.selectedCell.selected = NO;
-        [self.selectedCell setNeedsDisplay]; 
+        [self.selectedCell setNeedsLayout]; 
     } 
     
     selectedCellIndex = cell.index;
@@ -204,7 +205,7 @@
     
     if (self.selectedCell) {
         self.selectedCell.selected = YES;
-        [self.selectedCell setNeedsDisplay];
+        [self.selectedCell setNeedsLayout];
         
         //Scroll to this object
         [self.selectedRow.listView scrollRectToVisible:self.selectedCell.frame animated:YES];

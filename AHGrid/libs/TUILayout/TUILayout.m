@@ -477,12 +477,12 @@ typedef enum {
     if (typeOfLayout == TUILayoutVertical) {
         calculatedWidth = self.layout.bounds.size.width;
         for (TUILayoutObject *object in layout.objects) {
-            calculatedHeight += object.size.height;
+            calculatedHeight += object.size.height + layout.spaceBetweenViews;
         } 
     } else {
         calculatedHeight = self.layout.bounds.size.height;
         for (TUILayoutObject *object in layout.objects) {
-            calculatedWidth += object.size.width;
+            calculatedWidth += object.size.width + layout.spaceBetweenViews;
         } 
     }
     // final contentSize is modified by the amount of insertions, removals, and resizes as reflected
@@ -514,8 +514,11 @@ typedef enum {
     CGFloat i = 0;  
     CGFloat offset = 0;
     for (TUILayoutObject *object in layout.objects) {
+        if (i==0) {
+            offset += spaceBetweenViews;
+        }
         object.oldFrame = object.calculatedFrame;
-        object.x = i * (object.size.width + spaceBetweenViews);
+        object.x = offset;
         i += 1;
         offset += object.size.width + self.spaceBetweenViews;
     }

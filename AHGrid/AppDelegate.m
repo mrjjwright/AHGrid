@@ -25,7 +25,8 @@
     containerView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     [containerView addSubview:grid];
     nsView.rootView = containerView;
-    grid.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
+    grid.backgroundColor = [TUIColor colorWithPatternImage:[TUIImage imageNamed:@"bg.jpg"]];
+
     grid.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     nsView.scrollingInterceptor = self;
     // Insert code here to initialize your application
