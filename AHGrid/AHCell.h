@@ -20,6 +20,7 @@
 @property (nonatomic) NSUInteger index;
 @property (nonatomic) BOOL selected;
 @property (nonatomic, strong) TUITextView *commentEditor;
+@property (nonatomic) BOOL expanded;
 
 // Sizing
 @property (nonatomic) CGFloat padding;

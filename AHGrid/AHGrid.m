@@ -153,7 +153,7 @@
             return YES;
         }
     }    
-    
+    if (self.selectedCell) [self.selectedCell performKeyAction:event];
     return [super performKeyAction:event];
 }
 

@@ -35,7 +35,7 @@
 }
 
 -(IBAction)toggleConfigurationMode:(id)sender {
-    [grid toggleConfigurationMode];
+   // [grid toggleConfigurationMode];
 }
 
 -(IBAction)showCommentEditor:(id)sender {

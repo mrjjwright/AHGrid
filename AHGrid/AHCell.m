@@ -41,6 +41,7 @@
     [self setNeedsDisplay];
 }
 
+
 -(void) mouseDown:(NSEvent *)theEvent  {
     
     [super mouseDown:theEvent];
@@ -119,6 +120,7 @@
 @synthesize index;
 @synthesize selected;
 @synthesize commentEditor;
+@synthesize expanded;
 
 // Sizing
 @synthesize padding;
@@ -167,6 +169,7 @@
 
 -(void) prepareForReuse {
     self.selected = NO;
+    expanded = NO;
     showingCommentEditor = NO;
     if (commentEditor && commentEditor.text && commentEditor.text.length > 0) commentEditor.text = @"";
 }
@@ -344,17 +347,22 @@
     return YES;
 }
 
+-(void) mouseUp:(NSEvent *)theEvent {
+    [super mouseUp:theEvent];
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
-    grid.selectedCell = self;
+    if ([event clickCount] == 2) {
+        if (!row.expanded || (row.expanded && grid.selectedCell == self && self.expanded)) {
+            grid.selectedCell = self;
+            [row toggleExpanded];
+        }
+    } else if ([event clickCount] == 1) {
+        grid.selectedCell = self;
+    }
 	[super mouseDown:event]; // may make the text renderer first responder, so we want to do the selection before this	
 }
-
-- (void)mouseUp:(NSEvent *)event
-{
-	[super mouseUp:event];
-}
-
 
 
 -(NSMenu*) menuForEvent:(NSEvent *)event {
@@ -404,7 +412,7 @@
         commentEditor.backgroundColor = [TUIColor colorWithWhite:0.95 alpha:1];
         commentEditor.layer.shadowColor = [TUIColor blackColor].CGColor;
         commentEditor.layer.shadowOffset = CGSizeMake(2, 2);
-        commentEditor.delegate =  (__strong id) self;
+        commentEditor.delegate =   (id) self;
         commentEditor.font = [TUIFont systemFontOfSize:11];
         commentEditor.contentInset = TUIEdgeInsetsMake(2, 6, 2, 6);
         commentEditor.hidden = YES;
@@ -453,8 +461,12 @@
 - (BOOL)performKeyAction:(NSEvent *)event {
     NSString *chars = [event characters];
     unichar character = [chars characterAtIndex: 0];
+    NSLog(@"%d", character);
     if (character == 27 && commentEditor && showingCommentEditor) {
         [self hideCommentEditor];
+        return YES;
+    } else if (character == 13 && !expanded) {
+        [row toggleExpanded];
         return YES;
     }
     return [super performKeyAction:event];

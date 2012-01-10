@@ -141,6 +141,7 @@
     CGFloat height = expanded  ? 250 : grid.visibleRect.size.height;
     animating = YES;
 
+
     [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         // Fade in the detail view
         
@@ -173,6 +174,7 @@
         [grid scrollRectToVisible:self.frame animated:YES];
     }  completionBlock:^{
         expanded = !expanded;
+        grid.selectedCell.expanded = !grid.selectedCell.expanded;
         grid.scrollEnabled = !expanded;
         if (expanded) {
             grid.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
@@ -183,6 +185,19 @@
         [self setNeedsLayout];
     }];
 }
+
+#pragma mark - Key Handling
+
+- (BOOL)performKeyAction:(NSEvent *)event {
+    NSString *chars = [event characters];
+    unichar character = [chars characterAtIndex: 0];
+    if (character == 27 && expanded) {
+        [self toggleExpanded];
+        return YES;
+    }
+    return [super performKeyAction:event];
+}
+
 
 
 @end

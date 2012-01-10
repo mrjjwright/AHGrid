@@ -27,9 +27,9 @@
 //-(IBAction)configure:(id)sender;
 //- (void) saveConfiguration;
 //-(void) removeRow:(AHRow*) row;
--(void) togglExpansionForRow:(NSInteger) rowIndex;
--(void) toggleConfigurationMode;
-
+//-(void) togglExpansionForRow:(NSInteger) rowIndex;
+//-(void) toggleConfigurationMode;
+//
 
 -(void) showCommentEditorOnSelectedCell;
 
