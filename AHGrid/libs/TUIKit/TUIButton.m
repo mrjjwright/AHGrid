@@ -212,6 +212,9 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
 	CGContextRestoreGState(ctx);
 }
 
+
+
+
 - (void)mouseDown:(NSEvent *)event
 {
 	[super mouseDown:event];

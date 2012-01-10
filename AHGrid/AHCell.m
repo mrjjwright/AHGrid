@@ -10,6 +10,95 @@
 #import "TUIKit.h"
 
 
+@interface AHActionButton : TUIView 
+@property (nonatomic, strong) NSString *imageName;
+@property (nonatomic) BOOL selected;
+@end
+
+@implementation AHActionButton {
+    BOOL animating;
+}
+
+@synthesize imageName;
+@synthesize selected;
+
+-(id) initWithFrame:(CGRect)frame {
+    if((self = [super initWithFrame:frame])) {
+        self.backgroundColor = [TUIColor clearColor];
+    }
+    return self;
+}
+
+- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+{
+    return YES;
+}
+
+
+- (void)mouseUp:(NSEvent *)event
+{
+	[super mouseUp:event];
+    [self setNeedsDisplay];
+}
+
+-(void) mouseDown:(NSEvent *)theEvent  {
+    
+    [super mouseDown:theEvent];
+    // rather than a simple -setNeedsDisplay, let's fade it back out
+    animating = YES;
+	[TUIView animateWithDuration:0.5 animations:^{
+		[self redraw]; // -redraw forces a .contents update immediately based on drawRect, and it happens inside an animation block, so CoreAnimation gives us a cross-fade for free
+	} completion:^(BOOL finished) {
+        animating = NO;
+        [self redraw];
+    }];
+    
+}
+
+-(void) drawRect:(CGRect)rect {
+    CGRect b = self.bounds;
+    CGContextRef ctx = TUIGraphicsGetCurrentContext();
+    
+    TUIImage *image = [TUIImage imageNamed:imageName cache:YES];
+    
+    CGRect imageRect = ABIntegralRectWithSizeCenteredInRect([image size], b);
+    
+    if(animating || selected) { // simple way to check if the mouse is currently down inside of 'v'.  See the other methods in TUINSView for more.
+        
+        // first draw a slight white emboss below
+        CGContextSaveGState(ctx);
+        CGContextClipToMask(ctx, CGRectOffset(imageRect, 0, -1), image.CGImage);
+        CGContextSetRGBFillColor(ctx, 1, 1, 1, 0.5);
+        CGContextFillRect(ctx, b);
+        CGContextRestoreGState(ctx);
+        
+        // replace image with a dynamically generated fancy inset image
+        // 1. use the image as a mask to draw a blue gradient
+        // 2. generate an inner shadow image based on the mask, then overlay that on top
+        image = [TUIImage imageWithSize:imageRect.size drawing:^(CGContextRef ctx) {
+            CGRect r;
+            r.origin = CGPointZero;
+            r.size = imageRect.size;
+            
+            CGContextClipToMask(ctx, r, image.CGImage);
+            CGContextDrawLinearGradientBetweenPoints(ctx, CGPointMake(0, r.size.height), (CGFloat[]){0,0,1,1}, CGPointZero, (CGFloat[]){0,0.6,1,1});
+            TUIImage *innerShadow = [image innerShadowWithOffset:CGSizeMake(0, -1) radius:3.0 color:[TUIColor blackColor] backgroundColor:[TUIColor cyanColor]];
+            CGContextSetBlendMode(ctx, kCGBlendModeOverlay);
+            CGContextDrawImage(ctx, r, innerShadow.CGImage);
+        }];
+    }
+    
+    [image drawInRect:imageRect]; // draw 'image' (might be the regular one, or the dynamically generated one)
+    
+    // draw the index
+    //        TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"%ld", v.tag]];
+    //        [s ab_drawInRect:CGRectOffset(imageRect, imageRect.size.width, -15)];
+}
+
+
+
+@end
+
 
 @implementation AHCell {
     TUITextRenderer *userTextRenderer;
@@ -17,6 +106,9 @@
     
     TUIImageView *smallPhotoImageView;
     TUIImageView *profileImageView;
+    
+    AHActionButton *firstButton;
+    AHActionButton *secondButton;
     
     BOOL animating;
 }
@@ -64,7 +156,7 @@
         
         self.clipsToBounds = YES;
         self.layer.cornerRadius = 3;
-                
+        
         userTextRenderer = [[TUITextRenderer alloc] init];
         self.textRenderers = [NSArray arrayWithObjects:userTextRenderer, nil];
 	}
@@ -119,6 +211,44 @@
     }
 }
 
+-(void) setFirstButtonImage:(TUIImage *)s {
+    firstButtonImage = s;
+    
+    if ( firstButtonImage && !firstButton) {
+        firstButton = [[AHActionButton alloc] initWithFrame:CGRectZero];
+        firstButton.imageName = @"heart.png";
+        [self addSubview:firstButton];
+    } 
+    
+    if (!firstButtonImage && firstButton && firstButton.superview) {
+        [firstButton removeFromSuperview];
+    }
+    
+    if (firstButtonImage && firstButton && !firstButton.superview) {
+        [self addSubview:firstButton];
+    }
+}
+
+-(void) setSecondButtonImage:(TUIImage *)s {
+    secondButtonImage = s;
+    
+    if ( secondButtonImage && !secondButton) {
+        secondButton = [[AHActionButton alloc] initWithFrame:CGRectZero];
+        secondButton.imageName = @"reply.png";
+        secondButton.selected = YES;
+        [self addSubview:secondButton];
+    } 
+    
+    if (!secondButtonImage && secondButton && secondButton.superview) {
+        [secondButton removeFromSuperview];
+    }
+    
+    if (secondButtonImage && secondButton && !secondButton.superview) {
+        [self addSubview:secondButton];
+    }
+}
+
+
 -(void) setUserString:(NSAttributedString *)u  {
     userTextRenderer.attributedString = [u copy];
 }
@@ -134,9 +264,9 @@
 
 
 -(void) layoutSubviews {
-
+    
     CGRect b = self.bounds;
-
+    
     // Default position for all items
     CGRect commentEditorFrame = b;
     
@@ -149,7 +279,18 @@
     smallPhotoFrame.size.width -= (padding * 2);
     smallPhotoFrame.origin.x = (b.size.width - smallPhotoFrame.size.width)/2;
     smallPhotoFrame.origin.y = padding;
-
+    
+    CGRect buttonsFrame = b;
+    buttonsFrame.size.height = 30;
+    buttonsFrame.size.width = 80;
+    buttonsFrame.origin.x = NSMaxX(b) - 80;
+    buttonsFrame.origin.y = NSMaxY(smallPhotoFrame) + padding;
+    
+    
+    CGRect firstButtonFrame = buttonsFrame;
+    firstButtonFrame.size.width = 30;
+    CGRect secondButtonFrame = firstButtonFrame;
+    secondButtonFrame.origin.x += 30;
     
     if (showingCommentEditor) {
         commentEditorFrame = [self commentEditorFrame];
@@ -164,8 +305,10 @@
 	} else {
         self.layer.borderWidth = 0;
 	}
-
+    
     profileImageView.frame = profileImageFrame;
+    firstButton.frame = firstButtonFrame;
+    secondButton.frame = secondButtonFrame;
     smallPhotoImageView.frame = smallPhotoFrame;
 }
 
@@ -182,7 +325,7 @@
 	CGContextRef ctx = TUIGraphicsGetCurrentContext();
     CGContextSetRGBFillColor(ctx, .97, .97, .97, 1);
     CGContextFillRect(ctx, b);
-
+    
 	// text
 	CGRect userStringRect = CGRectMake(padding + profilePictureWidth + padding, b.size.height - 35, 100, 25);
 	userTextRenderer.frame = userStringRect; // set the frame so it knows where to draw itself
@@ -207,6 +350,12 @@
 	[super mouseDown:event]; // may make the text renderer first responder, so we want to do the selection before this	
 }
 
+- (void)mouseUp:(NSEvent *)event
+{
+	[super mouseUp:event];
+}
+
+
 
 -(NSMenu*) menuForEvent:(NSEvent *)event {
     NSMenu *menu = [[NSMenu alloc] init];
@@ -217,7 +366,7 @@
     NSMenuItem *item1 = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Toggle Expand To Fill",nil) action:@selector(toggleExpanded) keyEquivalent:@""];
     item1.target = self.row;
     [menu addItem:item1];
-
+    
     return menu;
 }
 
@@ -231,11 +380,11 @@
         return YES;
     } else if (commandSelector == @selector(insertNewline:)) {
         // The user pressed enter, fire off the comment
-//        JokinglyOperation *operation = [FacebookClient operationForComment:textView.text on:self.fbObject]; 
-//        [operation addHandler:^(JokinglyOperation *operation) {
-//            // TODO animate in comment
-//        }];
-//        [[FacebookClient operationQueue] addOperation:operation];
+        //        JokinglyOperation *operation = [FacebookClient operationForComment:textView.text on:self.fbObject]; 
+        //        [operation addHandler:^(JokinglyOperation *operation) {
+        //            // TODO animate in comment
+        //        }];
+        //        [[FacebookClient operationQueue] addOperation:operation];
         return YES;
     }
     return NO;
@@ -244,13 +393,13 @@
 
 - (void) showCommentEditor {
     if (animating) return;
-
+    
     if (!self.selected) {
         grid.selectedCell = self;
     }
     showingCommentEditor = YES;
     if (!commentEditor) {
-
+        
         commentEditor = [[TUITextView alloc] initWithFrame:[self commentEditorFrame]];
         commentEditor.backgroundColor = [TUIColor colorWithWhite:0.95 alpha:1];
         commentEditor.layer.shadowColor = [TUIColor blackColor].CGColor;
@@ -310,6 +459,8 @@
     }
     return [super performKeyAction:event];
 }
+
+
 
 
 @end

@@ -95,6 +95,8 @@
     
     cell.profileImage = [TUIImage imageNamed:@"jw_profile.jpg"];
     cell.smallPhotoImage = [TUIImage imageNamed:@"pet_plumes.jpg"];
+    cell.firstButtonImage = [TUIImage imageNamed:@"heart.png"];
+    cell.secondButtonImage = [TUIImage imageNamed:@"reply.png"];
     TUIAttributedString *userString = [TUIAttributedString stringWithString:@"John Wright"];
     userString.font = userStringFont;
     cell.userString = userString;
