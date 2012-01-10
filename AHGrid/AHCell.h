@@ -10,6 +10,7 @@
 #import "AHGrid.h"
 #import "TUIKit.h"
 
+
 @class AHGrid;
 @class AHRow;
 @interface AHCell : TUIView
@@ -20,6 +21,12 @@
 @property (nonatomic) BOOL selected;
 @property (nonatomic, strong) TUITextView *commentEditor;
 
+// Sizing
+@property (nonatomic) CGFloat padding;
+@property (nonatomic) CGFloat profilePictureWidth;
+@property (nonatomic) CGFloat profilePictureHeight;
+
+
 // Text
 @property (nonatomic, copy) NSAttributedString *userString;
 @property (nonatomic, copy) NSAttributedString *dateString;
@@ -29,6 +36,7 @@
 @property (nonatomic, copy) NSAttributedString *commentsTextInputPlaceholderString;
 
 // Images
+@property (nonatomic, strong) TUIImage *backgroundImage;
 @property (nonatomic, strong) TUIImage *profileImage;
 @property (nonatomic, strong) TUIImage *smallPhotoImage;
 @property (nonatomic, strong) TUIImage *largePhotoImage;

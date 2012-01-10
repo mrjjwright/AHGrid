@@ -16,6 +16,7 @@
     TUIScrollView *detailScrollView;
     TUIImageView *largeImageView;
     BOOL dataLoaded;
+    TUIFont *userStringFont;
 }
 
 @synthesize cells;
@@ -34,6 +35,8 @@
         for (int i = 0; i < 100; i++) {
             [cells addObject:[NSMutableDictionary dictionary]];
         }
+        
+        userStringFont = [TUIFont boldSystemFontOfSize:11];
         
         listView = [[TUILayout alloc] initWithFrame:CGRectZero];
         listView.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
@@ -89,6 +92,13 @@
     cell.selected = (index == grid.selectedRowIndex) && (i == grid.selectedCellIndex);
     cell.grid = grid;
     cell.index = i;
+    
+    cell.profileImage = [TUIImage imageNamed:@"jw_profile.jpg"];
+    cell.smallPhotoImage = [TUIImage imageNamed:@"pet_plumes.jpg"];
+    TUIAttributedString *userString = [TUIAttributedString stringWithString:@"John Wright"];
+    userString.font = userStringFont;
+    cell.userString = userString;
+    
 	return cell;
 }
 

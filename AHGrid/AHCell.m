@@ -10,20 +10,29 @@
 #import "TUIKit.h"
 
 
+
 @implementation AHCell {
-    TUITextRenderer *textRenderer;
+    TUITextRenderer *userTextRenderer;
     BOOL showingCommentEditor;
     
     TUIImageView *smallPhotoImageView;
+    TUIImageView *profileImageView;
     
     BOOL animating;
 }
+
 
 @synthesize row;
 @synthesize grid;
 @synthesize index;
 @synthesize selected;
 @synthesize commentEditor;
+
+// Sizing
+@synthesize padding;
+@synthesize profilePictureWidth;
+@synthesize profilePictureHeight;
+
 
 // Text
 @synthesize userString;
@@ -34,6 +43,7 @@
 @synthesize commentsTextInputPlaceholderString;
 
 // Images
+@synthesize backgroundImage;
 @synthesize profileImage;
 @synthesize smallPhotoImage;
 @synthesize largePhotoImage;
@@ -48,32 +58,77 @@
 {
 	if((self = [super initWithFrame:frame])) {
 		
+        padding = 5;
+        profilePictureWidth = 30;
+        profilePictureHeight = 30;
         
         self.clipsToBounds = YES;
-        textRenderer = [[TUITextRenderer alloc] init];
-        self.textRenderers = [NSArray arrayWithObjects:textRenderer, nil];
-        
-        smallPhotoImageView = [[TUIImageView alloc] initWithImage:[TUIImage imageNamed:@"pet_plumes.jpg"]];
-        smallPhotoImageView.layer.contentsGravity = kCAGravityResizeAspect;
-        smallPhotoImageView.clipsToBounds = YES;
-        smallPhotoImageView.layer.cornerRadius = 6;
-        [self addSubview:smallPhotoImageView];
+        self.layer.cornerRadius = 3;
+                
+        userTextRenderer = [[TUITextRenderer alloc] init];
+        self.textRenderers = [NSArray arrayWithObjects:userTextRenderer, nil];
 	}
 	return self;
 }
 
+# pragma mark - Cell Properties
+
 -(void) prepareForReuse {
     self.selected = NO;
     showingCommentEditor = NO;
+    if (commentEditor && commentEditor.text && commentEditor.text.length > 0) commentEditor.text = @"";
 }
+
+-(void) setSmallPhotoImage:(TUIImage *)s {
+    smallPhotoImage = s;
+    
+    if ( smallPhotoImage && !smallPhotoImageView) {
+        smallPhotoImageView = [[TUIImageView alloc] initWithImage:smallPhotoImage];
+        smallPhotoImageView.layer.cornerRadius = 3;
+        smallPhotoImageView.layer.contentsGravity = kCAGravityResizeAspect;
+        smallPhotoImageView.clipsToBounds = YES;
+        [self addSubview:smallPhotoImageView];
+    } 
+    
+    if (!smallPhotoImage && smallPhotoImageView && smallPhotoImageView.superview) {
+        [smallPhotoImageView removeFromSuperview];
+    }
+    
+    if (smallPhotoImage && smallPhotoImageView && !smallPhotoImageView.superview) {
+        [self addSubview:smallPhotoImageView];
+    }
+}
+
+-(void) setProfileImage:(TUIImage *)s {
+    profileImage = s;
+    
+    if ( profileImage && !smallPhotoImageView) {
+        profileImageView = [[TUIImageView alloc] initWithImage:profileImage];
+        profileImageView.layer.cornerRadius = 3;
+        profileImageView.layer.contentsGravity = kCAGravityResizeAspect;
+        profileImageView.clipsToBounds = YES;
+        [self addSubview:profileImageView];
+    } 
+    
+    if (!profileImage && profileImageView && profileImageView.superview) {
+        [profileImageView removeFromSuperview];
+    }
+    
+    if (profileImage && profileImageView && !profileImageView.superview) {
+        [self addSubview:profileImageView];
+    }
+}
+
+-(void) setUserString:(NSAttributedString *)u  {
+    userTextRenderer.attributedString = [u copy];
+}
+
+#pragma mark - Layout
 
 -(CGRect) commentEditorFrame {
     CGRect b = self.bounds;
     CGRect frame = b;
-    frame.size.height *= 0.2;
-    frame.size.width *= 0.9;
-    frame.origin.x = (b.size.width - frame.size.width)/2;
-    frame.origin.y = (b.size.width - frame.size.width)/2;
+    frame.size.height = 40;
     return frame;
 }
 
@@ -84,7 +139,17 @@
 
     // Default position for all items
     CGRect commentEditorFrame = b;
+    
+    CGRect profileImageFrame = CGRectMake(padding, b.size.height - padding - profilePictureHeight, profilePictureWidth, profilePictureHeight);
+    
+    CGFloat headerHeight = padding + padding + profilePictureHeight;
+    
     CGRect smallPhotoFrame = b;
+    smallPhotoFrame.size.height -= headerHeight + padding;
+    smallPhotoFrame.size.width -= (padding * 2);
+    smallPhotoFrame.origin.x = (b.size.width - smallPhotoFrame.size.width)/2;
+    smallPhotoFrame.origin.y = padding;
+
     
     if (showingCommentEditor) {
         commentEditorFrame = [self commentEditorFrame];
@@ -94,28 +159,35 @@
     }
     
     if(self.selected) {
-        smallPhotoImageView.layer.borderWidth = 2;
-        smallPhotoImageView.layer.borderColor = [TUIColor  yellowColor].CGColor;
+        self.layer.borderWidth = 3;
+        self.layer.borderColor = [TUIColor  yellowColor].CGColor;
 	} else {
-        smallPhotoImageView.layer.borderWidth = 0;
+        self.layer.borderWidth = 0;
 	}
 
-    
+    profileImageView.frame = profileImageFrame;
     smallPhotoImageView.frame = smallPhotoFrame;
 }
 
 
-//- (void)drawRect:(CGRect)rect
-//{
-//	CGRect b = self.bounds;
-//	//CGContextRef ctx = TUIGraphicsGetCurrentContext();
-//	
-//	
-//	// text
-//	CGRect textRect = CGRectOffset(b, 15, -15);
-//	textRenderer.frame = textRect; // set the frame so it knows where to draw itself
-//	[textRenderer draw];
-//}
+- (void)drawRect:(CGRect)rect
+{
+	CGRect b = self.bounds;
+	
+    if (backgroundImage) {
+        [backgroundImage drawInRect:b];
+    }
+    
+    // light gray background
+	CGContextRef ctx = TUIGraphicsGetCurrentContext();
+    CGContextSetRGBFillColor(ctx, .97, .97, .97, 1);
+    CGContextFillRect(ctx, b);
+
+	// text
+	CGRect userStringRect = CGRectMake(padding + profilePictureWidth + padding, b.size.height - 35, 100, 25);
+	userTextRenderer.frame = userStringRect; // set the frame so it knows where to draw itself
+	[userTextRenderer draw];
+}
 
 
 #pragma mark - Selection
@@ -180,11 +252,12 @@
     if (!commentEditor) {
 
         commentEditor = [[TUITextView alloc] initWithFrame:[self commentEditorFrame]];
-        commentEditor.backgroundColor = [TUIColor whiteColor];     
+        commentEditor.backgroundColor = [TUIColor colorWithWhite:0.95 alpha:1];
         commentEditor.layer.shadowColor = [TUIColor blackColor].CGColor;
         commentEditor.layer.shadowOffset = CGSizeMake(2, 2);
         commentEditor.delegate =  (__strong id) self;
-        commentEditor.contentInset = TUIEdgeInsetsMake(5, 5, 5, 5);
+        commentEditor.font = [TUIFont systemFontOfSize:11];
+        commentEditor.contentInset = TUIEdgeInsetsMake(2, 6, 2, 6);
         commentEditor.hidden = YES;
         commentEditor.spellCheckingEnabled = YES;
         [self addSubview:commentEditor];
@@ -224,6 +297,18 @@
 - (void) toggleCommentEditor {
     showingCommentEditor = !showingCommentEditor;
     showingCommentEditor ? [self showCommentEditor] : [self hideCommentEditor];
+}
+
+#pragma mark - Key Handling 
+
+- (BOOL)performKeyAction:(NSEvent *)event {
+    NSString *chars = [event characters];
+    unichar character = [chars characterAtIndex: 0];
+    if (character == 27 && commentEditor && showingCommentEditor) {
+        [self hideCommentEditor];
+        return YES;
+    }
+    return [super performKeyAction:event];
 }
 
 
