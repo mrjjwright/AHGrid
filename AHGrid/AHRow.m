@@ -17,6 +17,7 @@
     TUIImageView *largeImageView;
     BOOL dataLoaded;
     TUIFont *userStringFont;
+    TUILabel *titleLabel;
 }
 
 @synthesize cells;
@@ -26,6 +27,7 @@
 @synthesize expanded;
 @synthesize animating;
 @synthesize selected;
+@synthesize titleString;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -48,6 +50,13 @@
         listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
         listView.viewClass = [AHCell class];
         [self addSubview:listView];
+        
+        titleLabel = [[TUILabel alloc] initWithFrame:CGRectMake(10, self.bounds.size.height - 25, 300, 25)];
+        titleLabel.text = @"John Wright's Feed";
+        titleLabel.font = [TUIFont boldSystemFontOfSize:12];
+        titleLabel.textColor = [TUIColor whiteColor];
+        titleLabel.backgroundColor = [TUIColor clearColor];
+        [self addSubview:titleLabel];
     }
     return self;
 }
@@ -62,14 +71,18 @@
     if (animating) return [super layoutSubviews];
     CGRect b = self.bounds;
     CGRect listRect = b;
+    
+    CGRect titleRect = CGRectMake(10, self.bounds.size.height - 25, 300, 25);
     if (self.expanded) {
         listRect.size.height = 250;
     }
+    listRect.size.height -= 25;
     listView.frame = listRect;
     if (!dataLoaded) {
         [listView reloadData];
         dataLoaded = YES;
     }
+    titleLabel.frame = titleRect;
     [super layoutSubviews];
 }
 
@@ -93,10 +106,10 @@
     cell.grid = grid;
     cell.index = i;
     
-    cell.profileImage = [TUIImage imageNamed:@"jw_profile.jpg"];
-    cell.smallPhotoImage = [TUIImage imageNamed:@"pet_plumes.jpg"];
-    cell.firstButtonImage = [TUIImage imageNamed:@"heart.png"];
-    cell.secondButtonImage = [TUIImage imageNamed:@"reply.png"];
+    cell.profileImage = [TUIImage imageNamed:@"jw_profile.jpg" cache:YES];
+    cell.smallPhotoImage = [TUIImage imageNamed:@"pet_plumes.jpg"  cache:YES];
+    cell.firstButtonImage = [TUIImage imageNamed:@"heart.png"  cache:YES];
+    cell.secondButtonImage = [TUIImage imageNamed:@"reply.png" cache:YES];
     TUIAttributedString *userString = [TUIAttributedString stringWithString:@"John Wright"];
     userString.font = userStringFont;
     cell.userString = userString;
@@ -110,6 +123,7 @@
 
 - (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {
     CGSize size = self.bounds.size;
+    size.height -= 25;
     size.width = 350;
     return size;
 }
@@ -138,7 +152,7 @@
 #pragma mark - Expansion
 
 -(void) toggleExpanded {
-    CGFloat height = expanded  ? 250 : grid.visibleRect.size.height;
+    CGFloat height = expanded  ? 275 : grid.visibleRect.size.height;
     animating = YES;
 
 
@@ -146,14 +160,16 @@
         // Fade in the detail view
         
         if (!detailScrollView) {
-            detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(0, 250, self.bounds.size.width, 300)];
+            detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(100, 250, 100, 300)];
             detailScrollView.backgroundColor = [TUIColor clearColor];
             [self addSubview:detailScrollView];
-            detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, 400)];
+            detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, 100, 400)];
             largeImageView = [[TUIImageView alloc] initWithFrame:detailView.bounds];
-            largeImageView.backgroundColor = [TUIColor greenColor];
-            largeImageView.image = [TUIImage imageNamed:@"pet_plumes.jpg"];
+            largeImageView.layer.contentsGravity = kCAGravityResize;
+            largeImageView.clipsToBounds = YES;
+            largeImageView.image = [TUIImage imageNamed:@"pet_plumes.jpg" cache:YES];
             [detailView addSubview:largeImageView];
+            detailScrollView.contentSize = largeImageView.image.size;
             [detailScrollView addSubview:detailView];
             detailScrollView.alpha = 0;
             [detailScrollView scrollToTopAnimated:NO];
@@ -167,6 +183,8 @@
         CGRect listRect = b;
         listRect.size.height = 250;
         listView.frame = listRect;
+        
+        titleLabel.frame = CGRectMake(10, self.bounds.size.height - 25, 300, 25);
         
         detailScrollView.frame = CGRectMake(0, 250, self.bounds.size.width, 300);
         detailView.frame =  detailScrollView.bounds;
@@ -183,7 +201,7 @@
             grid.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
         }
         animating = NO;
-        [self setNeedsLayout];
+        [grid setNeedsLayout];
     }];
 }
 

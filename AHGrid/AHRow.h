@@ -24,6 +24,8 @@
 @property (nonatomic) BOOL selected;
 
 
+@property (nonatomic,strong) NSString * titleString;
+
 -(void) toggleExpanded;
 
 @end

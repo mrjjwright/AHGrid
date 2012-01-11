@@ -67,8 +67,7 @@
         padding = 5;
         profilePictureWidth = 30;
         profilePictureHeight = 30;
-        
-        
+            
         self.clipsToBounds = YES;
         self.layer.cornerRadius = 3;
         
@@ -87,7 +86,6 @@
             weakUserTextRender.frame = userStringRect; // set the frame so it knows where to draw itself
             [weakUserTextRender draw];
         };
-        headerView.backgroundColor = [TUIColor colorWithPatternImage:[TUIImage imageNamed:@"bg.jpg"]];
         [self addSubview:headerView];
 	}
 	return self;

@@ -98,7 +98,7 @@
     if (index == expandedRowIndex) {
         size.height = self.visibleRect.size.height;
     } else {
-        size.height = 250;        
+        size.height = 275;        
     }
     return size;
 }
