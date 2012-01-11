@@ -81,6 +81,7 @@
     } else {
         rowView.expanded = NO;
     }
+    rowView.titleString = @"John Wright's feed";
     return rowView;
 }
 
@@ -98,7 +99,7 @@
     if (index == expandedRowIndex) {
         size.height = self.visibleRect.size.height;
     } else {
-        size.height = 275;        
+        size.height = 200;        
     }
     return size;
 }

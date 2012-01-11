@@ -12,7 +12,7 @@
 
 @implementation AHRow {
     
-    TUIView *detailView;
+    AHCell *detailView;
     TUIScrollView *detailScrollView;
     TUIImageView *largeImageView;
     BOOL dataLoaded;
@@ -41,20 +41,20 @@
         userStringFont = [TUIFont boldSystemFontOfSize:11];
         
         listView = [[TUILayout alloc] initWithFrame:CGRectZero];
+        listView.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
         listView.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
         listView.dataSource = self;
         listView.typeOfLayout = TUILayoutHorizontal;
-        listView.backgroundColor = [TUIColor clearColor];
         listView.horizontalScrolling = YES;
-        listView.spaceBetweenViews = 15;
+        listView.spaceBetweenViews = 5;
         listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
         listView.viewClass = [AHCell class];
         [self addSubview:listView];
         
         titleLabel = [[TUILabel alloc] initWithFrame:CGRectMake(10, self.bounds.size.height - 25, 300, 25)];
-        titleLabel.text = @"John Wright's Feed";
+        titleLabel.text = titleString;
         titleLabel.font = [TUIFont boldSystemFontOfSize:12];
-        titleLabel.textColor = [TUIColor whiteColor];
+        titleLabel.textColor = [TUIColor blackColor];
         titleLabel.backgroundColor = [TUIColor clearColor];
         [self addSubview:titleLabel];
     }
@@ -71,14 +71,19 @@
     if (animating) return [super layoutSubviews];
     CGRect b = self.bounds;
     CGRect listRect = b;
-    listRect.size.height = 250;
+    listRect.size.height = 175;
     listView.frame = listRect;
     if (!dataLoaded) {
         [listView reloadData];
         dataLoaded = YES;
     }
+    if (detailScrollView && expanded) {
+        detailScrollView.frame = CGRectMake(50, 280, 960, 500);
+    }
     CGRect titleRect = CGRectMake(10,  NSMaxY(listRect) + 5, 300, 25);
     titleLabel.frame = titleRect;
+    titleLabel.text = titleString;
+    titleLabel.hidden = expanded;
     [super layoutSubviews];
 }
 
@@ -120,7 +125,7 @@
 - (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {
     CGSize size = self.bounds.size;
     size.height -= 25;
-    size.width = 350;
+    size.width = 275;
     return size;
 }
 
@@ -148,24 +153,25 @@
 #pragma mark - Expansion
 
 -(void) toggleExpanded {
-    CGFloat height = expanded  ? 275 : grid.visibleRect.size.height;
+    CGFloat height = expanded  ? 200 : grid.visibleRect.size.height;
     animating = YES;
 
+    titleLabel.hidden = !expanded;
 
     [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         // Fade in the detail view
         
         if (!detailScrollView) {
-            detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(100, 250, 100, 300)];
+            detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(50, 280, 960, 500)];
             detailScrollView.backgroundColor = [TUIColor clearColor];
             [self addSubview:detailScrollView];
-            detailView = [[TUIView alloc] initWithFrame:CGRectMake(0, 0, 100, 400)];
-            largeImageView = [[TUIImageView alloc] initWithFrame:detailView.bounds];
-            largeImageView.layer.contentsGravity = kCAGravityResize;
-            largeImageView.clipsToBounds = YES;
-            largeImageView.image = [TUIImage imageNamed:@"pet_plumes.jpg" cache:YES];
-            [detailView addSubview:largeImageView];
-            detailScrollView.contentSize = largeImageView.image.size;
+            detailView = [[AHCell alloc] initWithFrame:CGRectMake(0, 0, 960, 900)];
+            detailView.profileImage = grid.selectedCell.profileImage;
+            detailView.firstButtonImage = grid.selectedCell.firstButtonImage;
+            detailView.secondButtonImage = grid.selectedCell.secondButtonImage;
+            detailView.userString = grid.selectedCell.userString;
+            detailView.smallPhotoImage = [TUIImage imageNamed:@"pet_plumes.jpg" cache:YES];
+            detailScrollView.contentSize = CGSizeMake(960, 900);
             [detailScrollView addSubview:detailView];
             detailScrollView.alpha = 0;
             [detailScrollView scrollToTopAnimated:NO];
@@ -177,11 +183,10 @@
         
         CGRect b = self.bounds; 
         CGRect listRect = b;
-        listRect.size.height = 250;
+        listRect.size.height = 175;
         listView.frame = listRect;
         
-        detailScrollView.frame = CGRectMake(0, 250, self.bounds.size.width, 300);        
-        detailView.frame =  detailScrollView.bounds;
+        detailScrollView.frame = CGRectMake(50, 280, 960, 500);        
         
         // scroll the grid into place
         [grid scrollRectToVisible:self.frame animated:YES];
@@ -190,8 +195,10 @@
         grid.selectedCell.expanded = !grid.selectedCell.expanded;
         grid.scrollEnabled = !expanded;
         if (expanded) {
+            [self.nsWindow setTitle:titleString];
             grid.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
         } else {
+            [self.nsWindow setTitle:@"AHGrid"];
             grid.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
         }
         animating = NO;

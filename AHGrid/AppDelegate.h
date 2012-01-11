@@ -8,10 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 #import "AHGrid.h"
+#import "INAppStoreWindow.h"
+
+#define IN_RUNNING_LION (NSClassFromString(@"NSPopover") != nil)
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, TUIScrollingInterceptor>
 
-@property (assign) IBOutlet NSWindow *window;
+
+@property (assign) IBOutlet INAppStoreWindow *window;
+@property (nonatomic, strong) NSSearchField *searchField;
 
 -(IBAction)toggleConfigurationMode:(id)sender;
 -(IBAction)showCommentEditor:(id)sender;

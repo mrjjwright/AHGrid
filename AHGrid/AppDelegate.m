@@ -15,9 +15,24 @@
 }
 
 @synthesize window = _window;
+@synthesize searchField;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    // Lion full Screen support
+    if (IN_RUNNING_LION) {
+        [self.window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+    }
+    
+    // Add a search bar to the InAppStoreWindow
+    self.window.titleBarHeight = 40.0;
+    NSView *titleBarView = self.window.titleBarView;
+    NSSize searchFieldSize = NSMakeSize(250.f, 32.f);
+    NSRect searchFieldFrame = NSMakeRect(NSMaxX(titleBarView.bounds) - (searchFieldSize.width + 25.0f), NSMidY(titleBarView.bounds) - (searchFieldSize.height / 2.f), searchFieldSize.width, searchFieldSize.height);
+    searchField = [[NSSearchField alloc] initWithFrame:searchFieldFrame];
+    [titleBarView addSubview:searchField];
+    
+
     TUINSView *nsView = [[TUINSView alloc] initWithFrame:[_window.contentView frame]];
     nsView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     grid = [[AHGrid alloc] initWithFrame:nsView.bounds];
@@ -25,7 +40,7 @@
     containerView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     [containerView addSubview:grid];
     nsView.rootView = containerView;
-    grid.backgroundColor = [TUIColor colorWithPatternImage:[TUIImage imageNamed:@"bg_dark.jpg"]];
+    grid.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
 
     grid.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     nsView.scrollingInterceptor = self;

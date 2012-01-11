@@ -71,6 +71,8 @@
         self.clipsToBounds = YES;
         self.layer.cornerRadius = 3;
         
+        self.backgroundColor = [TUIColor whiteColor];
+        
         userTextRenderer = [[TUITextRenderer alloc] init];
         self.textRenderers = [NSArray arrayWithObjects:userTextRenderer, nil];
         headerView = [[TUIView alloc] initWithFrame:CGRectZero];
@@ -79,13 +81,18 @@
         __weak AHCell *weakSelf = self;
         headerView.drawRect   = ^(TUIView *v, CGRect rect) {
             CGRect b = v.bounds;
+            CGContextRef ctx = TUIGraphicsGetCurrentContext();
+            CGContextSetRGBFillColor(ctx, 1, 1, 1, 1);
+            CGContextFillRect(ctx, b);
+
             // text
-            TUIImage *image = [TUIImage imageNamed:@"bg.jpg" cache:YES];
-            [image drawInRect:rect];
+//            TUIImage *image = [TUIImage imageNamed:@"bg.jpg" cache:YES];
+//            [image drawInRect:rect];
             CGRect userStringRect = CGRectMake(weakSelf.padding + weakSelf.profilePictureWidth + weakSelf.padding, b.size.height - 35, 100, 25);
             weakUserTextRender.frame = userStringRect; // set the frame so it knows where to draw itself
             [weakUserTextRender draw];
         };
+        headerView.backgroundColor = [TUIColor whiteColor];
         [self addSubview:headerView];
 	}
 	return self;
@@ -234,7 +241,8 @@
         self.layer.borderWidth = 3;
         self.layer.borderColor = [TUIColor  yellowColor].CGColor;
 	} else {
-        self.layer.borderWidth = 0;
+        self.layer.borderWidth = 2;
+        self.layer.borderColor = [TUIColor colorWithWhite:0.85 alpha:1].CGColor;
 	}
     
     headerView.frame = headerFrame;
@@ -244,20 +252,6 @@
     smallPhotoImageView.frame = smallPhotoFrame;
 }
 
-
-- (void)drawRect:(CGRect)rect
-{
-	CGRect b = self.bounds;
-	
-    if (backgroundImage) {
-        [backgroundImage drawInRect:b];
-    }
-    
-    // light gray background
-	CGContextRef ctx = TUIGraphicsGetCurrentContext();
-    CGContextSetRGBFillColor(ctx, .97, .97, .97, 1);
-    CGContextFillRect(ctx, b);    
-}
 
 
 #pragma mark - Selection
@@ -369,7 +363,6 @@
 - (BOOL)performKeyAction:(NSEvent *)event {
     NSString *chars = [event characters];
     unichar character = [chars characterAtIndex: 0];
-    NSLog(@"%d", character);
     if (character == 27 && commentEditor && showingCommentEditor) {
         [self hideCommentEditor];
         return YES;
@@ -377,7 +370,7 @@
         [row toggleExpanded];
         return YES;
     }
-    return [super performKeyAction:event];
+    return [row performKeyAction:event];
 }
 
 #pragma mark - Mouse handling
