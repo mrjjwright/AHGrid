@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A0E548C14BD260800C0AE80 /* AHActionButton.m */; };
 		9A363DD114B65262004F31C7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A363DD014B65262004F31C7 /* Cocoa.framework */; };
 		9A363DDB14B65262004F31C7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A363DD914B65262004F31C7 /* InfoPlist.strings */; };
 		9A363DDD14B65262004F31C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DDC14B65262004F31C7 /* main.m */; };
@@ -86,6 +87,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9A0E548B14BD260800C0AE80 /* AHActionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHActionButton.h; sourceTree = "<group>"; };
+		9A0E548C14BD260800C0AE80 /* AHActionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHActionButton.m; sourceTree = "<group>"; };
 		9A363DCC14B65262004F31C7 /* AHGrid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AHGrid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A363DD014B65262004F31C7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9A363DD314B65262004F31C7 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -282,6 +285,8 @@
 				9A363DF814B65324004F31C7 /* libs */,
 				9A363DED14B6531E004F31C7 /* AHCell.h */,
 				9A363DEE14B6531E004F31C7 /* AHCell.m */,
+				9A0E548B14BD260800C0AE80 /* AHActionButton.h */,
+				9A0E548C14BD260800C0AE80 /* AHActionButton.m */,
 				9A363DEF14B6531E004F31C7 /* AHGrid.h */,
 				9A363DF014B6531E004F31C7 /* AHGrid.m */,
 				9A363DF114B6531E004F31C7 /* AHRow.h */,
@@ -582,6 +587,7 @@
 				9A363E9B14B6533C004F31C7 /* TUIViewController.m in Sources */,
 				9A363E9C14B6533C004F31C7 /* TUIViewNSViewContainer.m in Sources */,
 				9A363EB514B78A6C004F31C7 /* TUILayout.m in Sources */,
+				9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

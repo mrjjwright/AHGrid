@@ -8,97 +8,7 @@
 
 #import "AHCell.h"
 #import "TUIKit.h"
-
-
-@interface AHActionButton : TUIView 
-@property (nonatomic, strong) NSString *imageName;
-@property (nonatomic) BOOL selected;
-@end
-
-@implementation AHActionButton {
-    BOOL animating;
-}
-
-@synthesize imageName;
-@synthesize selected;
-
--(id) initWithFrame:(CGRect)frame {
-    if((self = [super initWithFrame:frame])) {
-        self.backgroundColor = [TUIColor clearColor];
-    }
-    return self;
-}
-
-- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
-{
-    return YES;
-}
-
-
-- (void)mouseUp:(NSEvent *)event
-{
-	[super mouseUp:event];
-    [self setNeedsDisplay];
-}
-
-
--(void) mouseDown:(NSEvent *)theEvent  {
-    
-    [super mouseDown:theEvent];
-    // rather than a simple -setNeedsDisplay, let's fade it back out
-    animating = YES;
-	[TUIView animateWithDuration:0.5 animations:^{
-		[self redraw]; // -redraw forces a .contents update immediately based on drawRect, and it happens inside an animation block, so CoreAnimation gives us a cross-fade for free
-	} completion:^(BOOL finished) {
-        animating = NO;
-        [self redraw];
-    }];
-    
-}
-
--(void) drawRect:(CGRect)rect {
-    CGRect b = self.bounds;
-    CGContextRef ctx = TUIGraphicsGetCurrentContext();
-    
-    TUIImage *image = [TUIImage imageNamed:imageName cache:YES];
-    
-    CGRect imageRect = ABIntegralRectWithSizeCenteredInRect([image size], b);
-    
-    if(animating || selected) { // simple way to check if the mouse is currently down inside of 'v'.  See the other methods in TUINSView for more.
-        
-        // first draw a slight white emboss below
-        CGContextSaveGState(ctx);
-        CGContextClipToMask(ctx, CGRectOffset(imageRect, 0, -1), image.CGImage);
-        CGContextSetRGBFillColor(ctx, 1, 1, 1, 0.5);
-        CGContextFillRect(ctx, b);
-        CGContextRestoreGState(ctx);
-        
-        // replace image with a dynamically generated fancy inset image
-        // 1. use the image as a mask to draw a blue gradient
-        // 2. generate an inner shadow image based on the mask, then overlay that on top
-        image = [TUIImage imageWithSize:imageRect.size drawing:^(CGContextRef ctx) {
-            CGRect r;
-            r.origin = CGPointZero;
-            r.size = imageRect.size;
-            
-            CGContextClipToMask(ctx, r, image.CGImage);
-            CGContextDrawLinearGradientBetweenPoints(ctx, CGPointMake(0, r.size.height), (CGFloat[]){0,0,1,1}, CGPointZero, (CGFloat[]){0,0.6,1,1});
-            TUIImage *innerShadow = [image innerShadowWithOffset:CGSizeMake(0, -1) radius:3.0 color:[TUIColor blackColor] backgroundColor:[TUIColor cyanColor]];
-            CGContextSetBlendMode(ctx, kCGBlendModeOverlay);
-            CGContextDrawImage(ctx, r, innerShadow.CGImage);
-        }];
-    }
-    
-    [image drawInRect:imageRect]; // draw 'image' (might be the regular one, or the dynamically generated one)
-    
-    // draw the index
-    //        TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"%ld", v.tag]];
-    //        [s ab_drawInRect:CGRectOffset(imageRect, imageRect.size.width, -15)];
-}
-
-
-
-@end
+#import "AHActionButton.h"
 
 
 @implementation AHCell {
@@ -112,8 +22,10 @@
     AHActionButton *secondButton;
     
     BOOL animating;
+    TUIView *headerView;
+    
+    NSInteger trackingCounter;
 }
-
 
 @synthesize row;
 @synthesize grid;
@@ -151,16 +63,32 @@
 - (id)initWithFrame:(CGRect)frame
 {
 	if((self = [super initWithFrame:frame])) {
-		
+		trackingCounter = 0;
         padding = 5;
         profilePictureWidth = 30;
         profilePictureHeight = 30;
+        
         
         self.clipsToBounds = YES;
         self.layer.cornerRadius = 3;
         
         userTextRenderer = [[TUITextRenderer alloc] init];
         self.textRenderers = [NSArray arrayWithObjects:userTextRenderer, nil];
+        headerView = [[TUIView alloc] initWithFrame:CGRectZero];
+        headerView.opaque = YES;
+        __weak TUITextRenderer *weakUserTextRender = userTextRenderer;
+        __weak AHCell *weakSelf = self;
+        headerView.drawRect   = ^(TUIView *v, CGRect rect) {
+            CGRect b = v.bounds;
+            // text
+            TUIImage *image = [TUIImage imageNamed:@"bg.jpg" cache:YES];
+            [image drawInRect:rect];
+            CGRect userStringRect = CGRectMake(weakSelf.padding + weakSelf.profilePictureWidth + weakSelf.padding, b.size.height - 35, 100, 25);
+            weakUserTextRender.frame = userStringRect; // set the frame so it knows where to draw itself
+            [weakUserTextRender draw];
+        };
+        headerView.backgroundColor = [TUIColor colorWithPatternImage:[TUIImage imageNamed:@"bg.jpg"]];
+        [self addSubview:headerView];
 	}
 	return self;
 }
@@ -183,6 +111,7 @@
         smallPhotoImageView.layer.contentsGravity = kCAGravityResizeAspect;
         smallPhotoImageView.clipsToBounds = YES;
         [self addSubview:smallPhotoImageView];
+        [self sendSubviewToBack:smallPhotoImageView];
     } 
     
     if (!smallPhotoImage && smallPhotoImageView && smallPhotoImageView.superview) {
@@ -202,7 +131,7 @@
         profileImageView.layer.cornerRadius = 3;
         profileImageView.layer.contentsGravity = kCAGravityResizeAspect;
         profileImageView.clipsToBounds = YES;
-        [self addSubview:profileImageView];
+        [headerView addSubview:profileImageView];
     } 
     
     if (!profileImage && profileImageView && profileImageView.superview) {
@@ -210,7 +139,7 @@
     }
     
     if (profileImage && profileImageView && !profileImageView.superview) {
-        [self addSubview:profileImageView];
+        [headerView addSubview:profileImageView];
     }
 }
 
@@ -220,7 +149,8 @@
     if ( firstButtonImage && !firstButton) {
         firstButton = [[AHActionButton alloc] initWithFrame:CGRectZero];
         firstButton.imageName = @"heart.png";
-        [self addSubview:firstButton];
+        firstButton.hidden = YES;
+        [headerView addSubview:firstButton];
     } 
     
     if (!firstButtonImage && firstButton && firstButton.superview) {
@@ -228,7 +158,7 @@
     }
     
     if (firstButtonImage && firstButton && !firstButton.superview) {
-        [self addSubview:firstButton];
+        [headerView addSubview:firstButton];
     }
 }
 
@@ -238,8 +168,8 @@
     if ( secondButtonImage && !secondButton) {
         secondButton = [[AHActionButton alloc] initWithFrame:CGRectZero];
         secondButton.imageName = @"reply.png";
-        secondButton.selected = YES;
-        [self addSubview:secondButton];
+        secondButton.hidden = YES;
+        [headerView addSubview:secondButton];
     } 
     
     if (!secondButtonImage && secondButton && secondButton.superview) {
@@ -247,7 +177,7 @@
     }
     
     if (secondButtonImage && secondButton && !secondButton.superview) {
-        [self addSubview:secondButton];
+        [headerView addSubview:secondButton];
     }
 }
 
@@ -273,9 +203,10 @@
     // Default position for all items
     CGRect commentEditorFrame = b;
     
-    CGRect profileImageFrame = CGRectMake(padding, b.size.height - padding - profilePictureHeight, profilePictureWidth, profilePictureHeight);
-    
     CGFloat headerHeight = padding + padding + profilePictureHeight;
+    CGRect headerFrame = CGRectMake(0, b.size.height - headerHeight, b.size.width, headerHeight);
+    
+    CGRect profileImageFrame = CGRectMake(padding, padding, profilePictureWidth, profilePictureHeight);
     
     CGRect smallPhotoFrame = b;
     smallPhotoFrame.size.height -= headerHeight + padding;
@@ -287,8 +218,7 @@
     buttonsFrame.size.height = 30;
     buttonsFrame.size.width = 80;
     buttonsFrame.origin.x = NSMaxX(b) - 80;
-    buttonsFrame.origin.y = NSMaxY(smallPhotoFrame) + padding;
-    
+    buttonsFrame.origin.y = padding;
     
     CGRect firstButtonFrame = buttonsFrame;
     firstButtonFrame.size.width = 30;
@@ -309,6 +239,7 @@
         self.layer.borderWidth = 0;
 	}
     
+    headerView.frame = headerFrame;
     profileImageView.frame = profileImageFrame;
     firstButton.frame = firstButtonFrame;
     secondButton.frame = secondButtonFrame;
@@ -327,12 +258,7 @@
     // light gray background
 	CGContextRef ctx = TUIGraphicsGetCurrentContext();
     CGContextSetRGBFillColor(ctx, .97, .97, .97, 1);
-    CGContextFillRect(ctx, b);
-    
-	// text
-	CGRect userStringRect = CGRectMake(padding + profilePictureWidth + padding, b.size.height - 35, 100, 25);
-	userTextRenderer.frame = userStringRect; // set the frame so it knows where to draw itself
-	[userTextRenderer draw];
+    CGContextFillRect(ctx, b);    
 }
 
 
@@ -347,22 +273,6 @@
     return YES;
 }
 
--(void) mouseUp:(NSEvent *)theEvent {
-    [super mouseUp:theEvent];
-}
-
-- (void)mouseDown:(NSEvent *)event
-{
-    if ([event clickCount] == 2) {
-        if (!row.expanded || (row.expanded && grid.selectedCell == self && self.expanded)) {
-            grid.selectedCell = self;
-            [row toggleExpanded];
-        }
-    } else if ([event clickCount] == 1) {
-        grid.selectedCell = self;
-    }
-	[super mouseDown:event]; // may make the text renderer first responder, so we want to do the selection before this	
-}
 
 
 -(NSMenu*) menuForEvent:(NSEvent *)event {
@@ -472,7 +382,61 @@
     return [super performKeyAction:event];
 }
 
+#pragma mark - Mouse handling
 
+-(void) mouseUp:(NSEvent *)theEvent {
+    [super mouseUp:theEvent];
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+    if ([event clickCount] == 2) {
+        if (!row.expanded || (row.expanded && grid.selectedCell == self && self.expanded)) {
+            grid.selectedCell = self;
+            [row toggleExpanded];
+        }
+    } else if ([event clickCount] == 1) {
+        grid.selectedCell = self;
+    }
+	[super mouseDown:event]; // may make the text renderer first responder, so we want to do the selection before this	
+}
+
+-(void) mouseEntered:(NSEvent *)theEvent {
+    [TUIView animateWithDuration:0.3 animations:^{
+        firstButton.hidden = NO;
+        secondButton.hidden = NO;
+    }];
+    trackingCounter++;
+}
+
+
+- (void) mouseEntered:(NSEvent *)event onSubview:(TUIView *)subview {
+    [TUIView animateWithDuration:0.3 animations:^{
+        firstButton.hidden = NO;
+        secondButton.hidden = NO;
+    }];
+    trackingCounter++;
+}
+
+-(void) mouseExited:(NSEvent *)event fromSubview:(TUIView *)subview {
+    trackingCounter--;
+    if (trackingCounter == 0) {
+        [TUIView animateWithDuration:0.3 animations:^{
+            firstButton.hidden = YES;
+            secondButton.hidden = YES;
+        }];
+    }
+}
+
+- (void) mouseExited:(NSEvent *)theEvent {
+    trackingCounter--;
+    if (trackingCounter == 0) {
+        [TUIView animateWithDuration:0.3 animations:^{
+            firstButton.hidden = YES;
+            secondButton.hidden = YES;
+        }];
+    }
+}
 
 
 @end

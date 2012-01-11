@@ -157,6 +157,7 @@
             [detailScrollView addSubview:detailView];
             detailScrollView.alpha = 0;
             [detailScrollView scrollToTopAnimated:NO];
+            [self sendSubviewToBack:detailScrollView];
         } 
         
         CGFloat alpha = expanded ? 0 : 1.0;
