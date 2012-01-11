@@ -71,17 +71,13 @@
     if (animating) return [super layoutSubviews];
     CGRect b = self.bounds;
     CGRect listRect = b;
-    
-    CGRect titleRect = CGRectMake(10, self.bounds.size.height - 25, 300, 25);
-    if (self.expanded) {
-        listRect.size.height = 250;
-    }
-    listRect.size.height -= 25;
+    listRect.size.height = 250;
     listView.frame = listRect;
     if (!dataLoaded) {
         [listView reloadData];
         dataLoaded = YES;
     }
+    CGRect titleRect = CGRectMake(10,  NSMaxY(listRect) + 5, 300, 25);
     titleLabel.frame = titleRect;
     [super layoutSubviews];
 }
@@ -184,9 +180,7 @@
         listRect.size.height = 250;
         listView.frame = listRect;
         
-        titleLabel.frame = CGRectMake(10, self.bounds.size.height - 25, 300, 25);
-        
-        detailScrollView.frame = CGRectMake(0, 250, self.bounds.size.width, 300);
+        detailScrollView.frame = CGRectMake(0, 250, self.bounds.size.width, 300);        
         detailView.frame =  detailScrollView.bounds;
         
         // scroll the grid into place
