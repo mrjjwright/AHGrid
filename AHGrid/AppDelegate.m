@@ -68,7 +68,11 @@
             return YES;
             
         } else if (fabs([event scrollingDeltaX]) < fabs([event scrollingDeltaY])) { // Vertical
-            [grid scrollWheel:event];
+            if (grid.selectedCell && (grid.selectedRowIndex != -1) && grid.selectedRow.expanded && grid.selectedRow.detailView) {
+                [grid.selectedRow.detailView scrollWheel:event];
+            } else {
+                [grid scrollWheel:event];
+            }
             return NO;
             
         }

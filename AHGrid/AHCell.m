@@ -10,7 +10,6 @@
 #import "TUIKit.h"
 #import "AHActionButton.h"
 
-
 @implementation AHCell {
     TUITextRenderer *userTextRenderer;
     BOOL showingCommentEditor;

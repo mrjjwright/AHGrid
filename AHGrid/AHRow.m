@@ -9,17 +9,15 @@
 #import "AHRow.h"
 #import "AHCell.h"
 
-
 @implementation AHRow {
-    
-    AHCell *detailView;
-    TUIScrollView *detailScrollView;
     TUIImageView *largeImageView;
+    TUIView *headerView;
     BOOL dataLoaded;
     TUIFont *userStringFont;
     TUILabel *titleLabel;
 }
 
+@synthesize detailView;
 @synthesize cells;
 @synthesize grid;
 @synthesize index;
@@ -28,6 +26,21 @@
 @synthesize animating;
 @synthesize selected;
 @synthesize titleString;
+
+-(CGRect) frameForHeaderView {
+    CGRect b = self.bounds;
+    b.size = CGSizeMake(300, 25);
+    b.origin.x = 10;
+    b.origin.y = NSMaxY(listView.frame) + 5;
+    return b;
+    
+}
+
+-(CGRect) frameForDetailView {
+    CGRect detailViewFrame = self.bounds;
+    detailViewFrame.origin.y = NSMaxY([self frameForHeaderView]);
+    return detailViewFrame;
+} 
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -77,19 +90,17 @@
         [listView reloadData];
         dataLoaded = YES;
     }
-    if (detailScrollView && expanded) {
-        detailScrollView.frame = CGRectMake(50, 280, 960, 500);
+    
+    if (detailView && expanded) {
+        detailView.frame = [self frameForDetailView];
     }
-    CGRect titleRect = CGRectMake(10,  NSMaxY(listRect) + 5, 300, 25);
-    titleLabel.frame = titleRect;
+
+    titleLabel.frame = [self frameForHeaderView];
     titleLabel.text = titleString;
-    titleLabel.hidden = expanded;
     [super layoutSubviews];
 }
 
 #pragma mark  - TUILayout DataSource Methods
-
-
 
 -(TUIView*) layout:(TUILayout *)l viewForObjectAtIndex:(NSInteger)i {
     
@@ -156,37 +167,33 @@
     CGFloat height = expanded  ? 200 : grid.visibleRect.size.height;
     animating = YES;
 
-    titleLabel.hidden = !expanded;
-
     [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         // Fade in the detail view
         
-        if (!detailScrollView) {
-            detailScrollView = [[TUIScrollView alloc] initWithFrame:CGRectMake(50, 280, 960, 500)];
-            detailScrollView.backgroundColor = [TUIColor clearColor];
-            [self addSubview:detailScrollView];
-            detailView = [[AHCell alloc] initWithFrame:CGRectMake(0, 0, 960, 900)];
-            detailView.profileImage = grid.selectedCell.profileImage;
-            detailView.firstButtonImage = grid.selectedCell.firstButtonImage;
-            detailView.secondButtonImage = grid.selectedCell.secondButtonImage;
-            detailView.userString = grid.selectedCell.userString;
-            detailView.smallPhotoImage = [TUIImage imageNamed:@"pet_plumes.jpg" cache:YES];
-            detailScrollView.contentSize = CGSizeMake(960, 900);
-            [detailScrollView addSubview:detailView];
-            detailScrollView.alpha = 0;
-            [detailScrollView scrollToTopAnimated:NO];
-            [self sendSubviewToBack:detailScrollView];
+        if (!detailView) {
+            detailView = [[AHDetailView alloc] initWithFrame:[self frameForDetailView]];
+            detailView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+            [self addSubview:detailView];
+            detailView.alpha = 0;
+            [self sendSubviewToBack:detailView];
         } 
         
+        detailView.userString = grid.selectedCell.userString;
+        detailView.photoImageView.image =  grid.selectedCell.smallPhotoImage;
+        detailView.profileImageView.image = grid.selectedCell.profileImage;
+        [detailView scrollToTopAnimated:NO];
+
         CGFloat alpha = expanded ? 0 : 1.0;
-        detailScrollView.alpha = alpha;
+        detailView.alpha = alpha;
+    
         
         CGRect b = self.bounds; 
         CGRect listRect = b;
         listRect.size.height = 175;
         listView.frame = listRect;
+        titleLabel.frame = [self frameForHeaderView];
+        detailView.frame = [self frameForDetailView];        
         
-        detailScrollView.frame = CGRectMake(50, 280, 960, 500);        
         
         // scroll the grid into place
         [grid scrollRectToVisible:self.frame animated:YES];

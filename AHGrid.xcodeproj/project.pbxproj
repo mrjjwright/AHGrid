@@ -85,6 +85,7 @@
 		9ABA08A114BBD09900A187B3 /* comment.png in Resources */ = {isa = PBXBuildFile; fileRef = 9ABA08A014BBD09900A187B3 /* comment.png */; };
 		9ABA08A514BBD20D00A187B3 /* reply.png in Resources */ = {isa = PBXBuildFile; fileRef = 9ABA08A414BBD20C00A187B3 /* reply.png */; };
 		9ABA08A714BBD29600A187B3 /* heart.png in Resources */ = {isa = PBXBuildFile; fileRef = 9ABA08A614BBD29600A187B3 /* heart.png */; };
+		9ACC13C914BFB3370062A438 /* AHDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ACC13C814BFB3370062A438 /* AHDetailView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -230,6 +231,8 @@
 		9ABA08A014BBD09900A187B3 /* comment.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = comment.png; sourceTree = "<group>"; };
 		9ABA08A414BBD20C00A187B3 /* reply.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reply.png; sourceTree = "<group>"; };
 		9ABA08A614BBD29600A187B3 /* heart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heart.png; sourceTree = "<group>"; };
+		9ACC13C714BFB3370062A438 /* AHDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHDetailView.h; sourceTree = "<group>"; };
+		9ACC13C814BFB3370062A438 /* AHDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHDetailView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -297,6 +300,8 @@
 				9A363DF814B65324004F31C7 /* libs */,
 				9A363DED14B6531E004F31C7 /* AHCell.h */,
 				9A363DEE14B6531E004F31C7 /* AHCell.m */,
+				9ACC13C714BFB3370062A438 /* AHDetailView.h */,
+				9ACC13C814BFB3370062A438 /* AHDetailView.m */,
 				9A0E548B14BD260800C0AE80 /* AHActionButton.h */,
 				9A0E548C14BD260800C0AE80 /* AHActionButton.m */,
 				9A363DEF14B6531E004F31C7 /* AHGrid.h */,
@@ -602,6 +607,7 @@
 				9A363EB514B78A6C004F31C7 /* TUILayout.m in Sources */,
 				9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */,
 				9A24FA2B14BE365400FDFD78 /* INAppStoreWindow.m in Sources */,
+				9ACC13C914BFB3370062A438 /* AHDetailView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
