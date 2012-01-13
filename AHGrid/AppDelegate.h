@@ -9,11 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import "AHGrid.h"
 #import "INAppStoreWindow.h"
+#import "AHGridNSView.h"
 
 #define IN_RUNNING_LION (NSClassFromString(@"NSPopover") != nil)
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate, AHGridInitDelegate>
 
 
+@property (assign) IBOutlet AHGridNSView *gridNSView;
 
 @end

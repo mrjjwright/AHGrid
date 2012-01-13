@@ -14,6 +14,7 @@
 @synthesize window;
 @synthesize searchField;
 @synthesize grid;
+@synthesize gridInitDelegate;
 
 -(void) awakeFromNib {
     
@@ -30,6 +31,7 @@
     NSSize searchFieldSize = NSMakeSize(250.f, 32.f);
     NSRect searchFieldFrame = NSMakeRect(NSMaxX(titleBarView.bounds) - (searchFieldSize.width + 25.0f), NSMidY(titleBarView.bounds) - (searchFieldSize.height / 2.f), searchFieldSize.width, searchFieldSize.height);
     searchField = [[NSSearchField alloc] initWithFrame:searchFieldFrame];
+    searchField.autoresizingMask = TUIViewAutoresizingFlexibleLeftMargin;
     [titleBarView addSubview:searchField];
     
     
@@ -42,8 +44,9 @@
     
     grid.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     self.scrollingInterceptor = self;
-    // Insert code here to initialize your application
-    [grid reloadData];
+    if (gridInitDelegate) {
+        grid.initDelegate = gridInitDelegate;
+    }
 }
 
 

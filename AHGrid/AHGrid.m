@@ -22,37 +22,30 @@
     NSMutableArray *rowViews;
     CGRect lastBounds;
     BOOL animating;
+    BOOL firstLayout;
 }
 
 @synthesize expandedRowIndex;
 @synthesize inConfigurationMode;
-
+@synthesize rowConfigureBlock;
+@synthesize cellConfigureBlock;
 @synthesize selectedRow;
 @synthesize selectedCell;
 @synthesize selectedRowIndex;
 @synthesize selectedCellIndex;
-
+@synthesize initDelegate;
+@synthesize numberOfRows;
 
 
 - (id)initWithFrame:(CGRect)frame
 {
 	if((self = [super initWithFrame:frame])) {
+        self.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
+        self.autoresizingMask = TUIViewAutoresizingFlexibleSize;    
         configurationModeRowHeight = 100;
         selectedRowIndex = -1;
         selectedCellIndex = -1;
-        self.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
-        self.autoresizingMask = NSViewMinXMargin | NSViewMinYMargin | NSViewWidthSizable | NSViewHeightSizable;    
-        // Initialization code here.
         rows = [NSMutableArray array];
-        rowViews = [NSMutableArray array];
-        for (int i = 0; i < 10; i++) {
-            NSDictionary *rowInfo = [NSDictionary dictionary];
-            [rows addObject:rowInfo];
-            AHRow *rowView = (AHRow*) [[AHRow alloc] initWithFrame:CGRectZero];
-            rowView.index = i;
-            rowView.grid = self;
-            [rowViews addObject:rowView];
-        }
         expandedRowIndex = -1;
         self.dataSource = self;
         self.spaceBetweenViews = 15;
@@ -63,13 +56,30 @@
     return self;
 }
 
-
+-(void) reloadData {
+    if (initDelegate) {
+        [initDelegate initGrid:self];
+    }
+    rowViews = [NSMutableArray array];
+    numberOfRows = numberOfRows >0 ? numberOfRows : 10;
+    for (int i = 0; i < numberOfRows; i++) {
+        NSDictionary *rowInfo = [NSDictionary dictionary];
+        [rows addObject:rowInfo];
+        AHRow *rowView = (AHRow*) [[AHRow alloc] initWithFrame:CGRectZero];
+        rowView.index = i;
+        rowView.grid = self;
+        [rowViews addObject:rowView];
+    }
+    [super reloadData];
+}
 
 -(void) layoutSubviews {
-    if (!CGSizeEqualToSize(lastBounds.size, self.bounds.size)) {
+    
+    if (!CGSizeEqualToSize(lastBounds.size, self.bounds.size) && firstLayout) {
         lastBounds = self.bounds;
         [self reloadData];
     }
+    firstLayout = YES;
     
     lastBounds = self.bounds;
     [super layoutSubviews];
@@ -89,7 +99,12 @@
     } else {
         rowView.expanded = NO;
     }
-    rowView.titleString = @"John Wright's feed";
+    if (rowConfigureBlock) {
+        rowView = rowConfigureBlock(self, rowView, index);
+    }
+    if (!rowView.titleString) {
+        rowView.titleString = [NSString stringWithFormat:@"Example Row %d", index];
+    }
     return rowView;
 }
 
@@ -126,7 +141,6 @@
     NSUInteger newRowIndex = selectedRowIndex;
     
     NSUInteger numberOfCellsInSelectedRow = [self.selectedRow.cells count];
-    NSUInteger numberOfRows = [rows count];
     
     switch([[event charactersIgnoringModifiers] characterAtIndex:0]) {
         case NSLeftArrowFunctionKey: {

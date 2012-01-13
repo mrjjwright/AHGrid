@@ -13,26 +13,39 @@
 #import "TUILayout.h"
 #import "AHDetailView.h"
 
+
+@class AHGrid;
 @class AHRow;
 @class AHCell;
+@protocol AHGridInitDelegate;
+
+typedef AHRow*(^AHGridRowConfigureBlock)(AHGrid* grid, AHRow *row, NSUInteger index);
+typedef AHCell*(^AHGridCellConfigureBlock)(AHGrid* grid, AHRow *row, AHCell *cell, NSUInteger index);
 
 @interface AHGrid : TUILayout  <TUILayoutDataSource>
 
 
+@property (nonatomic, weak) id<AHGridInitDelegate> initDelegate;
+@property (nonatomic) NSInteger numberOfRows;
 @property (nonatomic, weak) AHRow *selectedRow;
 @property (nonatomic, weak) AHCell *selectedCell;
 @property (nonatomic) NSInteger selectedRowIndex;
 @property (nonatomic) NSInteger selectedCellIndex;
 @property (nonatomic) NSInteger expandedRowIndex;
 @property (nonatomic) BOOL inConfigurationMode;
+@property (nonatomic, copy) AHGridRowConfigureBlock rowConfigureBlock; 
+@property (nonatomic, copy) AHGridCellConfigureBlock cellConfigureBlock; 
 
-//-(IBAction)configure:(id)sender;
-//- (void) saveConfiguration;
-//-(void) removeRow:(AHRow*) row;
-//-(void) toggleConfigurationMode;
-//
 
 -(void) toggleSelectedRowExpanded;
 -(void) showCommentEditorOnSelectedCell;
 
+@end
+
+
+@protocol AHGridInitDelegate <NSObject>
+
+@required
+// Populating subview items 
+- (void)initGrid:(AHGrid *)grid;
 @end

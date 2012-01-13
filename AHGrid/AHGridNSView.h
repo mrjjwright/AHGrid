@@ -13,7 +13,7 @@
 @interface AHGridNSView : TUINSView <TUIScrollingInterceptor>
 #define IN_RUNNING_LION (NSClassFromString(@"NSPopover") != nil)
 
-
+@property (assign) IBOutlet id<AHGridInitDelegate> gridInitDelegate;
 @property (assign) IBOutlet INAppStoreWindow *window;
 @property (nonatomic, strong) NSSearchField *searchField;
 @property (nonatomic, strong) AHGrid *grid;

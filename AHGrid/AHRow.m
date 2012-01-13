@@ -13,7 +13,6 @@
     TUIImageView *largeImageView;
     TUIView *headerView;
     BOOL dataLoaded;
-    TUIFont *userStringFont;
     TUILabel *titleLabel;
 }
 
@@ -52,9 +51,7 @@
         for (int i = 0; i < 100; i++) {
             [cells addObject:[NSMutableDictionary dictionary]];
         }
-        
-        userStringFont = [TUIFont boldSystemFontOfSize:11];
-        
+                
         listView = [[TUILayout alloc] initWithFrame:CGRectZero];
         listView.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
         listView.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
@@ -130,17 +127,10 @@
     cell.grid = grid;
     cell.index = i;
     
-    NSArray *pictures =[NSArray arrayWithObjects:@"jw_profile.jpg", @"girl_bubble.jpg", @"amy_john.jpg",@"john_amy.jpg", nil];
-    
-    cell.profileImage = [TUIImage imageNamed:[pictures objectAtIndex:arc4random() % 3] cache:YES];
-    cell.smallPhotoImage = [TUIImage imageNamed:[pictures objectAtIndex:arc4random() % 3]   cache:YES];
-    cell.firstButtonImage = [TUIImage imageNamed:@"heart.png"  cache:YES];
-    cell.secondButtonImage = [TUIImage imageNamed:@"reply.png" cache:YES];
-    TUIAttributedString *userString = [TUIAttributedString stringWithString:@"John Wright"];
-    userString.font = userStringFont;
-    cell.userString = userString;
-    
-	return cell;
+    if (grid.cellConfigureBlock) {
+        cell = grid.cellConfigureBlock(grid, self, cell, i);
+    }
+    return cell;
 }
 
 - (NSUInteger)numberOfObjectsInLayout:(TUILayout *)l {
