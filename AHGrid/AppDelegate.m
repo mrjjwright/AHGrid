@@ -68,8 +68,8 @@
             return YES;
             
         } else if (fabs([event scrollingDeltaX]) < fabs([event scrollingDeltaY])) { // Vertical
-            if (grid.selectedCell && (grid.selectedRowIndex != -1) && grid.selectedRow.expanded && grid.selectedRow.detailView) {
-                [grid.selectedRow.detailView scrollWheel:event];
+            if (grid.selectedCell && (grid.selectedRowIndex != -1) && grid.selectedRow.expanded && grid.detailView) {
+                [grid.detailView scrollWheel:event];
             } else {
                 [grid scrollWheel:event];
             }

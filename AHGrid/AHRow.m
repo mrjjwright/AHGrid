@@ -17,7 +17,6 @@
     TUILabel *titleLabel;
 }
 
-@synthesize detailView;
 @synthesize cells;
 @synthesize grid;
 @synthesize index;
@@ -36,11 +35,6 @@
     
 }
 
--(CGRect) frameForDetailView {
-    CGRect detailViewFrame = self.bounds;
-    detailViewFrame.origin.y = NSMaxY([self frameForHeaderView]);
-    return detailViewFrame;
-} 
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -91,10 +85,6 @@
         dataLoaded = YES;
     }
     
-    if (detailView && expanded) {
-        detailView.frame = [self frameForDetailView];
-    }
-
     titleLabel.frame = [self frameForHeaderView];
     titleLabel.text = titleString;
     [super layoutSubviews];
@@ -170,21 +160,14 @@
     [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         // Fade in the detail view
         
-        if (!detailView) {
-            detailView = [[AHDetailView alloc] initWithFrame:[self frameForDetailView]];
-            detailView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
-            [self addSubview:detailView];
-            detailView.alpha = 0;
-            [self sendSubviewToBack:detailView];
-        } 
         
-        detailView.userString = grid.selectedCell.userString;
-        detailView.photoImageView.image =  grid.selectedCell.smallPhotoImage;
-        detailView.profileImageView.image = grid.selectedCell.profileImage;
-        [detailView scrollToTopAnimated:NO];
+        grid.detailView.userString = grid.selectedCell.userString;
+        grid.detailView.photoImageView.image =  grid.selectedCell.smallPhotoImage;
+        grid.detailView.profileImageView.image = grid.selectedCell.profileImage;
+        [grid.detailView scrollToTopAnimated:NO];
 
         CGFloat alpha = expanded ? 0 : 1.0;
-        detailView.alpha = alpha;
+        grid.detailView.alpha = alpha;
     
         
         CGRect b = self.bounds; 
@@ -192,7 +175,6 @@
         listRect.size.height = 175;
         listView.frame = listRect;
         titleLabel.frame = [self frameForHeaderView];
-        detailView.frame = [self frameForDetailView];        
         
         
         // scroll the grid into place

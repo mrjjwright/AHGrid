@@ -31,6 +31,15 @@
 @synthesize selectedCell;
 @synthesize selectedRowIndex;
 @synthesize selectedCellIndex;
+@synthesize detailView;
+
+
+-(CGRect) frameForDetailView {
+    CGRect detailViewFrame = self.bounds;
+    detailViewFrame.origin.y = 225;
+    detailViewFrame.size.height -= 200;
+    return detailViewFrame;
+} 
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -55,15 +64,26 @@
         self.dataSource = self;
         self.spaceBetweenViews = 15;
         self.viewClass = [AHRow class];
+        
+        detailView = [[AHDetailView alloc] initWithFrame:[self frameForDetailView]];
+        detailView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+        [self addSubview:detailView];
+        detailView.alpha = 0;
+        [self sendSubviewToBack:detailView];
     }
     return self;
 }
+
+
 
 -(void) layoutSubviews {
     if (!CGSizeEqualToSize(lastBounds.size, self.bounds.size)) {
         lastBounds = self.bounds;
         [self reloadData];
     }
+    
+    detailView.frame = [self frameForDetailView];
+
     lastBounds = self.bounds;
     [super layoutSubviews];
 }
