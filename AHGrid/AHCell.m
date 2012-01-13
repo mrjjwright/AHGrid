@@ -103,6 +103,9 @@
     self.selected = NO;
     expanded = NO;
     showingCommentEditor = NO;
+    self.smallPhotoImage = nil;
+    self.userString = nil;
+    self.largePhotoImage = nil;
     if (commentEditor && commentEditor.text && commentEditor.text.length > 0) commentEditor.text = @"";
 }
 
@@ -117,6 +120,7 @@
         [self addSubview:smallPhotoImageView];
         [self sendSubviewToBack:smallPhotoImageView];
     } 
+    smallPhotoImageView.image = smallPhotoImage;
     
     if (!smallPhotoImage && smallPhotoImageView && smallPhotoImageView.superview) {
         [smallPhotoImageView removeFromSuperview];
@@ -138,6 +142,7 @@
         [headerView addSubview:profileImageView];
     } 
     
+    profileImageView.image = profileImage;
     if (!profileImage && profileImageView && profileImageView.superview) {
         [profileImageView removeFromSuperview];
     }
