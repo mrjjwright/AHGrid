@@ -88,6 +88,7 @@
 		9ACC13C914BFB3370062A438 /* AHDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ACC13C814BFB3370062A438 /* AHDetailView.m */; };
 		9ACC13D414C005C00062A438 /* amy_john.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9ACC13D314C005C00062A438 /* amy_john.jpg */; };
 		9ACC13D714C006C60062A438 /* john_amy.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9ACC13D614C006C60062A438 /* john_amy.jpg */; };
+		9ACC13DA14C0BF380062A438 /* AHGridNSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ACC13D914C0BF380062A438 /* AHGridNSView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -237,6 +238,8 @@
 		9ACC13C814BFB3370062A438 /* AHDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHDetailView.m; sourceTree = "<group>"; };
 		9ACC13D314C005C00062A438 /* amy_john.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = amy_john.jpg; sourceTree = "<group>"; };
 		9ACC13D614C006C60062A438 /* john_amy.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = john_amy.jpg; sourceTree = "<group>"; };
+		9ACC13D814C0BF370062A438 /* AHGridNSView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGridNSView.h; sourceTree = "<group>"; };
+		9ACC13D914C0BF380062A438 /* AHGridNSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridNSView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -312,6 +315,8 @@
 				9A363DF014B6531E004F31C7 /* AHGrid.m */,
 				9A363DF114B6531E004F31C7 /* AHRow.h */,
 				9A363DF214B6531E004F31C7 /* AHRow.m */,
+				9ACC13D814C0BF370062A438 /* AHGridNSView.h */,
+				9ACC13D914C0BF380062A438 /* AHGridNSView.m */,
 				9A363DE214B65262004F31C7 /* AppDelegate.h */,
 				9A363DE314B65262004F31C7 /* AppDelegate.m */,
 				9A363DE514B65263004F31C7 /* MainMenu.xib */,
@@ -616,6 +621,7 @@
 				9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */,
 				9A24FA2B14BE365400FDFD78 /* INAppStoreWindow.m in Sources */,
 				9ACC13C914BFB3370062A438 /* AHDetailView.m in Sources */,
+				9ACC13DA14C0BF380062A438 /* AHGridNSView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

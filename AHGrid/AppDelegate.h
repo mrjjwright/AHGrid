@@ -12,14 +12,8 @@
 
 #define IN_RUNNING_LION (NSClassFromString(@"NSPopover") != nil)
 
-@interface AppDelegate : NSObject <NSApplicationDelegate, TUIScrollingInterceptor>
+@interface AppDelegate : NSObject <NSApplicationDelegate>
 
 
-@property (assign) IBOutlet INAppStoreWindow *window;
-@property (nonatomic, strong) NSSearchField *searchField;
-
--(IBAction)toggleConfigurationMode:(id)sender;
--(IBAction)showCommentEditor:(id)sender;
--(IBAction)viewLarger:(id)sender;
 
 @end
