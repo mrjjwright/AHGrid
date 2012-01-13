@@ -197,16 +197,6 @@
 
 #pragma mark - Key Handling
 
-- (BOOL)performKeyAction:(NSEvent *)event {
-    NSString *chars = [event characters];
-    unichar character = [chars characterAtIndex: 0];
-    if (character == 27 && expanded) {
-        [self toggleExpanded];
-        return YES;
-    }
-    return [super performKeyAction:event];
-}
-
 
 
 @end

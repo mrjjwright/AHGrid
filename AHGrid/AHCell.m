@@ -68,7 +68,7 @@
         profilePictureHeight = 30;
             
         self.clipsToBounds = YES;
-        self.layer.cornerRadius = 3;
+        self.layer.cornerRadius = 4;
         
         self.backgroundColor = [TUIColor whiteColor];
         

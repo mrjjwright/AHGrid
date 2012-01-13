@@ -173,6 +173,13 @@
             }
             return YES;
         }
+        case 27: {
+            // Escape key
+            if (self.selectedRow.expanded) {
+                [self.selectedRow toggleExpanded];
+                return YES;
+            }
+        }
     }    
     if (self.selectedCell) [self.selectedCell performKeyAction:event];
     return [super performKeyAction:event];
