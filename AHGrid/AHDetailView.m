@@ -27,7 +27,7 @@
         frame.size = CGSizeMake(720, 500);
     }
     // move the frame over to make room for the comments view
-    frame.origin.y = self.contentSize.height - frame.size.height;
+    frame.origin.y = self.contentSize.height - frame.size.height -5;
     frame.origin.x = roundf((self.bounds.size.width - frame.size.width)/2);
     return frame;
 }
@@ -56,8 +56,10 @@
         
         // Add subviews
         photoImageView = [[TUIImageView alloc] initWithFrame:[self frameForPhotoImageView]];
+        //photoImageView.layer.cornerRadius = 6;
         photoImageView.clipsToBounds = YES;
         [self addSubview:photoImageView];
+        
         commentsView = [[TUIView alloc] initWithFrame:[self frameForCommentsView]];
         [self addSubview:commentsView];
         profileImageView = [[TUIImageView alloc] initWithFrame:[self frameForProfileImageView]];

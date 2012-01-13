@@ -365,7 +365,7 @@
     if (character == 27 && commentEditor && showingCommentEditor) {
         [self hideCommentEditor];
         return YES;
-    } else if (character == 13 && !expanded) {
+    } else if ((character == 13 || character == 32) && !expanded) {
         [row toggleExpanded];
         return YES;
     }

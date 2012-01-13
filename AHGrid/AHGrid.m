@@ -35,8 +35,8 @@
 
 
 -(CGRect) frameForDetailView {
-    CGRect detailViewFrame = self.bounds;
-    detailViewFrame.origin.y = 225;
+    CGRect detailViewFrame = self.visibleRect;
+    detailViewFrame.origin.y += 200;
     detailViewFrame.size.height -= 200;
     return detailViewFrame;
 } 
