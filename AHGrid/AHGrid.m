@@ -31,15 +31,8 @@
 @synthesize selectedCell;
 @synthesize selectedRowIndex;
 @synthesize selectedCellIndex;
-@synthesize detailView;
 
 
--(CGRect) frameForDetailView {
-    CGRect detailViewFrame = self.visibleRect;
-    detailViewFrame.origin.y += 200;
-    detailViewFrame.size.height -= 200;
-    return detailViewFrame;
-} 
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -65,11 +58,7 @@
         self.spaceBetweenViews = 15;
         self.viewClass = [AHRow class];
         
-        detailView = [[AHDetailView alloc] initWithFrame:[self frameForDetailView]];
-        detailView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
-        [self addSubview:detailView];
-        detailView.alpha = 0;
-        [self sendSubviewToBack:detailView];
+        
     }
     return self;
 }
@@ -83,10 +72,6 @@
     }
     
     lastBounds = self.bounds;
-    if (!self.selectedRow.expanded || (expandedRowIndex >= 0  && !self.selectedRow.expanded) || (self.selectedRow.expanded && !animating)) {
-        detailView.frame = [self frameForDetailView];
-        [detailView setNeedsLayout];
-    }
     [super layoutSubviews];
 }
 
@@ -133,7 +118,7 @@
 - (BOOL)performKeyAction:(NSEvent *)event
 {    
     if (!self.selectedRow || !self.selectedCell) return YES;
-   
+    
     
     NSUInteger oldCellIndex = selectedCellIndex;
     NSUInteger newCellIndex = selectedCellIndex;
@@ -160,7 +145,7 @@
             return YES;
         }
         case NSDownArrowFunctionKey: {
-             if (self.selectedRow.expanded == YES) return YES;
+            if (self.selectedRow.expanded == YES) return YES;
             newRowIndex += 1;
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
                 [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
@@ -168,7 +153,7 @@
             return YES;
         }
         case NSUpArrowFunctionKey: {
-             if (self.selectedRow.expanded == YES) return YES;
+            if (self.selectedRow.expanded == YES) return YES;
             newRowIndex -= 1;
             newRowIndex = MAX(newRowIndex, 0);
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
@@ -249,11 +234,11 @@
         
         if (expandedRowIndex >= 0) {
             self.selectedCell.expanded = YES;
-            detailView.userString = self.selectedCell.userString;
-            detailView.photoImageView.image =  self.selectedCell.smallPhotoImage;
-            detailView.profileImageView.image = self.selectedCell.profileImage;
-            [detailView layoutSubviews];
-            [detailView scrollToTopAnimated:NO];
+            self.selectedRow.detailView.userString = self.selectedCell.userString;
+            self.selectedRow. detailView.photoImageView.image =  self.selectedCell.smallPhotoImage;
+            self.selectedRow.detailView.profileImageView.image = self.selectedCell.profileImage;
+            [self.selectedRow.detailView layoutSubviews];
+            [ self.selectedRow.detailView scrollToTopAnimated:NO];
         }
     }
 }
@@ -275,21 +260,18 @@
 -(void) toggleSelectedRowExpanded {
     CGFloat height = expandedRowIndex >=0  ? 200 : self.visibleRect.size.height;
     animating = YES;
-    
+    self.selectedRow.animating = YES;
     [self resizeObjectAtIndex:self.selectedRow.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         // Fade in the detail view
-        detailView.userString = self.selectedCell.userString;
-        detailView.photoImageView.image =  self.selectedCell.smallPhotoImage;
-        detailView.profileImageView.image = self.selectedCell.profileImage;
-        [detailView scrollToTopAnimated:YES];
+        self.selectedRow.detailView.userString = self.selectedCell.userString;
+        self.selectedRow.detailView.photoImageView.image =  self.selectedCell.smallPhotoImage;
+        self.selectedRow.detailView.profileImageView.image = self.selectedCell.profileImage;
         
-        CGFloat alpha = expandedRowIndex >=0 ? 0 : 1.0;
-        detailView.alpha = alpha;
-        
+        CGFloat alpha = expandedRowIndex >=0 ? 0.0 : 1.0;
+        self.selectedRow.detailView.alpha = alpha;
         [self.selectedRow layoutSubviews];        
-        
-        // scroll the grid into place
         [self scrollRectToVisible:self.selectedRow.frame animated:YES];
+        [ self.selectedRow.detailView scrollToTopAnimated:NO];
     }  completionBlock:^{
         self.selectedRow.expanded = !self.selectedRow.expanded;
         self.selectedCell.expanded = !self.selectedCell.expanded;
@@ -302,13 +284,15 @@
         if (expandedRowIndex >= 0) {
             [self.nsWindow setTitle:self.selectedRow.titleString];
             self.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
+            
         } else {
             [self.nsWindow setTitle:@"AHGrid"];
             self.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
         }
         animating = NO;
+        self.selectedRow.animating = NO;
         [self setNeedsLayout];
-        [detailView scrollToTopAnimated:YES];
+        [self.selectedRow.detailView scrollToTopAnimated:YES];
     }];
 }
 

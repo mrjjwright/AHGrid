@@ -17,6 +17,8 @@
     TUILabel *titleLabel;
 }
 
+@synthesize animating;
+@synthesize detailView;
 @synthesize cells;
 @synthesize grid;
 @synthesize index;
@@ -33,6 +35,13 @@
     return b;
     
 }
+
+-(CGRect) frameForDetailView {
+    CGRect detailViewFrame = self.bounds;
+    detailViewFrame.origin.y += 200;
+    detailViewFrame.size.height -= 200;
+    return detailViewFrame;
+} 
 
 
 - (id)initWithFrame:(CGRect)frame
@@ -63,6 +72,12 @@
         titleLabel.textColor = [TUIColor blackColor];
         titleLabel.backgroundColor = [TUIColor clearColor];
         [self addSubview:titleLabel];
+        
+        detailView = [[AHDetailView alloc] initWithFrame:[self frameForDetailView]];
+        detailView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+        [self addSubview:detailView];
+        detailView.alpha = 0;
+        [self sendSubviewToBack:detailView];
     }
     return self;
 }
@@ -74,6 +89,9 @@
 #pragma mark - Layout
 
 -(void) layoutSubviews {
+    if (animating) {
+        return [super layoutSubviews];
+    }
     CGRect b = self.bounds;
     CGRect listRect = b;
     listRect.size.height = 175;
@@ -82,6 +100,12 @@
         [listView reloadData];
         dataLoaded = YES;
     }
+    
+    if (!self.expanded || (self.expanded && !animating)) {
+        detailView.frame = [self frameForDetailView];
+        [detailView setNeedsLayout];
+    }
+
     
     titleLabel.frame = [self frameForHeaderView];
     titleLabel.text = titleString;

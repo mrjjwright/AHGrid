@@ -18,7 +18,7 @@
 
 @interface AHGrid : TUILayout  <TUILayoutDataSource>
 
-@property (nonatomic, strong) AHDetailView *detailView;
+
 @property (nonatomic, weak) AHRow *selectedRow;
 @property (nonatomic, weak) AHCell *selectedCell;
 @property (nonatomic) NSInteger selectedRowIndex;

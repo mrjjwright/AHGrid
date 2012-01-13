@@ -16,6 +16,8 @@
 
 @interface AHRow : TUIView <TUILayoutDataSource>
 
+@property (nonatomic, strong) AHDetailView *detailView;
+@property (nonatomic) BOOL animating;
 @property (nonatomic, weak) AHGrid *grid;
 @property (nonatomic) NSUInteger index;
 @property (nonatomic, strong) TUILayout *listView;
