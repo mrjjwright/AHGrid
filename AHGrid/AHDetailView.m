@@ -20,10 +20,26 @@
 @synthesize profileImageView;
 
 
+- (CGSize) photoImageSize {
+    CGSize size = photoImageView.image.size;
+    size.height = MIN(self.bounds.size.height, size.height);
+    CGFloat heightFactor = size.height / photoImageView.image.size.height;
+    CGFloat widthFactor = size.width / photoImageView.image.size.width;
+    CGFloat scaleFactor = 0.0;
+    if (widthFactor < heightFactor) 
+        scaleFactor = widthFactor;
+    else
+        scaleFactor = heightFactor;
+    
+    size.width  = photoImageView.image.size.width * scaleFactor;
+    size.height = photoImageView.image.size.height * scaleFactor;
+    return size;
+}
+
 - (CGRect) frameForPhotoImageView {
     CGRect frame = CGRectZero;
     if (photoImageView.image) {
-        frame.size = photoImageView.image.size;
+        frame.size = [self photoImageSize];
     } else {
         frame.size = CGSizeMake(720, 500);
     }
@@ -67,6 +83,7 @@
         photoImageView = [[TUIImageView alloc] initWithFrame:[self frameForPhotoImageView]];
         //photoImageView.layer.cornerRadius = 6;
         photoImageView.clipsToBounds = YES;
+        photoImageView.layer.contents = kCAGravityResizeAspect;
         [self addSubview:photoImageView];
         
         commentsView = [[TUIView alloc] initWithFrame:[self frameForCommentsView]];
@@ -88,7 +105,7 @@
 -(void) layoutSubviews {
     CGRect b = self.bounds;
     if (photoImageView.image && b.size.height > 0) {
-        self.contentSize = CGSizeMake(b.size.width, photoImageView.image.size.height);    
+        self.contentSize = CGSizeMake(b.size.width,[self photoImageSize].height);    
     } else {
         self.contentSize = b.size;    
     }

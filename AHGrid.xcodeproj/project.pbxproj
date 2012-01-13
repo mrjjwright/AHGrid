@@ -88,6 +88,7 @@
 		9ACC13C914BFB3370062A438 /* AHDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ACC13C814BFB3370062A438 /* AHDetailView.m */; };
 		9ACC13D714C006C60062A438 /* john_amy.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9ACC13D614C006C60062A438 /* john_amy.jpg */; };
 		9ACC13DA14C0BF380062A438 /* AHGridNSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ACC13D914C0BF380062A438 /* AHGridNSView.m */; };
+		9ACC13DC14C0E7C30062A438 /* wide.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9ACC13DB14C0E7C30062A438 /* wide.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -238,6 +239,7 @@
 		9ACC13D614C006C60062A438 /* john_amy.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = john_amy.jpg; sourceTree = "<group>"; };
 		9ACC13D814C0BF370062A438 /* AHGridNSView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGridNSView.h; sourceTree = "<group>"; };
 		9ACC13D914C0BF380062A438 /* AHGridNSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridNSView.m; sourceTree = "<group>"; };
+		9ACC13DB14C0E7C30062A438 /* wide.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wide.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -326,6 +328,7 @@
 		9A363DD714B65262004F31C7 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9ACC13DB14C0E7C30062A438 /* wide.jpg */,
 				9ACC13D614C006C60062A438 /* john_amy.jpg */,
 				9ABA08A014BBD09900A187B3 /* comment.png */,
 				9ABA08A614BBD29600A187B3 /* heart.png */,
@@ -542,6 +545,7 @@
 				9ABA08A514BBD20D00A187B3 /* reply.png in Resources */,
 				9ABA08A714BBD29600A187B3 /* heart.png in Resources */,
 				9ACC13D714C006C60062A438 /* john_amy.jpg in Resources */,
+				9ACC13DC14C0E7C30062A438 /* wide.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

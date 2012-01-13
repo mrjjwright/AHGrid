@@ -22,7 +22,7 @@
 -(void) initGrid:(AHGrid *)grid {
     userStringFont = [TUIFont boldSystemFontOfSize:11];
 
-    NSArray *pictures =[NSArray arrayWithObjects:@"jw_profile.jpg", @"girl_bubble.jpg",@"john_amy.jpg", nil];
+    NSArray *pictures =[NSArray arrayWithObjects:@"jw_profile.jpg", @"girl_bubble.jpg",@"john_amy.jpg", @"wide.jpg", nil];
     grid.rowConfigureBlock = ^(AHGrid* grid, AHRow *row, NSUInteger index) {
         row.titleString = [NSString stringWithFormat:@"Example Row %d", index];
         return row; 
