@@ -47,6 +47,7 @@
 
 NSInteger makeFirstResponderCount = 0;
 
+
 - (BOOL)tui_containsObjectInResponderChain:(NSResponder *)r
 {
 	NSResponder *responder = [self firstResponder];

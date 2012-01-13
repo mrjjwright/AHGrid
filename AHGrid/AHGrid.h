@@ -23,16 +23,16 @@
 @property (nonatomic, weak) AHCell *selectedCell;
 @property (nonatomic) NSInteger selectedRowIndex;
 @property (nonatomic) NSInteger selectedCellIndex;
-
+@property (nonatomic) NSInteger expandedRowIndex;
 @property (nonatomic) BOOL inConfigurationMode;
 
 //-(IBAction)configure:(id)sender;
 //- (void) saveConfiguration;
 //-(void) removeRow:(AHRow*) row;
-//-(void) togglExpansionForRow:(NSInteger) rowIndex;
 //-(void) toggleConfigurationMode;
 //
 
+-(void) toggleSelectedRowExpanded;
 -(void) showCommentEditorOnSelectedCell;
 
 @end

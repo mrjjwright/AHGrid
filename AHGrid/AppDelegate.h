@@ -20,5 +20,6 @@
 
 -(IBAction)toggleConfigurationMode:(id)sender;
 -(IBAction)showCommentEditor:(id)sender;
+-(IBAction)viewLarger:(id)sender;
 
 @end

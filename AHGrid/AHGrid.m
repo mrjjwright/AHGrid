@@ -12,7 +12,6 @@
 
 @interface AHGrid()
 
-@property (nonatomic) NSInteger expandedRowIndex;
 -(void) selectCellInAdjacentRow:(AHRow*) row;
 
 @end
@@ -22,6 +21,7 @@
     CGFloat configurationModeRowHeight;
     NSMutableArray *rowViews;
     CGRect lastBounds;
+    BOOL animating;
 }
 
 @synthesize expandedRowIndex;
@@ -82,9 +82,11 @@
         [self reloadData];
     }
     
-    detailView.frame = [self frameForDetailView];
-
     lastBounds = self.bounds;
+    if (!self.selectedRow.expanded || (expandedRowIndex >= 0  && !self.selectedRow.expanded) || (self.selectedRow.expanded && !animating)) {
+        detailView.frame = [self frameForDetailView];
+        [detailView setNeedsLayout];
+    }
     [super layoutSubviews];
 }
 
@@ -96,6 +98,7 @@
     rowView.index = index;
     rowView.grid = self;
     
+    rowView.expanded = NO;
     if (expandedRowIndex >=0 && index == expandedRowIndex) {
         rowView.expanded = YES;
     } else {
@@ -157,7 +160,7 @@
             return YES;
         }
         case NSDownArrowFunctionKey: {
-             if (self.selectedRow.expanded) return YES;
+             if (self.selectedRow.expanded == YES) return YES;
             newRowIndex += 1;
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
                 [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
@@ -165,7 +168,7 @@
             return YES;
         }
         case NSUpArrowFunctionKey: {
-             if (self.selectedRow.expanded) return YES;
+             if (self.selectedRow.expanded == YES) return YES;
             newRowIndex -= 1;
             newRowIndex = MAX(newRowIndex, 0);
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
@@ -176,12 +179,17 @@
         case 27: {
             // Escape key
             if (self.selectedRow.expanded) {
-                [self.selectedRow toggleExpanded];
+                [self toggleSelectedRowExpanded];
                 return YES;
             }
         }
+        case 13:
+        case 32:{
+            // Escape key
+            [self toggleSelectedRowExpanded];
+            return YES;
+        }
     }    
-    if (self.selectedCell) [self.selectedCell performKeyAction:event];
     return [super performKeyAction:event];
 }
 
@@ -238,6 +246,15 @@
         //Scroll to this object
         [self.selectedRow.listView scrollRectToVisible:self.selectedCell.frame animated:YES];
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedCell];
+        
+        if (expandedRowIndex >= 0) {
+            self.selectedCell.expanded = YES;
+            detailView.userString = self.selectedCell.userString;
+            detailView.photoImageView.image =  self.selectedCell.smallPhotoImage;
+            detailView.profileImageView.image = self.selectedCell.profileImage;
+            [detailView layoutSubviews];
+            [detailView scrollToTopAnimated:NO];
+        }
     }
 }
 
@@ -253,6 +270,47 @@
 
 # pragma mark - Configuration
 
+#pragma mark - Expansion
+
+-(void) toggleSelectedRowExpanded {
+    CGFloat height = expandedRowIndex >=0  ? 200 : self.visibleRect.size.height;
+    animating = YES;
+    
+    [self resizeObjectAtIndex:self.selectedRow.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
+        // Fade in the detail view
+        detailView.userString = self.selectedCell.userString;
+        detailView.photoImageView.image =  self.selectedCell.smallPhotoImage;
+        detailView.profileImageView.image = self.selectedCell.profileImage;
+        [detailView scrollToTopAnimated:YES];
+        
+        CGFloat alpha = expandedRowIndex >=0 ? 0 : 1.0;
+        detailView.alpha = alpha;
+        
+        [self.selectedRow layoutSubviews];        
+        
+        // scroll the grid into place
+        [self scrollRectToVisible:self.selectedRow.frame animated:YES];
+    }  completionBlock:^{
+        self.selectedRow.expanded = !self.selectedRow.expanded;
+        self.selectedCell.expanded = !self.selectedCell.expanded;
+        if (self.selectedRow.expanded) {
+            expandedRowIndex = self.selectedRow.index;
+        } else {
+            expandedRowIndex = -1;
+        }
+        self.scrollEnabled = !self.selectedRow.expanded;
+        if (expandedRowIndex >= 0) {
+            [self.nsWindow setTitle:self.selectedRow.titleString];
+            self.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
+        } else {
+            [self.nsWindow setTitle:@"AHGrid"];
+            self.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
+        }
+        animating = NO;
+        [self setNeedsLayout];
+        [detailView scrollToTopAnimated:YES];
+    }];
+}
 
 //- (void) saveConfiguration {
 //    NSMutableArray *currentRows = [NSMutableArray array];

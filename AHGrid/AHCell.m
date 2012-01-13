@@ -187,7 +187,8 @@
 
 
 -(void) setUserString:(NSAttributedString *)u  {
-    userTextRenderer.attributedString = [u copy];
+    userString = [u copy];
+    userTextRenderer.attributedString = userString;
 }
 
 #pragma mark - Layout
@@ -366,10 +367,10 @@
         [self hideCommentEditor];
         return YES;
     } else if ((character == 13 || character == 32) && !expanded) {
-        [row toggleExpanded];
+        [grid toggleSelectedRowExpanded];
         return YES;
     }
-    return [row performKeyAction:event];
+    return [grid performKeyAction:event];
 }
 
 #pragma mark - Mouse handling
@@ -383,7 +384,7 @@
     if ([event clickCount] == 2) {
         if (!row.expanded || (row.expanded && grid.selectedCell == self && self.expanded)) {
             grid.selectedCell = self;
-            [row toggleExpanded];
+            [grid toggleSelectedRowExpanded];
         }
     } else if ([event clickCount] == 1) {
         grid.selectedCell = self;

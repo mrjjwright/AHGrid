@@ -57,6 +57,12 @@
     [grid showCommentEditorOnSelectedCell];
 }
 
+-(IBAction)viewLarger:(id)sender {
+    if (grid.selectedRowIndex != -1 && !grid.selectedRow.expanded) {
+        [grid toggleSelectedRowExpanded];
+    }
+}
+
 
 - (BOOL)shouldScrollWheel:(NSEvent *)event {
     

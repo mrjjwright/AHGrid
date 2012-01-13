@@ -22,7 +22,6 @@
 @synthesize index;
 @synthesize listView;
 @synthesize expanded;
-@synthesize animating;
 @synthesize selected;
 @synthesize titleString;
 
@@ -75,7 +74,6 @@
 #pragma mark - Layout
 
 -(void) layoutSubviews {
-    if (animating) return [super layoutSubviews];
     CGRect b = self.bounds;
     CGRect listRect = b;
     listRect.size.height = 175;
@@ -108,8 +106,10 @@
     cell.grid = grid;
     cell.index = i;
     
-    cell.profileImage = [TUIImage imageNamed:@"jw_profile.jpg" cache:YES];
-    cell.smallPhotoImage = [TUIImage imageNamed:@"pet_plumes.jpg"  cache:YES];
+    NSArray *pictures =[NSArray arrayWithObjects:@"jw_profile.jpg", @"girl_bubble.jpg", @"amy_john.jpg",@"john_amy.jpg", nil];
+    
+    cell.profileImage = [TUIImage imageNamed:[pictures objectAtIndex:arc4random() % 3] cache:YES];
+    cell.smallPhotoImage = [TUIImage imageNamed:[pictures objectAtIndex:arc4random() % 3]   cache:YES];
     cell.firstButtonImage = [TUIImage imageNamed:@"heart.png"  cache:YES];
     cell.secondButtonImage = [TUIImage imageNamed:@"reply.png" cache:YES];
     TUIAttributedString *userString = [TUIAttributedString stringWithString:@"John Wright"];
@@ -153,49 +153,12 @@
 
 #pragma mark - Expansion
 
--(void) toggleExpanded {
-    CGFloat height = expanded  ? 200 : grid.visibleRect.size.height;
-    animating = YES;
-
-    [grid resizeObjectAtIndex:self.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
-        // Fade in the detail view
-        
-        
-        grid.detailView.userString = grid.selectedCell.userString;
-        grid.detailView.photoImageView.image =  grid.selectedCell.smallPhotoImage;
-        grid.detailView.profileImageView.image = grid.selectedCell.profileImage;
-        [grid.detailView scrollToTopAnimated:NO];
-
-        CGFloat alpha = expanded ? 0 : 1.0;
-        grid.detailView.alpha = alpha;
-    
-        
-        CGRect b = self.bounds; 
-        CGRect listRect = b;
-        listRect.size.height = 175;
-        listView.frame = listRect;
-        titleLabel.frame = [self frameForHeaderView];
-        
-        
-        // scroll the grid into place
-        [grid scrollRectToVisible:self.frame animated:YES];
-    }  completionBlock:^{
-        expanded = !expanded;
-        grid.selectedCell.expanded = !grid.selectedCell.expanded;
-        grid.scrollEnabled = !expanded;
-        if (expanded) {
-            [self.nsWindow setTitle:titleString];
-            grid.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
-        } else {
-            [self.nsWindow setTitle:@"AHGrid"];
-            grid.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
-        }
-        animating = NO;
-        [grid setNeedsLayout];
-    }];
-}
 
 #pragma mark - Key Handling
+
+- (BOOL)performKeyAction:(NSEvent *)event {
+   return [grid performKeyAction:event];
+}
 
 
 
