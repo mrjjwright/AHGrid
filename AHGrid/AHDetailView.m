@@ -22,7 +22,9 @@
 
 - (CGSize) photoImageSize {
     CGSize size = photoImageView.image.size;
-    size.height = MIN(self.bounds.size.height, size.height);
+    if (self.bounds.size.height > 400) {
+        size.height = MIN(self.bounds.size.height, size.height);
+    }
     CGFloat heightFactor = size.height / photoImageView.image.size.height;
     CGFloat widthFactor = size.width / photoImageView.image.size.width;
     CGFloat scaleFactor = 0.0;

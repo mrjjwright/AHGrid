@@ -8,13 +8,32 @@
 
 #import "AHGridNSView.h"
 
-@implementation AHGridNSView
+#define kMasterViewWidth 200
+
+@implementation AHGridNSView {
+    TUINSView *nsView;
+}
 
 
 @synthesize window;
 @synthesize searchField;
 @synthesize grid;
 @synthesize gridInitDelegate;
+@synthesize masterView;
+
+-(NSRect) frameForGrid {
+    NSRect b = self.bounds;
+    b.size.width -= kMasterViewWidth;
+    b.origin.x += kMasterViewWidth;
+    return b;
+}
+
+-(NSRect) frameForMasterView {
+    NSRect b = self.bounds;
+    b.size.width = kMasterViewWidth;
+    return b;    
+}
+
 
 -(void) awakeFromNib {
     
@@ -25,28 +44,29 @@
         [self.window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
     }
     
-    // Add a search bar to the InAppStoreWindow
-    self.window.titleBarHeight = 40.0;
-    NSView *titleBarView = self.window.titleBarView;
-    NSSize searchFieldSize = NSMakeSize(250.f, 32.f);
-    NSRect searchFieldFrame = NSMakeRect(NSMaxX(titleBarView.bounds) - (searchFieldSize.width + 25.0f), NSMidY(titleBarView.bounds) - (searchFieldSize.height / 2.f), searchFieldSize.width, searchFieldSize.height);
-    searchField = [[NSSearchField alloc] initWithFrame:searchFieldFrame];
-    searchField.autoresizingMask = TUIViewAutoresizingFlexibleLeftMargin;
-    [titleBarView addSubview:searchField];
+    nsView = [[TUINSView alloc] initWithFrame:[self frameForGrid]];
+    [self addSubview:nsView];
     
-    
-    grid = [[AHGrid alloc] initWithFrame:self.bounds];
-    TUIView *containerView = [[TUIView alloc] initWithFrame:self.bounds];
+    grid = [[AHGrid alloc] initWithFrame:nsView.bounds];
+    TUIView *containerView = [[TUIView alloc] initWithFrame:nsView.bounds];
     containerView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     [containerView addSubview:grid];
-    self.rootView = containerView;
+    nsView.rootView = containerView;
     grid.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
-    
     grid.autoresizingMask = TUIViewAutoresizingFlexibleSize;
-    self.scrollingInterceptor = self;
+    nsView.scrollingInterceptor = self;
     if (gridInitDelegate) {
         grid.initDelegate = gridInitDelegate;
     }
+    
+    //Initialize Master View
+    masterView = [[AHGridMasterView alloc] initWithFrame:[self frameForMasterView]];
+    [self addSubview:masterView];
+}
+
+-(void) drawRect:(NSRect)dirtyRect {
+    masterView.frame = [self frameForMasterView];
+    nsView.frame = [self frameForGrid];
 }
 
 

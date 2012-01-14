@@ -60,8 +60,9 @@
     if (initDelegate) {
         [initDelegate initGrid:self];
     }
+    rowViews = nil;
     rowViews = [NSMutableArray array];
-    numberOfRows = numberOfRows >0 ? numberOfRows : 10;
+    numberOfRows = numberOfRows >= 0 ? numberOfRows : 10;
     for (int i = 0; i < numberOfRows; i++) {
         NSDictionary *rowInfo = [NSDictionary dictionary];
         [rows addObject:rowInfo];
@@ -110,7 +111,7 @@
 
 
 - (NSUInteger)numberOfObjectsInLayout:(TUILayout *)l {
-    return [rows count];
+    return numberOfRows;
 }
 
 - (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {
