@@ -32,6 +32,7 @@ typedef void(^AHGridPickerCellBlock)(AHGridPickerView* picker, AHGridPickerCellV
 
 @interface AHGridPickerView : NSView <TUITableViewDelegate, TUITableViewDataSource>
 
+@property (nonatomic, strong) TUITableView *pickerTableView;
 @property (nonatomic, copy) AHGridPickerHeaderBlock headerConfigureBlock; 
 @property (nonatomic, copy) AHGridPickerCellBlock cellConfigureBlock; 
 

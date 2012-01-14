@@ -133,11 +133,12 @@
 
 @implementation AHGridPickerView {
     TUINSView *nsView;
-    TUITableView *pickerTableView;
     NSSearchField *searchField;
     NSColor *backgroundColor;
+    BOOL firstLoadComplete;
 }
 
+@synthesize pickerTableView;
 @synthesize headerConfigureBlock;
 @synthesize cellConfigureBlock;
 
@@ -181,7 +182,6 @@
         nsView.rootView = containerView;
         pickerTableView.dataSource = self;
         pickerTableView.delegate = self;
-        [pickerTableView reloadData];
     }
     
     return self;
@@ -191,6 +191,8 @@
 -(void) drawRect:(NSRect)dirtyRect {
     searchField.frame = [self frameForSearchField];
     nsView.frame = [self frameForPickerTableView];
+    pickerTableView.frame = nsView.bounds;
+    [pickerTableView setNeedsLayout];
 //    [backgroundColor set];
 //    NSRectFill(self.bounds);
 }

@@ -72,6 +72,7 @@
         [rowViews addObject:rowView];
     }
     [super reloadData];
+    [picker.pickerTableView reloadData];
 }
 
 -(void) layoutSubviews {
