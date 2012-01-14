@@ -109,6 +109,7 @@
     if (commentEditor && commentEditor.text && commentEditor.text.length > 0) commentEditor.text = @"";
 }
 
+
 -(void) setSmallPhotoImage:(TUIImage *)s {
     smallPhotoImage = s;
     

@@ -15,59 +15,8 @@
  */
 
 #import "TUITableViewSectionHeader.h"
-#import "TUITableView+SectionDragging.h"
 
 @implementation TUITableViewSectionHeader
-
-@synthesize index;
-
--(BOOL)acceptsFirstResponder {
-    return TRUE;
-}
-
-
--(void) setFrame:(CGRect)frame {
-    [super setFrame:frame];
-}
-
-- (TUITableView *)tableView
-{
-	return (TUITableView *)self.superview;
-}
-
-- (void)mouseDown:(NSEvent *)event
-{
-    // note the initial mouse location for dragging
-    _mouseOffset = [self localPointForLocationInWindow:[event locationInWindow]];
-    
-    // notify our table view of the event
-    [self.tableView __mouseDownInSection:self offset:_mouseOffset event:event];
-    
-	[super mouseDown:event]; // may make the text renderer first responder, so we want to do the selection before this	
-	
-}
-
-/**
- * @brief The table cell was dragged
- */
--(void)mouseDragged:(NSEvent *)event {
-    // propagate the event
-    [super mouseDragged:event];
-    // notify our table view of the event
-    [self.tableView __mouseDraggedSection:self offset:_mouseOffset event:event];
-    [self setNeedsDisplay];
-    
-}
-
-- (void)mouseUp:(NSEvent *)event
-{
-	[super mouseUp:event];
-    // notify our table view of the event
-    [self.tableView __mouseUpInSection:self offset:_mouseOffset event:event];
-    
-	[self setNeedsDisplay];
-	
-}
 
 /**
  * @brief Determine if this header is currently pinned to the viewport
@@ -78,8 +27,6 @@
 -(BOOL)isPinnedToViewport {
   return _isPinnedToViewport;
 }
-
-
 
 /**
  * @brief Specify whether this header is currently pinned to the viewport
@@ -113,6 +60,5 @@
 -(void)headerWillBecomeUnpinned {
   [self setNeedsDisplay];
 }
-
 
 @end

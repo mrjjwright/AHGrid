@@ -63,14 +63,6 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 	NSInteger	 _tag;
 	NSArray		*_textRenderers;
 	id			 _currentTextRenderer; // weak
-    // Support dragging
-    CGPoint     _mouseOffset;
-    
-    CGFloat _x;
-    CGFloat _y;
-    CGFloat _width;
-    CGFloat _height;
-
 	
 	CGPoint		startDrag;
 	
@@ -402,7 +394,6 @@ extern CGRect(^TUIViewCenteredLayout)(TUIView*);
 
 + (void)animateWithDuration:(NSTimeInterval)duration animations:(void (^)(void))animations;
 + (void)animateWithDuration:(NSTimeInterval)duration animations:(void (^)(void))animations completion:(void (^)(BOOL finished))completion;
-+ (void)setAnimationCompletionBlock:(void (^)(BOOL finished))completion;
 
 /**
  from receiver and all subviews

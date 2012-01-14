@@ -16,7 +16,6 @@
 
 #import "TUIScrollView.h"
 #import "TUIFastIndexPath.h"
-#import "TUITableViewSectionHeader.h"
 
 typedef enum {
 	TUITableViewStylePlain,              // regular table view
@@ -31,9 +30,9 @@ typedef enum {
 } TUITableViewScrollPosition;
 
 typedef enum {
-    TUITableViewInsertionMethodBeforeIndex  = NSOrderedAscending,
-    TUITableViewInsertionMethodAtIndex      = NSOrderedSame,
-    TUITableViewInsertionMethodAfterIndex   = NSOrderedDescending
+  TUITableViewInsertionMethodBeforeIndex  = NSOrderedAscending,
+  TUITableViewInsertionMethodAtIndex      = NSOrderedSame,
+  TUITableViewInsertionMethodAfterIndex   = NSOrderedDescending
 } TUITableViewInsertionMethod;
 
 @class TUITableViewCell;
@@ -43,9 +42,9 @@ typedef enum {
 
 @protocol TUITableViewDelegate<NSObject, TUIScrollViewDelegate>
 
+- (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(TUIFastIndexPath *)indexPath;
 
 @optional
-- (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(TUIFastIndexPath *)indexPath;
 
 - (void)tableView:(TUITableView *)tableView willDisplayCell:(TUITableViewCell *)cell forRowAtIndexPath:(TUIFastIndexPath *)indexPath; // called after the cell's frame has been set but before it's added as a subview
 - (void)tableView:(TUITableView *)tableView didSelectRowAtIndexPath:(TUIFastIndexPath *)indexPath; // happens on left/right mouse down, key up/down
@@ -68,7 +67,7 @@ typedef enum {
 {
 	TUITableViewStyle             _style;
 	id <TUITableViewDataSource>	  _dataSource; // weak
-	NSMutableArray                     * _sectionInfo;
+	NSArray                     * _sectionInfo;
 	
 	TUIView                     * _pullDownView;
 	TUIView							        * _headerView;
@@ -85,34 +84,22 @@ typedef enum {
 	NSInteger                     _futureMakeFirstResponderToken;
 	TUIFastIndexPath            * _keepVisibleIndexPathForReload;
 	CGFloat                       _relativeOffsetForReload;
-    CGFloat                     _rowHeight;
 	
-	// drag-to-reorder state for cells
-    TUITableViewCell             * _dragToReorderCell;
-    CGPoint                       _currentDragToReorderLocation;
-    CGPoint                       _currentDragToReorderMouseOffset;
-    TUIFastIndexPath            * _currentDragToReorderIndexPath;
-    TUITableViewInsertionMethod   _currentDragToReorderInsertionMethod;
-    TUIFastIndexPath            * _previousDragToReorderIndexPath;
-    TUITableViewInsertionMethod   _previousDragToReorderInsertionMethod;
-    
-    // drag-to-reorder state for sections
-    TUITableViewSectionHeader         * _dragToReorderSection;
-    CGPoint                       _currentDragToReorderSectionLocation;
-    CGPoint                       _currentDragToReorderSectionMouseOffset;
-    NSInteger                      _currentDragToReorderSectionIndex;
-    TUITableViewInsertionMethod   _currentDragToReorderSectionInsertionMethod;
-    NSInteger                    _previousDragToReorderSectionIndex;
-    TUITableViewInsertionMethod   _previousDragToReorderSectionInsertionMethod;
-    
-    
+	// drag-to-reorder state
+  TUITableViewCell            * _dragToReorderCell;
+  CGPoint                       _currentDragToReorderLocation;
+  CGPoint                       _currentDragToReorderMouseOffset;
+  TUIFastIndexPath            * _currentDragToReorderIndexPath;
+  TUITableViewInsertionMethod   _currentDragToReorderInsertionMethod;
+  TUIFastIndexPath            * _previousDragToReorderIndexPath;
+  TUITableViewInsertionMethod   _previousDragToReorderInsertionMethod;
+  
 	struct {
 		unsigned int animateSelectionChanges:1;
 		unsigned int forceSaveScrollPosition:1;
 		unsigned int derepeaterEnabled:1;
 		unsigned int layoutSubviewsReentrancyGuard:1;
 		unsigned int didFirstLayout:1;
-        unsigned int animating:1;
 		unsigned int dataSourceNumberOfSectionsInTableView:1;
 		unsigned int delegateTableViewWillDisplayCellForRowAtIndexPath:1;
 		unsigned int maintainContentOffsetAfterReload:1;
@@ -127,12 +114,8 @@ typedef enum {
 
 @property (readwrite, assign) BOOL                        animateSelectionChanges;
 @property (nonatomic, assign) BOOL maintainContentOffsetAfterReload;
-@property (nonatomic, assign) CGFloat                        rowHeight;
-@property (nonatomic, assign) BOOL animating;
 
 - (void)reloadData;
-- (void)reloadDataWithCompletionBlock:(void (^)())completion;
-
 
 /**
  The table view itself has mechanisms for maintaining scroll position. During a live resize the table view should automatically "do the right thing".  This method may be useful during a reload if you want to stay in the same spot.  Use it instead of -reloadData.
@@ -164,7 +147,6 @@ typedef enum {
 - (NSArray *)visibleCells; // no particular order
 - (NSArray *)sortedVisibleCells; // top to bottom
 - (NSArray *)indexPathsForVisibleRows;
--(void) recalculateRowHeights;
 
 - (void)scrollToRowAtIndexPath:(TUIFastIndexPath *)indexPath atScrollPosition:(TUITableViewScrollPosition)scrollPosition animated:(BOOL)animated;
 
@@ -174,8 +156,6 @@ typedef enum {
 
 - (void)selectRowAtIndexPath:(TUIFastIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(TUITableViewScrollPosition)scrollPosition;
 - (void)deselectRowAtIndexPath:(TUIFastIndexPath *)indexPath animated:(BOOL)animated;
-
--(void)removeSectionAnimated:(NSInteger) index;
 
 /**
  Above the top cell, only visible if you pull down (if you have scroll bouncing enabled)
@@ -209,10 +189,9 @@ typedef enum {
 - (BOOL)tableView:(TUITableView *)tableView canMoveRowAtIndexPath:(TUIFastIndexPath *)indexPath;
 - (void)tableView:(TUITableView *)tableView moveRowAtIndexPath:(TUIFastIndexPath *)fromIndexPath toIndexPath:(TUIFastIndexPath *)toIndexPath;
 
-
-// the following are required to support section reordering
-- (BOOL)tableView:(TUITableView *)tableView canMoveSectionAtIndex:(NSInteger )index;
-- (void)tableView:(TUITableView *)tableView moveSectionAtIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex;
+// the following are required to support row reordering
+- (BOOL)tableView:(TUITableView *)tableView canMoveRowAtIndexPath:(TUIFastIndexPath *)indexPath;
+- (void)tableView:(TUITableView *)tableView moveRowAtIndexPath:(TUIFastIndexPath *)fromIndexPath toIndexPath:(TUIFastIndexPath *)toIndexPath;
 
 /**
  Default is 1 if not implemented

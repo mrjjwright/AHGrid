@@ -111,13 +111,7 @@ CGRect(^TUIViewCenteredLayout)(TUIView*) = nil;
 		toolTipDelay = 1.5;
 		self.isAccessibilityElement = YES;
 		accessibilityFrame = CGRectNull; // null rect means we'll just get the view's frame and use that
-
-        _x = frame.origin.x;
-        _y = frame.origin.y;
-        _width = frame.size.width;
-        _height = frame.size.height;
-
-    }
+	}
 	return self;
 }
 

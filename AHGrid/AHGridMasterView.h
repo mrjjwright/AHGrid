@@ -7,7 +7,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "TUIKit.h"
 
-@interface AHGridMasterView : NSView
+
+@interface AHGridMasterView : NSView <TUITableViewDelegate, TUITableViewDataSource>
 
 @end

@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-@interface TUIView (Event) 
+@interface TUIView (Event)
 
 - (BOOL)didDrag; // valid when called from mouseUp: will determine if a drag happened in this event sequence
 

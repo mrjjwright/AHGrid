@@ -8,7 +8,8 @@
 
 #import "AHGridNSView.h"
 
-#define kMasterViewWidth 200
+
+#define kMasterViewWidth 225
 
 @implementation AHGridNSView {
     TUINSView *nsView;

@@ -15,7 +15,7 @@
  */
 
 #import "TUIView.h"
-@class TUITableView;
+
 /**
  * @brief An optional base for section header views
  * 
@@ -23,16 +23,14 @@
  * in which case the view will recieve messages about header state.
  */
 @interface TUITableViewSectionHeader : TUIView {
-    
-    BOOL  _isPinnedToViewport;
+  
+  BOOL  _isPinnedToViewport;
+  
 }
 
 -(void)headerWillBecomePinned;
 -(void)headerWillBecomeUnpinned;
 
-
 @property (readwrite, assign, getter=isPinnedToViewport) BOOL pinnedToViewport;
-@property (nonatomic, assign) NSInteger index;
-@property (nonatomic, readonly) TUITableView *tableView;
 
 @end

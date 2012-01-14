@@ -55,7 +55,6 @@
 		9A363E8614B6533C004F31C7 /* TUITableView+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E3A14B6533B004F31C7 /* TUITableView+Additions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A363E8714B6533C004F31C7 /* TUITableView+Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E3C14B6533B004F31C7 /* TUITableView+Cell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A363E8814B6533C004F31C7 /* TUITableView+Derepeater.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E3E14B6533B004F31C7 /* TUITableView+Derepeater.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		9A363E8914B6533C004F31C7 /* TUITableView+SectionDragging.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E4014B6533B004F31C7 /* TUITableView+SectionDragging.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A363E8A14B6533C004F31C7 /* TUITableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E4214B6533B004F31C7 /* TUITableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A363E8B14B6533C004F31C7 /* TUITableViewSectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E4414B6533B004F31C7 /* TUITableViewSectionHeader.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A363E8C14B6533C004F31C7 /* TUITextEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363E4614B6533B004F31C7 /* TUITextEditor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -602,7 +601,6 @@
 				9A363E8614B6533C004F31C7 /* TUITableView+Additions.m in Sources */,
 				9A363E8714B6533C004F31C7 /* TUITableView+Cell.m in Sources */,
 				9A363E8814B6533C004F31C7 /* TUITableView+Derepeater.m in Sources */,
-				9A363E8914B6533C004F31C7 /* TUITableView+SectionDragging.m in Sources */,
 				9A363E8A14B6533C004F31C7 /* TUITableViewCell.m in Sources */,
 				9A363E8B14B6533C004F31C7 /* TUITableViewSectionHeader.m in Sources */,
 				9A363E8C14B6533C004F31C7 /* TUITextEditor.m in Sources */,

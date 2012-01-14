@@ -209,8 +209,6 @@
 
 - (void)mouseDown:(NSEvent *)event onSubview:(TUIView *)subview
 {
-    // note the initial mouse location for dragging
-    _mouseOffset = [self localPointForLocationInWindow:[event locationInWindow]];
   [self.superview mouseDown:event onSubview:subview];
 }
 

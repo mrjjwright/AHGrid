@@ -1,4 +1,4 @@
- /*
+/*
  Copyright 2011 Twitter, Inc.
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,7 +58,6 @@
 -(BOOL)__isDraggingCell {
   return _dragToReorderCell != nil && _currentDragToReorderIndexPath != nil;
 }
-
 
 /**
  * @brief Begin dragging a cell

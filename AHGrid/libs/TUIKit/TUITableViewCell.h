@@ -27,6 +27,7 @@ typedef enum {
 {
   
   NSString  * _reuseIdentifier;
+  CGPoint     _mouseOffset;
 	
 	struct {
 		unsigned int highlighted:1;
