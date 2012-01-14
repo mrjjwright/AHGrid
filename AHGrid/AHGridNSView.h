@@ -9,7 +9,7 @@
 #import "TUIKit.h"
 #import "INAppStoreWindow.h"
 #import "AHGrid.h"
-#import "AHGridMasterView.h"
+#import "AHGridPickerView.h"
 
 @interface AHGridNSView : NSView <TUIScrollingInterceptor>
 #define IN_RUNNING_LION (NSClassFromString(@"NSPopover") != nil)
@@ -18,7 +18,7 @@
 @property (assign) IBOutlet INAppStoreWindow *window;
 @property (nonatomic, strong) NSSearchField *searchField;
 @property (nonatomic, strong) AHGrid *grid;
-@property (nonatomic, strong) AHGridMasterView *masterView;
+@property (nonatomic, strong) AHGridPickerView *picker;
 
 -(IBAction)toggleConfigurationMode:(id)sender;
 -(IBAction)showCommentEditor:(id)sender;

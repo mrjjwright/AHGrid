@@ -9,7 +9,7 @@
 #import "AHGridNSView.h"
 
 
-#define kMasterViewWidth 225
+#define kpickerWidth 225
 
 @implementation AHGridNSView {
     TUINSView *nsView;
@@ -20,18 +20,18 @@
 @synthesize searchField;
 @synthesize grid;
 @synthesize gridInitDelegate;
-@synthesize masterView;
+@synthesize picker;
 
 -(NSRect) frameForGrid {
     NSRect b = self.bounds;
-    b.size.width -= kMasterViewWidth;
-    b.origin.x += kMasterViewWidth;
+    b.size.width -= kpickerWidth;
+    b.origin.x += kpickerWidth;
     return b;
 }
 
--(NSRect) frameForMasterView {
+-(NSRect) frameForpicker {
     NSRect b = self.bounds;
-    b.size.width = kMasterViewWidth;
+    b.size.width = kpickerWidth;
     return b;    
 }
 
@@ -45,9 +45,11 @@
         [self.window setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
     }
     
+    // The container TUI NSView
     nsView = [[TUINSView alloc] initWithFrame:[self frameForGrid]];
     [self addSubview:nsView];
     
+    // Setup the grid
     grid = [[AHGrid alloc] initWithFrame:nsView.bounds];
     TUIView *containerView = [[TUIView alloc] initWithFrame:nsView.bounds];
     containerView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
@@ -60,13 +62,15 @@
         grid.initDelegate = gridInitDelegate;
     }
     
-    //Initialize Master View
-    masterView = [[AHGridMasterView alloc] initWithFrame:[self frameForMasterView]];
-    [self addSubview:masterView];
+    // setup the picker
+    picker = [[AHGridPickerView alloc] initWithFrame:[self frameForpicker]];
+    [self addSubview:picker];
+    grid.picker = picker;
+
 }
 
 -(void) drawRect:(NSRect)dirtyRect {
-    masterView.frame = [self frameForMasterView];
+    picker.frame = [self frameForpicker];
     nsView.frame = [self frameForGrid];
 }
 
@@ -84,7 +88,6 @@
         [grid toggleSelectedRowExpanded];
     }
 }
-
 
 - (BOOL)shouldScrollWheel:(NSEvent *)event {
     

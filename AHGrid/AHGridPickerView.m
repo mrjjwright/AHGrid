@@ -6,17 +6,14 @@
 //  Copyright (c) 2012 AirHeart. All rights reserved.
 //
 
-#import "AHGridMasterView.h"
+#import "AHGridPickerView.h"
 
 #define kHeaderHeight 40
 #define kSearchFieldHeight 32
 
-@interface AHGridMasterHeaderView : TUITableViewSectionHeader 
-@property (nonatomic, strong) TUITextRenderer *labelRenderer;
-@end
 
 
-@implementation AHGridMasterHeaderView  
+@implementation AHGridPickerHeaderView  
 
 
 @synthesize labelRenderer;
@@ -71,13 +68,9 @@
 }
 @end
 
-@interface AHGridMasterCellView : TUITableViewCell 
 
-@property (nonatomic, copy) NSAttributedString *attributedString;
 
-@end
-
-@implementation AHGridMasterCellView {
+@implementation AHGridPickerCellView {
     TUITextRenderer *textRenderer;
 }
 
@@ -138,14 +131,15 @@
 
 #define kSearchFieldWidth 215
 
-@implementation AHGridMasterView {
+@implementation AHGridPickerView {
     TUINSView *nsView;
     TUITableView *pickerTableView;
     NSSearchField *searchField;
     NSColor *backgroundColor;
-    TUIFont *headerFont;
-    TUIFont *pickerCellFont;
 }
+
+@synthesize headerConfigureBlock;
+@synthesize cellConfigureBlock;
 
 - (NSRect) frameForSearchField {
     NSRect frame = self.bounds;
@@ -168,9 +162,6 @@
     self = [super initWithFrame:frame];
     if (self) {
         
-        headerFont = [TUIFont fontWithName:@"HelveticaNeue" size:15];
-		pickerCellFont = [TUIFont fontWithName:@"HelveticaNeue-Bold" size:15];
-
         backgroundColor = [NSColor colorWithPatternImage:[NSImage imageNamed:@"bg_dark.jpg"]];
         searchField = [[NSSearchField alloc] initWithFrame:[self frameForSearchField]];
         searchField.autoresizingMask = NSViewMinYMargin;
@@ -223,23 +214,20 @@
 
 - (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section
 {
-	AHGridMasterHeaderView *view = [[AHGridMasterHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
-	TUIAttributedString *title = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"Example Section %d", section]];
-	title.color = [TUIColor blackColor];
-	title.font = headerFont;
-	view.labelRenderer.attributedString = title;
+	AHGridPickerHeaderView *view = [[AHGridPickerHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
+    if (headerConfigureBlock) {
+        headerConfigureBlock(self, view, section);
+    }
     return view;
 }
 
 - (TUITableViewCell *)tableView:(TUITableView *)tableView cellForRowAtIndexPath:(TUIFastIndexPath *)indexPath
 {
-	AHGridMasterCellView *cell = reusableTableCellOfClass(tableView, AHGridMasterCellView);
+	AHGridPickerCellView *cell = reusableTableCellOfClass(tableView, AHGridPickerCellView);
 	
-	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", indexPath.row]];
-	s.color = [TUIColor blackColor];
-	s.font = headerFont;
-	[s setFont:pickerCellFont inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
-	cell.attributedString = s;
+    if (cellConfigureBlock) {
+        cellConfigureBlock(self, cell, indexPath);
+    }
 	
 	return cell;
 }

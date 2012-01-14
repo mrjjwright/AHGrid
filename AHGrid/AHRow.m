@@ -128,7 +128,7 @@
     cell.index = i;
     
     if (grid.cellConfigureBlock) {
-        cell = grid.cellConfigureBlock(grid, self, cell, i);
+        grid.cellConfigureBlock(grid, self, cell, i);
     }
     return cell;
 }

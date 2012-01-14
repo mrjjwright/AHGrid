@@ -35,7 +35,7 @@
 @synthesize selectedCellIndex;
 @synthesize initDelegate;
 @synthesize numberOfRows;
-
+@synthesize picker;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -101,7 +101,7 @@
         rowView.expanded = NO;
     }
     if (rowConfigureBlock) {
-        rowView = rowConfigureBlock(self, rowView, index);
+        rowConfigureBlock(self, rowView, index);
     }
     if (!rowView.titleString) {
         rowView.titleString = [NSString stringWithFormat:@"Example Row %d", index];
