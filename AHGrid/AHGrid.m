@@ -281,7 +281,7 @@
     animating = YES;
     self.selectedRow.animating = YES;
     
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"AHGridToggledSelectedRow" object:self]];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kAHGridWillToggleExpansionOfRow object:self]];
     [self resizeObjectAtIndex:self.selectedRow.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         
         // Set properties on the detail view

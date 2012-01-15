@@ -22,6 +22,8 @@
 @class AHGridDetailView;
 @protocol AHGridInitDelegate;
 
+#define kAHGridWillToggleExpansionOfRow @"kAHGridWillToggleExpansionOfRow"
+
 typedef void(^AHGridRowConfigureBlock)(AHGrid* grid, AHRow *row, NSUInteger index);
 typedef void(^AHGridCellConfigureBlock)(AHGrid* grid, AHRow *row, AHCell *cell, NSUInteger index);
 

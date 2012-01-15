@@ -75,7 +75,7 @@
     detailViewContainer = [[TUINSView alloc] initWithFrame:self.bounds];
     detailViewContainer.rootView = detailView;
     grid.detailView = detailView;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showDetailView:) name:@"AHGridToggledSelectedRow" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleDetailView:) name:kAHGridWillToggleExpansionOfRow object:nil];
 }
 
 -(void) drawRect:(NSRect)dirtyRect {
@@ -121,10 +121,16 @@
     return NO;
 }
 
--(void) showDetailView:(NSNotification*) notification {
-    [picker removeFromSuperview];
-    [self addSubview:detailViewContainer];
-    detailViewContainer.frame = picker.bounds;
+-(void) toggleDetailView:(NSNotification*) notification {
+    if (!grid.selectedRow.expanded) {
+        [picker removeFromSuperview];
+        [self addSubview:detailViewContainer];
+        detailViewContainer.frame = [self frameForPicker];        
+    } else {
+        [detailViewContainer removeFromSuperview];
+        [self addSubview:picker];
+        picker.frame = [self frameForPicker];
+    }
 }
 
 
