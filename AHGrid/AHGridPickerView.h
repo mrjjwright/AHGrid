@@ -15,6 +15,7 @@
 
 typedef void(^AHGridPickerHeaderBlock)(AHGridPickerView* picker, AHGridPickerHeaderView *cell, NSUInteger section);
 typedef void(^AHGridPickerCellBlock)(AHGridPickerView* picker, AHGridPickerCellView *cell, TUIFastIndexPath *indexPath);
+typedef NSInteger(^AHGridPickerNumberofRowsBlock)(AHGridPickerView* picker, NSUInteger section);
 
 
 @interface AHGridPickerHeaderView : TUITableViewSectionHeader 
@@ -34,6 +35,10 @@ typedef void(^AHGridPickerCellBlock)(AHGridPickerView* picker, AHGridPickerCellV
 
 @property (nonatomic, strong) TUITableView *pickerTableView;
 @property (nonatomic, copy) AHGridPickerHeaderBlock headerConfigureBlock; 
-@property (nonatomic, copy) AHGridPickerCellBlock cellConfigureBlock; 
+@property (nonatomic, copy) AHGridPickerCellBlock cellConfigureBlock;
+@property (nonatomic, copy) AHGridPickerNumberofRowsBlock numberOfRowsBlock;
+@property (nonatomic) NSInteger numberOfSections;
+@property (nonatomic) NSInteger headerHeight;
+@property (nonatomic) NSInteger cellHeight;
 
 @end

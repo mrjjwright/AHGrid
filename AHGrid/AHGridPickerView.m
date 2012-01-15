@@ -12,12 +12,10 @@
 #define kSearchFieldHeight 32
 
 
-
 @implementation AHGridPickerHeaderView  
 
 
 @synthesize labelRenderer;
-
 
 -(id)initWithFrame:(CGRect)frame {
 	if((self = [super initWithFrame:frame])) {
@@ -121,7 +119,7 @@
 	}
 	
 	// text
-	CGRect textRect = CGRectOffset(b, 15, -15);
+	CGRect textRect = CGRectOffset(b, 10, -10);
 	textRenderer.frame = textRect; // set the frame so it knows where to draw itself
 	[textRenderer draw];
 	
@@ -141,6 +139,11 @@
 @synthesize pickerTableView;
 @synthesize headerConfigureBlock;
 @synthesize cellConfigureBlock;
+@synthesize headerHeight;
+@synthesize cellHeight;
+@synthesize numberOfSections;
+@synthesize numberOfRowsBlock;
+
 
 - (NSRect) frameForSearchField {
     NSRect frame = self.bounds;
@@ -162,7 +165,9 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
+        headerHeight = 32;
+        cellHeight = 50;
+        numberOfSections = 8;
         backgroundColor = [NSColor colorWithPatternImage:[NSImage imageNamed:@"bg_dark.jpg"]];
         searchField = [[NSSearchField alloc] initWithFrame:[self frameForSearchField]];
         searchField.autoresizingMask = NSViewMinYMargin;
@@ -201,22 +206,23 @@
 
 - (NSInteger)numberOfSectionsInTableView:(TUITableView *)tableView
 {
-	return 8;
+	return numberOfSections;
 }
 
 - (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section
 {
-	return 25;
+	if (numberOfRowsBlock) return numberOfRowsBlock(self, section);
+    return 25;
 }
 
 - (CGFloat)tableView:(TUITableView *)tableView heightForRowAtIndexPath:(TUIFastIndexPath *)indexPath
 {
-	return 50.0;
+	return cellHeight;
 }
 
 - (TUIView *)tableView:(TUITableView *)tableView headerViewForSection:(NSInteger)section
 {
-	AHGridPickerHeaderView *view = [[AHGridPickerHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, 32)];
+	AHGridPickerHeaderView *view = [[AHGridPickerHeaderView alloc] initWithFrame:CGRectMake(0, 0, 100, headerHeight)];
     if (headerConfigureBlock) {
         headerConfigureBlock(self, view, section);
     }

@@ -23,13 +23,15 @@
 
 -(void) initGrid:(AHGrid *)grid {
     userStringFont = [TUIFont boldSystemFontOfSize:11];
-    headerFont = [TUIFont fontWithName:@"HelveticaNeue" size:15];
-    pickerCellFont = [TUIFont fontWithName:@"HelveticaNeue-Bold" size:15];
+    pickerCellFont = [TUIFont fontWithName:@"HelveticaNeue" size:12];
+    headerFont = [TUIFont fontWithName:@"HelveticaNeue-Bold" size:12];
 
     NSArray *pictures =[NSArray arrayWithObjects:@"jw_profile.jpg", @"girl_bubble.jpg",@"john_amy.jpg", @"wide.jpg", nil];
     
     // Configure grid visual style
     grid.numberOfRows = 10;
+    grid.picker.cellHeight = 35;
+    grid.picker.numberOfSections = 1;
     
     // Configure rows
     grid.rowConfigureBlock = ^(AHGrid* grid, AHRow *row, NSUInteger index) {
@@ -47,7 +49,13 @@
         cell.userString = userString;
     };
     
-    // Configure the picker header
+
+    
+    // Configure the picker
+    grid.picker.numberOfRowsBlock = ^(AHGridPickerView* picker, NSUInteger section) {
+        return (NSInteger)10;
+    };
+    
     grid.picker.headerConfigureBlock = ^(AHGridPickerView* master, AHGridPickerHeaderView *headerView, NSUInteger section) {
         
         TUIAttributedString *title = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"Example Section %d", section]];
