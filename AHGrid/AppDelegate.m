@@ -31,7 +31,7 @@
     // Configure grid visual style
     grid.numberOfRows = 10;
     grid.picker.cellHeight = 35;
-    grid.picker.numberOfSections = 1;
+    grid.picker.numberOfSections = 2;
     
     // Configure rows
     grid.rowConfigureBlock = ^(AHGrid* grid, AHRow *row, NSUInteger index) {

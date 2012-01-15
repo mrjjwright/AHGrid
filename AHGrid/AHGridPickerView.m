@@ -12,7 +12,8 @@
 #define kSearchFieldHeight 32
 
 
-@implementation AHGridPickerHeaderView  
+@implementation AHGridPickerHeaderView {
+}
 
 
 @synthesize labelRenderer;
@@ -37,7 +38,7 @@
 }
 
 -(void)drawRect:(CGRect)rect {
-    
+    CGRect b = self.bounds;
     CGContextRef g;
     if((g = TUIGraphicsGetCurrentContext()) != nil){
         [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:g flipped:FALSE]];
@@ -52,7 +53,8 @@
         NSGradient *gradient = nil;
         
         gradient = [[NSGradient alloc] initWithStartingColor:start endingColor:end];
-        [gradient drawInRect:self.bounds angle:90];
+        CGRect gradientRect = b;
+        [gradient drawInRect:gradientRect angle:90];
         
         [[start shadowWithLevel:0.1] set];
         NSRectFill(NSMakeRect(0, 0, self.bounds.size.width, 1));
@@ -60,7 +62,6 @@
         CGFloat labelHeight = 18;
         self.labelRenderer.frame = CGRectMake(15, roundf((self.bounds.size.height - labelHeight) / 2.0), self.bounds.size.width - 30, labelHeight);
         [self.labelRenderer draw];
-        
     }
     
 }
@@ -121,8 +122,7 @@
 	// text
 	CGRect textRect = CGRectOffset(b, 10, -10);
 	textRenderer.frame = textRect; // set the frame so it knows where to draw itself
-	[textRenderer draw];
-	
+	[textRenderer draw];	
 }
 
 @end
@@ -146,8 +146,8 @@
 
 - (NSRect) frameForSearchField {
     NSRect frame = self.bounds;
-    CGFloat startOfHeader = NSMaxY(frame) - kHeaderHeight;
-    frame.origin.y = startOfHeader + ((kSearchFieldHeight - kSearchFieldHeight)/2);
+    CGFloat startOfHeader = NSMaxY(frame) - headerHeight;
+    frame.origin.y = startOfHeader + ((headerHeight - kSearchFieldHeight)/2);
     frame.origin.x = NSMidX(self.bounds) - (kSearchFieldWidth / 2.f);
     frame.size.height = kSearchFieldHeight;
     frame.size.width = kSearchFieldWidth;
@@ -156,7 +156,7 @@
 
 -(NSRect) frameForPickerTableView {
     NSRect frame = self.bounds;
-    frame.size.height -= kHeaderHeight;
+    frame.size.height -= (headerHeight +2);
     frame.size.width -= 2;
     return frame;
 }
@@ -165,7 +165,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        headerHeight = 32;
+        headerHeight = 40;
         cellHeight = 50;
         numberOfSections = 8;
         searchField = [[NSSearchField alloc] initWithFrame:[self frameForSearchField]];
@@ -213,6 +213,19 @@
     sideLineRect.origin.x = NSMaxX(b) -2;
     [whiteLine set];
     NSRectFill(sideLineRect);
+    
+    // Draw a line under the header
+    NSRect topLineRect = b;
+    topLineRect.size.height = 1;
+    topLineRect.origin.y = b.size.height - 1 - headerHeight;
+    [blackLine set];
+    NSRectFill(topLineRect);
+    // Inner white line
+    topLineRect = b;
+    topLineRect.size.height = 1;
+    topLineRect.origin.y = NSMaxY(b) - 2  - headerHeight;
+    [whiteLine set];
+    NSRectFill(topLineRect);
 }
 
 #pragma mark - TUITableView methods
