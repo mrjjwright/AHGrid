@@ -17,7 +17,7 @@
 }
 
 @synthesize animating;
-@synthesize detailView;
+@synthesize expandedCell;
 @synthesize cells;
 @synthesize grid;
 @synthesize index;
@@ -35,11 +35,11 @@
     
 }
 
--(CGRect) frameForDetailView {
-    CGRect detailViewFrame = self.bounds;
-    detailViewFrame.origin.y += 200;
-    detailViewFrame.size.height -= 200;
-    return detailViewFrame;
+-(CGRect) frameForexpandedCell {
+    CGRect expandedCellFrame = self.bounds;
+    expandedCellFrame.origin.y += 200;
+    expandedCellFrame.size.height -= 200;
+    return expandedCellFrame;
 } 
 
 
@@ -70,11 +70,11 @@
         titleLabel.backgroundColor = [TUIColor clearColor];
         [self addSubview:titleLabel];
         
-        detailView = [[AHDetailView alloc] initWithFrame:[self frameForDetailView]];
-        detailView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
-        [self addSubview:detailView];
-        detailView.alpha = 0;
-        [self sendSubviewToBack:detailView];
+        expandedCell = [[AHGridExpandedCell alloc] initWithFrame:[self frameForexpandedCell]];
+        expandedCell.autoresizingMask = TUIViewAutoresizingFlexibleSize;
+        [self addSubview:expandedCell];
+        expandedCell.alpha = 0;
+        [self sendSubviewToBack:expandedCell];
     }
     return self;
 }
@@ -99,11 +99,10 @@
     }
     
     if (!self.expanded || (self.expanded && !animating)) {
-        detailView.frame = [self frameForDetailView];
-        [detailView setNeedsLayout];
+        expandedCell.frame = [self frameForexpandedCell];
+        [expandedCell setNeedsLayout];
     }
 
-    
     titleLabel.frame = [self frameForHeaderView];
     titleLabel.text = titleString;
     [super layoutSubviews];

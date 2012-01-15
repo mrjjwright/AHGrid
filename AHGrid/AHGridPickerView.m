@@ -129,12 +129,14 @@
 
 #define kSearchFieldWidth 215
 
+
 @implementation AHGridPickerView {
     TUINSView *nsView;
     NSSearchField *searchField;
     BOOL firstLoadComplete;
 }
 
+@synthesize grid;
 @synthesize pickerTableView;
 @synthesize headerConfigureBlock;
 @synthesize cellConfigureBlock;
@@ -170,6 +172,8 @@
         numberOfSections = 8;
         searchField = [[NSSearchField alloc] initWithFrame:[self frameForSearchField]];
         searchField.autoresizingMask = NSViewMinYMargin;
+        [searchField setTarget:self];
+        [searchField setAction:@selector(searchAction:)];
         [self addSubview:searchField];
         
         nsView = [[TUINSView alloc] initWithFrame:[self frameForPickerTableView]];
@@ -238,6 +242,9 @@
 - (NSInteger)tableView:(TUITableView *)table numberOfRowsInSection:(NSInteger)section
 {
 	if (numberOfRowsBlock) return numberOfRowsBlock(self, section);
+    if (section == 0) {
+        return grid.numberOfRows;
+    }
     return 25;
 }
 
@@ -304,7 +311,11 @@
     return proposedPath;
 }
 
+#pragma mark - IBActions
 
+-(IBAction)searchAction:(id)sender {
+    NSLog(@"%@", [sender stringValue]);
+}
 
 
 @end

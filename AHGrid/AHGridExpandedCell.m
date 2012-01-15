@@ -6,10 +6,9 @@
 //  Copyright (c) 2012 AirHeart. All rights reserved.
 //
 
-#import "AHDetailView.h"
+#import "AHGridExpandedCell.h"
 
-@implementation AHDetailView {
-    TUIView *commentsView;
+@implementation AHGridExpandedCell {
     TUILabel *userLabel;
 }
 @synthesize profileImageWidth;
@@ -88,8 +87,6 @@
         photoImageView.layer.contents = kCAGravityResizeAspect;
         [self addSubview:photoImageView];
         
-        commentsView = [[TUIView alloc] initWithFrame:[self frameForCommentsView]];
-        [self addSubview:commentsView];
         profileImageView = [[TUIImageView alloc] initWithFrame:[self frameForProfileImageView]];
         [self addSubview:profileImageView];
         
@@ -99,7 +96,6 @@
         [self addSubview:userLabel];
         
         self.contentSize = frame.size;
-        
     }
     return self;
 }

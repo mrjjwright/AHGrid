@@ -8,11 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 #import "TUIKit.h"
+#import "AHGrid.h"
 
 @class AHGridPickerView;
 @class AHGridPickerHeaderView;
 @class AHGridPickerCellView;
-
+@class AHGrid;
 typedef void(^AHGridPickerHeaderBlock)(AHGridPickerView* picker, AHGridPickerHeaderView *cell, NSUInteger section);
 typedef void(^AHGridPickerCellBlock)(AHGridPickerView* picker, AHGridPickerCellView *cell, TUIFastIndexPath *indexPath);
 typedef NSInteger(^AHGridPickerNumberofRowsBlock)(AHGridPickerView* picker, NSUInteger section);
@@ -40,5 +41,6 @@ typedef NSInteger(^AHGridPickerNumberofRowsBlock)(AHGridPickerView* picker, NSUI
 @property (nonatomic) NSInteger numberOfSections;
 @property (nonatomic) NSInteger headerHeight;
 @property (nonatomic) NSInteger cellHeight;
+@property (nonatomic, weak) AHGrid *grid;
 
 @end

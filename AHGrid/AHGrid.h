@@ -11,12 +11,13 @@
 #import "AHCell.h"
 #import "TUIKit.h"
 #import "TUILayout.h"
-#import "AHDetailView.h"
+#import "AHGridExpandedCell.h"
 #import "AHGridPickerView.h"
 
 @class AHGrid;
 @class AHRow;
 @class AHCell;
+@class AHGridPickerView;
 @protocol AHGridInitDelegate;
 
 typedef void(^AHGridRowConfigureBlock)(AHGrid* grid, AHRow *row, NSUInteger index);

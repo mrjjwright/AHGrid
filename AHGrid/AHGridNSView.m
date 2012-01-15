@@ -9,7 +9,7 @@
 #import "AHGridNSView.h"
 
 
-#define kpickerWidth 225
+#define kPickerWidth 250
 
 @implementation AHGridNSView {
     TUINSView *nsView;
@@ -24,14 +24,14 @@
 
 -(NSRect) frameForGrid {
     NSRect b = self.bounds;
-    b.size.width -= kpickerWidth;
-    b.origin.x += kpickerWidth;
+    b.size.width -= kPickerWidth;
+    b.origin.x += kPickerWidth;
     return b;
 }
 
 -(NSRect) frameForPicker {
     NSRect b = self.bounds;
-    b.size.width = kpickerWidth;
+    b.size.width = kPickerWidth;
     return b;    
 }
 
@@ -64,6 +64,7 @@
     // setup the picker
     picker = [[AHGridPickerView alloc] initWithFrame:[self frameForPicker]];
     grid.picker = picker;
+    picker.grid = grid;
     [self addSubview:nsView];
     [self addSubview:picker];
 }
@@ -98,8 +99,8 @@
             return YES;
             
         } else if (fabs([event scrollingDeltaX]) < fabs([event scrollingDeltaY])) { // Vertical
-            if (grid.selectedCell && (grid.selectedRowIndex != -1) && grid.selectedRow.expanded && grid.selectedRow.detailView) {
-                [grid.selectedRow.detailView scrollWheel:event];
+            if (grid.selectedCell && (grid.selectedRowIndex != -1) && grid.selectedRow.expanded && grid.selectedRow.expandedCell) {
+                [grid.selectedRow.expandedCell scrollWheel:event];
             } else {
                 [grid scrollWheel:event];
             }

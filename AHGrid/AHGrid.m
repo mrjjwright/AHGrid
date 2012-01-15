@@ -51,7 +51,6 @@
         self.spaceBetweenViews = 15;
         self.viewClass = [AHRow class];
         
-        
     }
     return self;
 }
@@ -250,11 +249,11 @@
         
         if (expandedRowIndex >= 0) {
             self.selectedCell.expanded = YES;
-            self.selectedRow.detailView.userString = self.selectedCell.userString;
-            self.selectedRow. detailView.photoImageView.image =  self.selectedCell.smallPhotoImage;
-            self.selectedRow.detailView.profileImageView.image = self.selectedCell.profileImage;
-            [self.selectedRow.detailView layoutSubviews];
-            [ self.selectedRow.detailView scrollToTopAnimated:NO];
+            self.selectedRow.expandedCell.userString = self.selectedCell.userString;
+            self.selectedRow. expandedCell.photoImageView.image =  self.selectedCell.smallPhotoImage;
+            self.selectedRow.expandedCell.profileImageView.image = self.selectedCell.profileImage;
+            [self.selectedRow.expandedCell layoutSubviews];
+            [ self.selectedRow.expandedCell scrollToTopAnimated:NO];
         }
     }
 }
@@ -279,15 +278,15 @@
     self.selectedRow.animating = YES;
     [self resizeObjectAtIndex:self.selectedRow.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         // Fade in the detail view
-        self.selectedRow.detailView.userString = self.selectedCell.userString;
-        self.selectedRow.detailView.photoImageView.image =  self.selectedCell.smallPhotoImage;
-        self.selectedRow.detailView.profileImageView.image = self.selectedCell.profileImage;
+        self.selectedRow.expandedCell.userString = self.selectedCell.userString;
+        self.selectedRow.expandedCell.photoImageView.image =  self.selectedCell.smallPhotoImage;
+        self.selectedRow.expandedCell.profileImageView.image = self.selectedCell.profileImage;
         
         CGFloat alpha = expandedRowIndex >=0 ? 0.0 : 1.0;
-        self.selectedRow.detailView.alpha = alpha;
+        self.selectedRow.expandedCell.alpha = alpha;
         [self.selectedRow layoutSubviews];        
         [self scrollRectToVisible:self.selectedRow.frame animated:YES];
-        [ self.selectedRow.detailView scrollToTopAnimated:NO];
+        [ self.selectedRow.expandedCell scrollToTopAnimated:NO];
     }  completionBlock:^{
         self.selectedRow.expanded = !self.selectedRow.expanded;
         self.selectedCell.expanded = !self.selectedCell.expanded;
@@ -308,7 +307,7 @@
         animating = NO;
         self.selectedRow.animating = NO;
         [self setNeedsLayout];
-        [self.selectedRow.detailView scrollToTopAnimated:YES];
+        [self.selectedRow.expandedCell scrollToTopAnimated:YES];
     }];
 }
 
