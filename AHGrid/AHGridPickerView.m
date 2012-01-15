@@ -132,7 +132,6 @@
 @implementation AHGridPickerView {
     TUINSView *nsView;
     NSSearchField *searchField;
-    NSColor *backgroundColor;
     BOOL firstLoadComplete;
 }
 
@@ -158,6 +157,7 @@
 -(NSRect) frameForPickerTableView {
     NSRect frame = self.bounds;
     frame.size.height -= kHeaderHeight;
+    frame.size.width -= 2;
     return frame;
 }
 
@@ -168,7 +168,6 @@
         headerHeight = 32;
         cellHeight = 50;
         numberOfSections = 8;
-        backgroundColor = [NSColor colorWithPatternImage:[NSImage imageNamed:@"bg_dark.jpg"]];
         searchField = [[NSSearchField alloc] initWithFrame:[self frameForSearchField]];
         searchField.autoresizingMask = NSViewMinYMargin;
         [self addSubview:searchField];
@@ -194,12 +193,26 @@
 
 
 -(void) drawRect:(NSRect)dirtyRect {
+    CGRect b = self.bounds;
     searchField.frame = [self frameForSearchField];
     nsView.frame = [self frameForPickerTableView];
     pickerTableView.frame = nsView.bounds;
     [pickerTableView setNeedsLayout];
-//    [backgroundColor set];
-//    NSRectFill(self.bounds);
+    
+    // Border lines
+    NSColor *blackLine = [NSColor colorWithDeviceWhite:0.6 alpha:0.9];
+    NSRect sideLineRect = b;
+    sideLineRect.size.width = 1;
+    sideLineRect.origin.x = NSMaxX(b) -1;
+    [blackLine set];
+    NSRectFill(sideLineRect);
+    // Inner white line
+    NSColor *whiteLine = [NSColor colorWithDeviceWhite:0.98 alpha:0.9];
+    sideLineRect = b;
+    sideLineRect.size.width = 1;
+    sideLineRect.origin.x = NSMaxX(b) -2;
+    [whiteLine set];
+    NSRectFill(sideLineRect);
 }
 
 #pragma mark - TUITableView methods

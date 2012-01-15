@@ -29,7 +29,7 @@
     return b;
 }
 
--(NSRect) frameForpicker {
+-(NSRect) frameForPicker {
     NSRect b = self.bounds;
     b.size.width = kpickerWidth;
     return b;    
@@ -47,7 +47,6 @@
     
     // The container TUI NSView
     nsView = [[TUINSView alloc] initWithFrame:[self frameForGrid]];
-    [self addSubview:nsView];
     
     // Setup the grid
     grid = [[AHGrid alloc] initWithFrame:nsView.bounds];
@@ -63,14 +62,14 @@
     }
     
     // setup the picker
-    picker = [[AHGridPickerView alloc] initWithFrame:[self frameForpicker]];
-    [self addSubview:picker];
+    picker = [[AHGridPickerView alloc] initWithFrame:[self frameForPicker]];
     grid.picker = picker;
-
+    [self addSubview:nsView];
+    [self addSubview:picker];
 }
 
 -(void) drawRect:(NSRect)dirtyRect {
-    picker.frame = [self frameForpicker];
+    picker.frame = [self frameForPicker];
     nsView.frame = [self frameForGrid];
 }
 
