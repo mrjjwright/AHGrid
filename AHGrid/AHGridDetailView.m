@@ -41,6 +41,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        self.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
         // Default value for sizing properties
         profileImageHeight = 50;
         profileImageWidth = 50;

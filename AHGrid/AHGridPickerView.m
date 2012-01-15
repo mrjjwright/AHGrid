@@ -145,7 +145,6 @@
 @synthesize numberOfSections;
 @synthesize numberOfRowsBlock;
 
-
 - (NSRect) frameForSearchField {
     NSRect frame = self.bounds;
     CGFloat startOfHeader = NSMaxY(frame) - headerHeight;
@@ -190,6 +189,7 @@
         nsView.rootView = containerView;
         pickerTableView.dataSource = self;
         pickerTableView.delegate = self;
+        
     }
     
     return self;

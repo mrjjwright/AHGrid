@@ -13,11 +13,13 @@
 #import "TUILayout.h"
 #import "AHGridExpandedCell.h"
 #import "AHGridPickerView.h"
+#import "AHGridDetailView.h"
 
 @class AHGrid;
 @class AHRow;
 @class AHCell;
 @class AHGridPickerView;
+@class AHGridDetailView;
 @protocol AHGridInitDelegate;
 
 typedef void(^AHGridRowConfigureBlock)(AHGrid* grid, AHRow *row, NSUInteger index);
@@ -28,6 +30,7 @@ typedef void(^AHGridCellConfigureBlock)(AHGrid* grid, AHRow *row, AHCell *cell, 
 
 @property (nonatomic, weak) id<AHGridInitDelegate> initDelegate;
 @property (nonatomic, weak) AHGridPickerView *picker;
+@property (nonatomic, weak) AHGridDetailView *detailView;
 @property (nonatomic) NSInteger numberOfRows;
 @property (nonatomic, weak) AHRow *selectedRow;
 @property (nonatomic, weak) AHCell *selectedCell;
@@ -41,7 +44,7 @@ typedef void(^AHGridCellConfigureBlock)(AHGrid* grid, AHRow *row, AHCell *cell, 
 
 -(void) toggleSelectedRowExpanded;
 -(void) showCommentEditorOnSelectedCell;
-
+-(void) populateDetailView;
 @end
 
 

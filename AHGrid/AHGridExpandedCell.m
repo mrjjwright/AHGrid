@@ -9,14 +9,10 @@
 #import "AHGridExpandedCell.h"
 
 @implementation AHGridExpandedCell {
-    TUILabel *userLabel;
+    TUILabel *textLabel;
 }
-@synthesize profileImageWidth;
-@synthesize profileImageHeight;
-@synthesize userString;
-@synthesize dateString;
+
 @synthesize photoImageView;
-@synthesize profileImageView;
 
 
 - (CGSize) photoImageSize {
@@ -50,35 +46,10 @@
     return frame;
 }
 
-- (CGRect) frameForCommentsView {
-    CGRect frame = self.bounds;
-    frame.origin.x = NSMaxX([self frameForPhotoImageView]) + 5;
-    return frame;
-}
 
-- (CGRect) frameForProfileImageView {
-    CGRect frame = self.visibleRect;
-    frame.origin.y = self.contentSize.height - profileImageHeight - 5;
-    frame.origin.x = 5;
-    frame.size = CGSizeMake(profileImageWidth, profileImageHeight);
-    return frame;
-}
-
-- (CGRect) frameForUserLabel {
-    CGRect frame = [self frameForProfileImageView];
-    frame.origin.x = NSMaxX(frame) + 5;
-    frame.origin.y += 20;
-    frame.size.width = 250;
-    frame.size.height = 25;
-    return frame;
-}
 
 -(id) initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
-        
-        // Default value for sizing properties
-        profileImageHeight = 50;
-        profileImageWidth = 50;
         
         // Add subviews
         photoImageView = [[TUIImageView alloc] initWithFrame:[self frameForPhotoImageView]];
@@ -87,13 +58,6 @@
         photoImageView.layer.contents = kCAGravityResizeAspect;
         [self addSubview:photoImageView];
         
-        profileImageView = [[TUIImageView alloc] initWithFrame:[self frameForProfileImageView]];
-        [self addSubview:profileImageView];
-        
-        userLabel = [[TUILabel alloc] initWithFrame:[self frameForUserLabel]];
-        userLabel.font = [TUIFont boldSystemFontOfSize:11];
-        userLabel.backgroundColor = [TUIColor clearColor];
-        [self addSubview:userLabel];
         
         self.contentSize = frame.size;
     }
@@ -108,16 +72,9 @@
         self.contentSize = b.size;    
     }
     photoImageView.frame = [self frameForPhotoImageView];
-    profileImageView.frame = [self frameForProfileImageView];
-    userLabel.frame = [self frameForUserLabel];
     [super layoutSubviews];
 }
 
--(void) setUserString:(NSAttributedString *)u {
-    userString = [u copy];
-    userLabel.attributedString = u;
-    [self setNeedsDisplay];
-}
 
 
 @end

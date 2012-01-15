@@ -36,6 +36,7 @@
 @synthesize initDelegate;
 @synthesize numberOfRows;
 @synthesize picker;
+@synthesize detailView;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -228,6 +229,12 @@
     }
 }
 
+-(void) populateDetailView {
+    self.detailView.userString = self.selectedCell.userString;
+    self.detailView.profilePictureImageView.image = self.selectedCell.profileImage;
+    self.selectedRow.expandedCell.photoImageView.image =  self.selectedCell.smallPhotoImage;    
+}
+
 - (void) setSelectedCell:(AHCell *) cell 
 {
     if (cell.index == selectedCellIndex && cell.row.index == selectedRowIndex) return;
@@ -242,16 +249,13 @@
     if (self.selectedCell) {
         self.selectedCell.selected = YES;
         [self.selectedCell setNeedsLayout];
-        
         //Scroll to this object
         [self.selectedRow.listView scrollRectToVisible:self.selectedCell.frame animated:YES];
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedCell];
         
         if (expandedRowIndex >= 0) {
+            [self populateDetailView];
             self.selectedCell.expanded = YES;
-            self.selectedRow.expandedCell.userString = self.selectedCell.userString;
-            self.selectedRow. expandedCell.photoImageView.image =  self.selectedCell.smallPhotoImage;
-            self.selectedRow.expandedCell.profileImageView.image = self.selectedCell.profileImage;
             [self.selectedRow.expandedCell layoutSubviews];
             [ self.selectedRow.expandedCell scrollToTopAnimated:NO];
         }
@@ -276,14 +280,17 @@
     CGFloat height = expandedRowIndex >=0  ? 200 : self.visibleRect.size.height;
     animating = YES;
     self.selectedRow.animating = YES;
+    
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"AHGridToggledSelectedRow" object:self]];
     [self resizeObjectAtIndex:self.selectedRow.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
-        // Fade in the detail view
-        self.selectedRow.expandedCell.userString = self.selectedCell.userString;
-        self.selectedRow.expandedCell.photoImageView.image =  self.selectedCell.smallPhotoImage;
-        self.selectedRow.expandedCell.profileImageView.image = self.selectedCell.profileImage;
         
+        // Set properties on the detail view
+        [self populateDetailView];
+        
+        // Fade in the expanded Cell view
         CGFloat alpha = expandedRowIndex >=0 ? 0.0 : 1.0;
         self.selectedRow.expandedCell.alpha = alpha;
+
         [self.selectedRow layoutSubviews];        
         [self scrollRectToVisible:self.selectedRow.frame animated:YES];
         [ self.selectedRow.expandedCell scrollToTopAnimated:NO];
