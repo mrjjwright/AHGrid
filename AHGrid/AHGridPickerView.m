@@ -140,6 +140,7 @@
 @synthesize pickerTableView;
 @synthesize headerConfigureBlock;
 @synthesize cellConfigureBlock;
+@synthesize reorderBlock;
 @synthesize headerHeight;
 @synthesize cellHeight;
 @synthesize numberOfSections;
@@ -272,7 +273,7 @@
 -(void)tableView:(TUITableView *)tableView moveRowAtIndexPath:(TUIFastIndexPath *)fromIndexPath toIndexPath:(TUIFastIndexPath *)toIndexPath {
     // update the model to reflect the changed index paths; since this example isn't backed by
     // a "real" model, after dropping a cell the table will revert to it's previous state
-    NSLog(@"Move dragged row: %@ => %@", fromIndexPath, toIndexPath);
+    if (reorderBlock) reorderBlock(self, fromIndexPath.section, fromIndexPath.row, toIndexPath.section, toIndexPath.row);
 }
 
 -(TUIFastIndexPath *)tableView:(TUITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(TUIFastIndexPath *)fromPath toProposedIndexPath:(TUIFastIndexPath *)proposedPath {

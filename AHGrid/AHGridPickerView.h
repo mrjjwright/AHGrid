@@ -39,6 +39,7 @@ typedef void(^AHGridPickerReorderBlock)(AHGridPickerView* picker, NSUInteger fro
 @property (nonatomic, copy) AHGridPickerHeaderBlock headerConfigureBlock; 
 @property (nonatomic, copy) AHGridPickerCellBlock cellConfigureBlock;
 @property (nonatomic, copy) AHGridPickerNumberofRowsBlock numberOfRowsBlock;
+@property (nonatomic, copy) AHGridPickerReorderBlock reorderBlock;
 @property (nonatomic) NSInteger numberOfSections;
 @property (nonatomic) NSInteger headerHeight;
 @property (nonatomic) NSInteger cellHeight;

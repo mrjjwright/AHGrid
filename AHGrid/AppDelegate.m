@@ -134,6 +134,10 @@
         [s setFont:pickerCellFont inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
         cell.attributedString = s; 
     };
+    
+    grid.picker.reorderBlock = ^(AHGridPickerView* picker, NSUInteger fromSection, NSUInteger fromRow, NSUInteger toSection, NSUInteger toRow) {
+       NSLog(@"Move dragged row: %lu => %lu", fromRow, toRow);  
+    };
 }
 
 @end
