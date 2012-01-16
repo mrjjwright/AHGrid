@@ -15,8 +15,9 @@
 @class AHGridPickerCellView;
 @class AHGrid;
 typedef void(^AHGridPickerHeaderBlock)(AHGridPickerView* picker, AHGridPickerHeaderView *cell, NSUInteger section);
-typedef void(^AHGridPickerCellBlock)(AHGridPickerView* picker, AHGridPickerCellView *cell, TUIFastIndexPath *indexPath);
+typedef void(^AHGridPickerCellBlock)(AHGridPickerView* picker, AHGridPickerCellView *cell, NSUInteger section, NSUInteger row);
 typedef NSInteger(^AHGridPickerNumberofRowsBlock)(AHGridPickerView* picker, NSUInteger section);
+typedef void(^AHGridPickerReorderBlock)(AHGridPickerView* picker, NSUInteger fromSection, NSUInteger fromRow, NSUInteger toSection, NSUInteger toRow);
 
 
 @interface AHGridPickerHeaderView : TUITableViewSectionHeader 

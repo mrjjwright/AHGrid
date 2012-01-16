@@ -28,14 +28,10 @@
     pickerCellFont = [TUIFont fontWithName:@"HelveticaNeue" size:12];
     headerFont = [TUIFont fontWithName:@"HelveticaNeue-Bold" size:12];
 
-    // Configure grid properties
-    
-    
-    grid.numberOfRows = 10;
-    grid.picker.cellHeight = 35;
-    grid.picker.numberOfSections = 2;
-    
+    // Setup model
+    NSInteger numberOfRows = 10;
     NSInteger numExampleCellsPerRow = 20;
+    
     //Setup an example model
     gridModel = [NSMutableDictionary dictionary];
 
@@ -47,7 +43,7 @@
     NSArray *linkPics = [NSArray arrayWithObjects:@"wip.jp", @"mlk.jpg", @"bike_frame.jpg", @"school.png", nil];
     
     
-    for (NSUInteger i=0; i< grid.numberOfRows; i++) {
+    for (NSUInteger i=0; i< numberOfRows; i++) {
         NSMutableArray *cellModels = [NSMutableArray array];
         for (NSUInteger j=0; j < numExampleCellsPerRow; j++ ) {
             NSMutableDictionary *cellModel = [NSMutableDictionary dictionary];
@@ -74,6 +70,11 @@
         }
         [gridModel setObject:cellModels forKey:[NSNumber numberWithInteger:i]];
     }
+
+    // Setup grid properties
+    grid.numberOfRows = numberOfRows;
+    grid.picker.cellHeight = 35;
+    grid.picker.numberOfSections = 2;
     
     
     
@@ -114,7 +115,7 @@
     
     // Configure the picker
     grid.picker.numberOfRowsBlock = ^(AHGridPickerView* picker, NSUInteger section) {
-        return (NSInteger)10;
+        return picker.grid.numberOfRows;
     };
     
     grid.picker.headerConfigureBlock = ^(AHGridPickerView* master, AHGridPickerHeaderView *headerView, NSUInteger section) {
@@ -126,8 +127,8 @@
     };
     
     // Configure the picker cell
-    grid.picker.cellConfigureBlock = ^(AHGridPickerView *masterView, AHGridPickerCellView *cell, TUIFastIndexPath *indexPath) {
-        TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", indexPath.row]];
+    grid.picker.cellConfigureBlock = ^(AHGridPickerView *masterView, AHGridPickerCellView *cell, NSUInteger section, NSUInteger row) {
+        TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", row]];
         s.color = [TUIColor blackColor];
         s.font = headerFont;
         [s setFont:pickerCellFont inRange:NSMakeRange(8, 4)]; // make the word "cell" bold

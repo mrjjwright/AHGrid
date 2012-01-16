@@ -238,7 +238,7 @@
 	AHGridPickerCellView *cell = reusableTableCellOfClass(tableView, AHGridPickerCellView);
 	
     if (cellConfigureBlock) {
-        cellConfigureBlock(self, cell, indexPath);
+        cellConfigureBlock(self, cell, indexPath.section, indexPath.row);
     }
 	
 	return cell;
