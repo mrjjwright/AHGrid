@@ -254,7 +254,7 @@
     profileImageView.frame = profileImageFrame;
     firstButton.frame = firstButtonFrame;
     secondButton.frame = secondButtonFrame;
-    [smallPhotoImageView constrainToSize:CGSizeMake(b.size.width, b.size.height - 50)];
+    [smallPhotoImageView constrainToSize:CGSizeMake(b.size.width, b.size.height - headerFrame.size.height - 10)];
     CGRect smallPhotoImageFrame = smallPhotoImageView.frame;
     smallPhotoImageFrame.origin.x = (b.size.width - smallPhotoImageFrame.size.width)/2;
     smallPhotoImageFrame.origin.y = padding;

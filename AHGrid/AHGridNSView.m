@@ -158,12 +158,10 @@ constrainMaxCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset {
 
 -(void) toggleDetailView:(NSNotification*) notification {
     if (!grid.selectedRow.expanded) {
-        [splitView addSubview:detailViewContainer];
-        [picker removeFromSuperview];
+        [splitView replaceSubview:picker with:detailViewContainer];
         detailViewContainer.frame = [self frameForPicker];        
     } else {
-        [detailViewContainer removeFromSuperview];
-        [splitView addSubview:picker];
+        [splitView replaceSubview:detailViewContainer with:picker];
         picker.frame = [self frameForPicker];
     }
 }
