@@ -169,7 +169,7 @@
         cellHeight = 50;
         numberOfSections = 8;
         searchField = [[NSSearchField alloc] initWithFrame:[self frameForSearchField]];
-        searchField.autoresizingMask = NSViewMinYMargin;
+        searchField.autoresizingMask = NSViewMinXMargin | NSViewWidthSizable;
         [searchField setTarget:self];
         [searchField setAction:@selector(searchAction:)];
         [self addSubview:searchField];

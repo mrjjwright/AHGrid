@@ -42,6 +42,7 @@
 {
 	if((self = [super initWithFrame:frame])) {
         self.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
+        self.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenScrolling;
         self.autoresizingMask = TUIViewAutoresizingFlexibleSize;    
         configurationModeRowHeight = 100;
         selectedRowIndex = -1;

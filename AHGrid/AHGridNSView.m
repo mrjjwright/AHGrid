@@ -30,13 +30,12 @@
 -(NSRect) frameForGrid {
     NSRect b = self.bounds;
     b.size.width -= kPickerWidth;
-    b.origin.x += kPickerWidth;
     return b;
 }
 
 -(NSRect) frameForPicker {
     NSRect b = self.bounds;
-    b.size.width = kPickerWidth -2;
+    b.size.width = kPickerWidth;
     return b;    
 }
 
@@ -73,8 +72,6 @@
     picker = [[AHGridPickerView alloc] initWithFrame:[self frameForPicker]];
     grid.picker = picker;
     picker.grid = grid;
-//    [self addSubview:nsView];
-//    [self addSubview:picker];
     
     // Init the detail views
     detailView = [[AHGridDetailView alloc] initWithFrame:self.bounds];
@@ -84,9 +81,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleDetailView:) name:kAHGridWillToggleExpansionOfRow object:nil];
     
     splitView = [[NSSplitView alloc]initWithFrame:self.bounds];
+    splitView.delegate = self;
     [splitView setVertical:YES];
-    [splitView addSubview:picker];
     [splitView addSubview:nsViewContainer];
+    [splitView addSubview:picker];
     [self addSubview:splitView];
     splitView.dividerStyle = NSSplitViewDividerStyleThin;
     [splitView adjustSubviews];
@@ -103,6 +101,23 @@
     [grid setNeedsLayout];
 }
 
+
+- (CGFloat)splitView:(NSSplitView *)sender
+constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset {
+    if (offset == 0) {
+        return self.bounds.size.width - kPickerWidth;
+    }
+    return kPickerWidth;
+}
+
+
+- (CGFloat)splitView:(NSSplitView *)sender
+constrainMaxCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset {
+    if (offset == 0) {
+        return self.bounds.size.width - kPickerWidth;
+    }
+    return kPickerWidth;
+}
 
 -(IBAction)toggleConfigurationMode:(id)sender {
     // [grid toggleConfigurationMode];

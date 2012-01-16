@@ -12,7 +12,7 @@
 #import "AHGridPickerView.h"
 #import "AHGridDetailView.h"
 
-@interface AHGridNSView : NSView <TUIScrollingInterceptor>
+@interface AHGridNSView : NSView <TUIScrollingInterceptor, NSSplitViewDelegate>
 #define IN_RUNNING_LION (NSClassFromString(@"NSPopover") != nil)
 
 @property (assign) IBOutlet id<AHGridInitDelegate> gridInitDelegate;
