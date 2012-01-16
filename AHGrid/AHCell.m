@@ -9,6 +9,7 @@
 #import "AHCell.h"
 #import "TUIKit.h"
 #import "AHActionButton.h"
+#import "TUIImageView+AHExtensions.h"
 
 @implementation AHCell {
     TUITextRenderer *userTextRenderer;
@@ -219,12 +220,6 @@
     
     CGRect profileImageFrame = CGRectMake(padding, padding, profilePictureWidth, profilePictureHeight);
     
-    CGRect smallPhotoFrame = b;
-    smallPhotoFrame.size.height -= headerHeight + padding;
-    smallPhotoFrame.size.width -= (padding * 2);
-    smallPhotoFrame.origin.x = (b.size.width - smallPhotoFrame.size.width)/2;
-    smallPhotoFrame.origin.y = padding;
-    
     CGRect buttonsFrame = b;
     buttonsFrame.size.height = 30;
     buttonsFrame.size.width = 80;
@@ -239,7 +234,7 @@
     if (showingCommentEditor) {
         commentEditorFrame = [self commentEditorFrame];
         // Move everything else up
-        smallPhotoFrame.origin.y = NSMaxY(commentEditorFrame);
+        //smallPhotoFrame.origin.y = NSMaxY(commentEditorFrame);
         commentEditor.frame = commentEditorFrame;
     }
     
@@ -259,7 +254,11 @@
     profileImageView.frame = profileImageFrame;
     firstButton.frame = firstButtonFrame;
     secondButton.frame = secondButtonFrame;
-    smallPhotoImageView.frame = smallPhotoFrame;
+    [smallPhotoImageView constrainToSize:CGSizeMake(b.size.width, b.size.height - 50)];
+    CGRect smallPhotoImageFrame = smallPhotoImageView.frame;
+    smallPhotoImageFrame.origin.x = (b.size.width - smallPhotoImageFrame.size.width)/2;
+    smallPhotoImageFrame.origin.y = padding;
+    smallPhotoImageView.frame = smallPhotoImageFrame;
 }
 
 

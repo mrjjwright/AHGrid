@@ -47,6 +47,9 @@ typedef void(^AHGridCellConfigureBlock)(AHGrid* grid, AHRow *row, AHCell *cell, 
 -(void) toggleSelectedRowExpanded;
 -(void) showCommentEditorOnSelectedCell;
 -(void) populateDetailView;
+
+
+
 @end
 
 

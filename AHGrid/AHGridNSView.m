@@ -83,8 +83,8 @@
     splitView = [[NSSplitView alloc]initWithFrame:self.bounds];
     splitView.delegate = self;
     [splitView setVertical:YES];
-    [splitView addSubview:nsViewContainer];
     [splitView addSubview:picker];
+    [splitView addSubview:nsViewContainer];
     [self addSubview:splitView];
     splitView.dividerStyle = NSSplitViewDividerStyleThin;
     [splitView adjustSubviews];
@@ -105,18 +105,18 @@
 - (CGFloat)splitView:(NSSplitView *)sender
 constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset {
     if (offset == 0) {
-        return self.bounds.size.width - kPickerWidth;
+        return kPickerWidth;
     }
-    return kPickerWidth;
+    return self.bounds.size.width - kPickerWidth;
 }
 
 
 - (CGFloat)splitView:(NSSplitView *)sender
 constrainMaxCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset {
     if (offset == 0) {
-        return self.bounds.size.width - kPickerWidth;
+        return kPickerWidth;
     }
-    return kPickerWidth;
+    return self.bounds.size.width - kPickerWidth;
 }
 
 -(IBAction)toggleConfigurationMode:(id)sender {
@@ -158,8 +158,8 @@ constrainMaxCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset {
 
 -(void) toggleDetailView:(NSNotification*) notification {
     if (!grid.selectedRow.expanded) {
-        [picker removeFromSuperview];
         [splitView addSubview:detailViewContainer];
+        [picker removeFromSuperview];
         detailViewContainer.frame = [self frameForPicker];        
     } else {
         [detailViewContainer removeFromSuperview];

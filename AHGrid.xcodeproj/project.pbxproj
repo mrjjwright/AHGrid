@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A0E548C14BD260800C0AE80 /* AHActionButton.m */; };
 		9A24FA2B14BE365400FDFD78 /* INAppStoreWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A24FA2A14BE365400FDFD78 /* INAppStoreWindow.m */; };
+		9A2C9A9414C3EA8A00F361CE /* PPNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9314C3EA8A00F361CE /* PPNavigationController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		9A2C9A9714C3EEA900F361CE /* TUIImageView+AHExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9614C3EEA900F361CE /* TUIImageView+AHExtensions.m */; };
 		9A363DD114B65262004F31C7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A363DD014B65262004F31C7 /* Cocoa.framework */; };
 		9A363DDB14B65262004F31C7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A363DD914B65262004F31C7 /* InfoPlist.strings */; };
 		9A363DDD14B65262004F31C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DDC14B65262004F31C7 /* main.m */; };
@@ -97,6 +99,10 @@
 		9A0E548C14BD260800C0AE80 /* AHActionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHActionButton.m; sourceTree = "<group>"; };
 		9A24FA2914BE365400FDFD78 /* INAppStoreWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = INAppStoreWindow.h; sourceTree = "<group>"; };
 		9A24FA2A14BE365400FDFD78 /* INAppStoreWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = INAppStoreWindow.m; sourceTree = "<group>"; };
+		9A2C9A9214C3EA8A00F361CE /* PPNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPNavigationController.h; sourceTree = "<group>"; };
+		9A2C9A9314C3EA8A00F361CE /* PPNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPNavigationController.m; sourceTree = "<group>"; };
+		9A2C9A9514C3EEA900F361CE /* TUIImageView+AHExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUIImageView+AHExtensions.h"; sourceTree = "<group>"; };
+		9A2C9A9614C3EEA900F361CE /* TUIImageView+AHExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUIImageView+AHExtensions.m"; sourceTree = "<group>"; };
 		9A363DCC14B65262004F31C7 /* AHGrid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AHGrid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A363DD014B65262004F31C7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9A363DD314B65262004F31C7 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -269,6 +275,15 @@
 			name = InAppStoreWindow;
 			sourceTree = "<group>";
 		};
+		9A2C9A9014C3EA7B00F361CE /* PushPopController */ = {
+			isa = PBXGroup;
+			children = (
+				9A2C9A9214C3EA8A00F361CE /* PPNavigationController.h */,
+				9A2C9A9314C3EA8A00F361CE /* PPNavigationController.m */,
+			);
+			name = PushPopController;
+			sourceTree = "<group>";
+		};
 		9A363DC114B65262004F31C7 = {
 			isa = PBXGroup;
 			children = (
@@ -361,6 +376,7 @@
 		9A363DF814B65324004F31C7 /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				9A2C9A9014C3EA7B00F361CE /* PushPopController */,
 				9A24FA2714BE363C00FDFD78 /* InAppStoreWindow */,
 				9A363EB214B78A43004F31C7 /* TUILayout */,
 				9A363DF914B6532A004F31C7 /* TUIKit */,
@@ -494,6 +510,8 @@
 		9AEA425714C38DC9003AAFD7 /* extensions */ = {
 			isa = PBXGroup;
 			children = (
+				9A2C9A9514C3EEA900F361CE /* TUIImageView+AHExtensions.h */,
+				9A2C9A9614C3EEA900F361CE /* TUIImageView+AHExtensions.m */,
 			);
 			name = extensions;
 			sourceTree = "<group>";
@@ -640,6 +658,8 @@
 				9ACC13DA14C0BF380062A438 /* AHGridNSView.m in Sources */,
 				9ACC13DF14C10E410062A438 /* AHGridPickerView.m in Sources */,
 				9AEA425614C37D66003AAFD7 /* AHGridDetailView.m in Sources */,
+				9A2C9A9414C3EA8A00F361CE /* PPNavigationController.m in Sources */,
+				9A2C9A9714C3EEA900F361CE /* TUIImageView+AHExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
