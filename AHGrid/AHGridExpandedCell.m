@@ -9,11 +9,13 @@
 #import "AHGridExpandedCell.h"
 
 @implementation AHGridExpandedCell {
-    TUILabel *textLabel;
+    TUILabel *mainLabel;
+    TUIImageView *photoImageView;
 }
 
-@synthesize photoImageView;
-
+-(void) prepareForReuse {
+    photoImageView.image = nil;
+}
 
 - (CGSize) photoImageSize {
     CGSize size = photoImageView.image.size;
@@ -46,6 +48,12 @@
     return frame;
 }
 
+-(CGRect) frameForMainLabel {
+    CGRect b = self.bounds;
+    b.size.width *= 0.8;
+    return ABRectCenteredInRect(b, self.bounds);
+}
+
 
 
 -(id) initWithFrame:(CGRect)frame {
@@ -58,23 +66,49 @@
         photoImageView.layer.contents = kCAGravityResizeAspect;
         [self addSubview:photoImageView];
         
-        
+        // Main Label
+        mainLabel = [[TUILabel alloc] initWithFrame:[self frameForMainLabel]];
+        mainLabel.backgroundColor = [TUIColor clearColor];
         self.contentSize = frame.size;
     }
     return self;
 }
 
 -(void) layoutSubviews {
-    CGRect b = self.bounds;
-    if (photoImageView.image && b.size.height > 0) {
-        self.contentSize = CGSizeMake(b.size.width,[self photoImageSize].height);    
-    } else {
-        self.contentSize = b.size;    
-    }
+    mainLabel.frame = [self frameForMainLabel];
     photoImageView.frame = [self frameForPhotoImageView];
     [super layoutSubviews];
 }
 
 
+-(void) setCellToExpand:(AHCell *)cell {
+    photoImageView.image = nil;
+    [photoImageView removeFromSuperview];
+    [mainLabel removeFromSuperview];
+    switch (cell.type) {
+        case AHGridCellTypePhoto:
+        {   
+            [self addSubview:photoImageView];
+            photoImageView.image = cell.smallPhotoImage;
+            photoImageView.frame = [self frameForPhotoImageView];
+            self.contentSize = CGSizeMake(self.bounds.size.width,[self photoImageSize].height); 
+            break;
+        }    
+        case AHGridCellTypeText:
+        {
+            [self addSubview:mainLabel];
+            mainLabel.attributedString = cell.mainString;
+            mainLabel.frame = [self frameForMainLabel];
+            self.contentSize = CGSizeMake(self.bounds.size.width, mainLabel.frame.size.height); 
+        }
+        case AHGridCellTypeLink:
+        {
+            
+        }
+        default:
+            break;
+    }
+    [self setNeedsLayout];
+}
 
 @end

@@ -239,7 +239,7 @@
 -(void) populateDetailView {
     self.detailView.userString = self.selectedCell.userString;
     self.detailView.profilePictureImageView.image = self.selectedCell.profileImage;
-    self.selectedRow.expandedCell.photoImageView.image =  self.selectedCell.smallPhotoImage;    
+    [self.selectedRow.expandedCell setCellToExpand:self.selectedCell    ];    
 }
 
 - (void) setSelectedCell:(AHCell *) cell 

@@ -7,9 +7,13 @@
 //
 
 #import "TUIKit.h"
+#import "AHGrid.h"
+
+@class AHCell;
 
 @interface AHGridExpandedCell : TUIScrollView
 
-@property (nonatomic, strong) TUIImageView *photoImageView;
+
+-(void) setCellToExpand:(AHCell*) cell;
 
 @end

@@ -13,7 +13,7 @@
 #import "AHGridExpandedCell.h"
 
 @class AHGrid;
-
+@class AHGridExpandedCell;
 @interface AHRow : TUIView <TUILayoutDataSource>
 
 @property (nonatomic) NSInteger numberOfCells;
