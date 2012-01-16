@@ -12,6 +12,7 @@
 #import "TUIImageView+AHExtensions.h"
 
 @implementation AHCell {
+    TUILabel *mainTextLabel;
     TUITextRenderer *userTextRenderer;
     BOOL showingCommentEditor;
     
@@ -109,6 +110,7 @@
     showingCommentEditor = NO;
     self.smallPhotoImage = nil;
     self.userString = nil;
+    self.mainString = nil;
     self.largePhotoImage = nil;
     if (commentEditor && commentEditor.text && commentEditor.text.length > 0) commentEditor.text = @"";
 }
@@ -201,6 +203,26 @@
     userTextRenderer.attributedString = userString;
 }
 
+-(void) setMainString:(NSAttributedString *)m  {
+    mainString = [m copy];
+    if (!mainTextLabel) {
+        mainTextLabel = [[TUILabel alloc] initWithFrame:CGRectZero];
+        mainTextLabel.backgroundColor = [TUIColor clearColor];
+    }
+    
+    if (mainString) {
+        if (!mainTextLabel.superview) [self addSubview:mainTextLabel];
+        mainTextLabel.attributedString = mainString;
+    }
+    
+    if (!mainString && mainTextLabel.superview) {
+        [mainTextLabel removeFromSuperview];
+    }
+    
+    
+}
+
+
 #pragma mark - Layout
 
 -(CGRect) commentEditorFrame {
@@ -215,7 +237,6 @@
     
     CGRect b = self.bounds;
     
-    // Default position for all items
     CGRect commentEditorFrame = b;
     
     CGFloat headerHeight = padding + padding + profilePictureHeight;
@@ -257,6 +278,12 @@
     profileImageView.frame = profileImageFrame;
     firstButton.frame = firstButtonFrame;
     secondButton.frame = secondButtonFrame;
+    CGRect mainFrame = b;
+    mainFrame.size.height -= (headerHeight + 10);
+    CGRect mainFrame1 = mainFrame;
+    mainFrame1.size.width -= (padding + padding);
+    mainFrame = ABRectCenteredInRect(mainFrame1, mainFrame);
+                                                            
     switch (type) {
         case AHGridCellTypePhoto:
             [smallPhotoImageView constrainToSize:CGSizeMake(b.size.width, b.size.height - headerFrame.size.height - 10)];
@@ -264,13 +291,14 @@
             smallPhotoImageFrame.origin.x = (b.size.width - smallPhotoImageFrame.size.width)/2;
             smallPhotoImageFrame.origin.y = padding;
             smallPhotoImageView.frame = smallPhotoImageFrame;
-            break;            
+            break;
+        case AHGridCellTypeText:
+            mainTextLabel.frame = mainFrame;
+            break;
         default:
             break;
     }
 }
-
-
 
 #pragma mark - Selection
 

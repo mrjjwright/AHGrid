@@ -77,7 +77,6 @@
     grid.picker.numberOfSections = 2;
     
     
-    
     // Configure rows
     grid.rowConfigureBlock = ^(AHGrid* grid, AHRow *row, NSUInteger index) {
         row.titleString = [NSString stringWithFormat:@"Example Row %d", index];
@@ -95,15 +94,22 @@
         userString.font = userStringFont;
         cell.userString = userString;
         cell.profileImage = [TUIImage imageNamed:[cellModel objectForKey:@"profilePic"] cache:YES];
+        cell.firstButtonImage = [TUIImage imageNamed:@"heart.png" cache:YES];
+        cell.secondButtonImage = [TUIImage imageNamed:@"comment.png" cache:YES];
+        
         AHGridCellType cellType = [[cellModel objectForKey:@"type"] unsignedIntValue];
         cell.type = cellType;
         switch (cellType) {
             case AHGridCellTypePhoto:
                 cell.smallPhotoImage = [TUIImage imageNamed:[cellModel objectForKey:@"photo"] cache:YES];
                 break;
-            case AHGridCellTypeText:    
-                cell.mainString = [TUIAttributedString stringWithString:[cellModel objectForKey:@"mainText"]];
+            case AHGridCellTypeText: 
+            {
+                TUIAttributedString *mainString = [TUIAttributedString stringWithString:[cellModel objectForKey:@"mainText"]];
+                mainString.font = pickerCellFont;
+                cell.mainString = mainString;
                 break;
+            }
             case AHGridCellTypeLink:
                 cell.linkDescriptonString = [TUIAttributedString stringWithString:[cellModel objectForKey:@"linkDescription"]];
                 cell.linkImage = [TUIImage imageNamed:[cellModel objectForKey:@"linkPic"] cache:YES];
