@@ -157,8 +157,7 @@
 
 -(NSRect) frameForPickerTableView {
     NSRect frame = self.bounds;
-    frame.size.height -= (headerHeight +2);
-    frame.size.width -= 2;
+    frame.size.height -= (headerHeight);
     return frame;
 }
 
@@ -181,6 +180,7 @@
         
         pickerTableView = [[TUITableView alloc] initWithFrame:nsView.bounds];
         pickerTableView.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0]; 
+        pickerTableView.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
         pickerTableView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
         TUIView *containerView = [[TUIView alloc] initWithFrame:nsView.bounds];
         containerView.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
@@ -196,40 +196,11 @@
 }
 
 
--(void) drawRect:(NSRect)dirtyRect {
-    CGRect b = self.bounds;
+-(void) resizeSubviewsWithOldSize:(NSSize)oldSize {
     searchField.frame = [self frameForSearchField];
     nsView.frame = [self frameForPickerTableView];
     pickerTableView.frame = nsView.bounds;
     [pickerTableView setNeedsLayout];
-    
-    // Border lines
-    NSColor *blackLine = [NSColor colorWithDeviceWhite:0.6 alpha:0.9];
-    NSRect sideLineRect = b;
-    sideLineRect.size.width = 1;
-    sideLineRect.origin.x = NSMaxX(b) -1;
-    [blackLine set];
-    NSRectFill(sideLineRect);
-    // Inner white line
-    NSColor *whiteLine = [NSColor colorWithDeviceWhite:0.98 alpha:0.9];
-    sideLineRect = b;
-    sideLineRect.size.width = 1;
-    sideLineRect.origin.x = NSMaxX(b) -2;
-    [whiteLine set];
-    NSRectFill(sideLineRect);
-    
-    // Draw a line under the header
-    NSRect topLineRect = b;
-    topLineRect.size.height = 1;
-    topLineRect.origin.y = b.size.height - 1 - headerHeight;
-    [blackLine set];
-    NSRectFill(topLineRect);
-    // Inner white line
-    topLineRect = b;
-    topLineRect.size.height = 1;
-    topLineRect.origin.y = NSMaxY(b) - 2  - headerHeight;
-    [whiteLine set];
-    NSRectFill(topLineRect);
 }
 
 #pragma mark - TUITableView methods

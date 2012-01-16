@@ -14,6 +14,9 @@
 @implementation AHGridNSView {
     TUINSView *nsView;
     TUINSView *detailViewContainer;
+    NSView *nsViewContainer;
+    NSSplitView *splitView;
+    NSInteger numDrawRects;
 }
 
 
@@ -33,7 +36,7 @@
 
 -(NSRect) frameForPicker {
     NSRect b = self.bounds;
-    b.size.width = kPickerWidth;
+    b.size.width = kPickerWidth -2;
     return b;    
 }
 
@@ -48,11 +51,14 @@
     }
     
     // The container TUI NSView
-    nsView = [[TUINSView alloc] initWithFrame:[self frameForGrid]];
+    nsViewContainer = [[NSView alloc] initWithFrame:[self frameForGrid]];
+    CGRect nsViewFrame = CGRectMake(0, 0, nsViewContainer.bounds.size.width, nsViewContainer.bounds.size.height);
+    nsView = [[TUINSView alloc] initWithFrame:nsViewFrame];
+    [nsViewContainer addSubview:nsView];
     
     // Setup the grid
-    grid = [[AHGrid alloc] initWithFrame:nsView.bounds];
-    TUIView *containerView = [[TUIView alloc] initWithFrame:nsView.bounds];
+    grid = [[AHGrid alloc] initWithFrame:nsViewFrame];
+    TUIView *containerView = [[TUIView alloc] initWithFrame:nsViewFrame];
     containerView.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     [containerView addSubview:grid];
     nsView.rootView = containerView;
@@ -67,8 +73,8 @@
     picker = [[AHGridPickerView alloc] initWithFrame:[self frameForPicker]];
     grid.picker = picker;
     picker.grid = grid;
-    [self addSubview:nsView];
-    [self addSubview:picker];
+//    [self addSubview:nsView];
+//    [self addSubview:picker];
     
     // Init the detail views
     detailView = [[AHGridDetailView alloc] initWithFrame:self.bounds];
@@ -76,11 +82,25 @@
     detailViewContainer.rootView = detailView;
     grid.detailView = detailView;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleDetailView:) name:kAHGridWillToggleExpansionOfRow object:nil];
+    
+    splitView = [[NSSplitView alloc]initWithFrame:self.bounds];
+    [splitView setVertical:YES];
+    [splitView addSubview:picker];
+    [splitView addSubview:nsViewContainer];
+    [self addSubview:splitView];
+    splitView.dividerStyle = NSSplitViewDividerStyleThin;
+    [splitView adjustSubviews];
 }
 
--(void) drawRect:(NSRect)dirtyRect {
+-(void) resizeSubviewsWithOldSize:(NSSize)oldSize {
     picker.frame = [self frameForPicker];
-    nsView.frame = [self frameForGrid];
+    nsViewContainer.frame = [self frameForGrid];
+    CGRect nsViewFrame = CGRectMake(0, 0, nsViewContainer.bounds.size.width, nsViewContainer.bounds.size.height);
+    nsView.frame = nsViewFrame;
+    splitView.frame = self.bounds;
+    [splitView adjustSubviews];
+    grid.bounds = nsViewFrame;
+    [grid setNeedsLayout];
 }
 
 
@@ -124,11 +144,11 @@
 -(void) toggleDetailView:(NSNotification*) notification {
     if (!grid.selectedRow.expanded) {
         [picker removeFromSuperview];
-        [self addSubview:detailViewContainer];
+        [splitView addSubview:detailViewContainer];
         detailViewContainer.frame = [self frameForPicker];        
     } else {
         [detailViewContainer removeFromSuperview];
-        [self addSubview:picker];
+        [splitView addSubview:picker];
         picker.frame = [self frameForPicker];
     }
 }

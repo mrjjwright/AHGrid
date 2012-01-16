@@ -228,7 +228,7 @@
     CGRect buttonsFrame = b;
     buttonsFrame.size.height = 30;
     buttonsFrame.size.width = 80;
-    buttonsFrame.origin.x = NSMaxX(b) - 80;
+    buttonsFrame.origin.x = NSMaxX(b) - 70;
     buttonsFrame.origin.y = padding;
     
     CGRect firstButtonFrame = buttonsFrame;
@@ -246,9 +246,13 @@
     if(self.selected) {
         self.layer.borderWidth = 3;
         self.layer.borderColor = [TUIColor  yellowColor].CGColor;
+        firstButton.hidden = NO;
+        secondButton.hidden = NO;
 	} else {
         self.layer.borderWidth = 2;
         self.layer.borderColor = [TUIColor colorWithWhite:0.85 alpha:1].CGColor;
+        firstButton.hidden = YES;
+        secondButton.hidden = YES;
 	}
     
     headerView.frame = headerFrame;
