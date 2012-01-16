@@ -11,10 +11,17 @@
 #import "TUIKit.h"
 
 
+typedef enum {
+	AHGridCellTypePhoto,
+    AHGridCellTypeText,
+    AHGridCellTypeLink,
+} AHGridCellType;
+
 @class AHGrid;
 @class AHRow;
 @interface AHCell : TUIView
 
+@property (nonatomic) AHGridCellType type;
 @property (nonatomic, strong) AHRow *row;
 @property (nonatomic, weak) AHGrid *grid;
 @property (nonatomic) NSUInteger index;
@@ -27,11 +34,11 @@
 @property (nonatomic) CGFloat profilePictureWidth;
 @property (nonatomic) CGFloat profilePictureHeight;
 
-
 // Text
 @property (nonatomic, copy) NSAttributedString *userString;
 @property (nonatomic, copy) NSAttributedString *dateString;
 @property (nonatomic, copy) NSAttributedString *mainString;
+@property (nonatomic, copy) NSAttributedString *linkDescriptonString;
 @property (nonatomic, copy) NSAttributedString *likesString;
 @property (nonatomic, copy) NSAttributedString *commentsString;
 @property (nonatomic, copy) NSAttributedString *commentsTextInputPlaceholderString;
@@ -39,6 +46,7 @@
 // Images
 @property (nonatomic, strong) TUIImage *backgroundImage;
 @property (nonatomic, strong) TUIImage *profileImage;
+@property (nonatomic, strong) TUIImage *linkImage;
 @property (nonatomic, strong) TUIImage *smallPhotoImage;
 @property (nonatomic, strong) TUIImage *largePhotoImage;
 

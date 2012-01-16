@@ -26,6 +26,7 @@
 
 typedef void(^AHGridRowConfigureBlock)(AHGrid* grid, AHRow *row, NSUInteger index);
 typedef void(^AHGridCellConfigureBlock)(AHGrid* grid, AHRow *row, AHCell *cell, NSUInteger index);
+typedef NSInteger(^AHGridNumberOfCellsBlock)(AHGrid *grid, AHRow *row);
 
 @interface AHGrid : TUILayout  <TUILayoutDataSource>
 
@@ -42,7 +43,7 @@ typedef void(^AHGridCellConfigureBlock)(AHGrid* grid, AHRow *row, AHCell *cell, 
 @property (nonatomic) BOOL inConfigurationMode;
 @property (nonatomic, copy) AHGridRowConfigureBlock rowConfigureBlock; 
 @property (nonatomic, copy) AHGridCellConfigureBlock cellConfigureBlock; 
-
+@property (nonatomic, copy) AHGridNumberOfCellsBlock numberOfCellsBlock;
 
 -(void) toggleSelectedRowExpanded;
 -(void) showCommentEditorOnSelectedCell;

@@ -37,6 +37,7 @@
 @synthesize numberOfRows;
 @synthesize picker;
 @synthesize detailView;
+@synthesize numberOfCellsBlock;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -69,6 +70,11 @@
         [rows addObject:rowInfo];
         AHRow *rowView = (AHRow*) [[AHRow alloc] initWithFrame:CGRectZero];
         rowView.index = i;
+        if (numberOfCellsBlock) {
+            rowView.numberOfCells = numberOfCellsBlock(self, rowView);
+        } else {
+            rowView.numberOfCells = 10;
+        }
         rowView.grid = self;
         [rowViews addObject:rowView];
     }
@@ -143,7 +149,7 @@
     NSUInteger oldRowIndex = selectedRowIndex;
     NSUInteger newRowIndex = selectedRowIndex;
     
-    NSUInteger numberOfCellsInSelectedRow = [self.selectedRow.cells count];
+    NSUInteger numberOfCellsInSelectedRow = self.selectedRow.numberOfCells;
     
     switch([[event charactersIgnoringModifiers] characterAtIndex:0]) {
         case NSLeftArrowFunctionKey: {

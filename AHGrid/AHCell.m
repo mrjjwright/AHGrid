@@ -27,6 +27,7 @@
     NSInteger trackingCounter;
 }
 
+@synthesize type;
 @synthesize row;
 @synthesize grid;
 @synthesize index;
@@ -45,12 +46,14 @@
 @synthesize dateString;
 @synthesize mainString;
 @synthesize likesString;
+@synthesize linkDescriptonString;
 @synthesize commentsString;
 @synthesize commentsTextInputPlaceholderString;
 
 // Images
 @synthesize backgroundImage;
 @synthesize profileImage;
+@synthesize linkImage;
 @synthesize smallPhotoImage;
 @synthesize largePhotoImage;
 
@@ -254,11 +257,17 @@
     profileImageView.frame = profileImageFrame;
     firstButton.frame = firstButtonFrame;
     secondButton.frame = secondButtonFrame;
-    [smallPhotoImageView constrainToSize:CGSizeMake(b.size.width, b.size.height - headerFrame.size.height - 10)];
-    CGRect smallPhotoImageFrame = smallPhotoImageView.frame;
-    smallPhotoImageFrame.origin.x = (b.size.width - smallPhotoImageFrame.size.width)/2;
-    smallPhotoImageFrame.origin.y = padding;
-    smallPhotoImageView.frame = smallPhotoImageFrame;
+    switch (type) {
+        case AHGridCellTypePhoto:
+            [smallPhotoImageView constrainToSize:CGSizeMake(b.size.width, b.size.height - headerFrame.size.height - 10)];
+            CGRect smallPhotoImageFrame = smallPhotoImageView.frame;
+            smallPhotoImageFrame.origin.x = (b.size.width - smallPhotoImageFrame.size.width)/2;
+            smallPhotoImageFrame.origin.y = padding;
+            smallPhotoImageView.frame = smallPhotoImageFrame;
+            break;            
+        default:
+            break;
+    }
 }
 
 

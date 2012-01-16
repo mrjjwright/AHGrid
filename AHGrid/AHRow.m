@@ -18,13 +18,13 @@
 
 @synthesize animating;
 @synthesize expandedCell;
-@synthesize cells;
 @synthesize grid;
 @synthesize index;
 @synthesize listView;
 @synthesize expanded;
 @synthesize selected;
 @synthesize titleString;
+@synthesize numberOfCells;
 
 -(CGRect) frameForHeaderView {
     CGRect b = self.bounds;
@@ -46,11 +46,7 @@
 - (id)initWithFrame:(CGRect)frame
 {
 	if((self = [super initWithFrame:frame])) {
-        cells = [NSMutableArray array];
         self.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
-        for (int i = 0; i < 100; i++) {
-            [cells addObject:[NSMutableDictionary dictionary]];
-        }
                 
         listView = [[TUILayout alloc] initWithFrame:CGRectZero];
         listView.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
@@ -113,13 +109,6 @@
 -(TUIView*) layout:(TUILayout *)l viewForObjectAtIndex:(NSInteger)i {
     
     AHCell *cell = (AHCell*) [listView dequeueReusableView];
-	
-//	TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", i]];
-//	s.color = [TUIColor blackColor];
-//	s.font = [TUIFont systemFontOfSize:11];
-//	cell.attributedString = s;
-    
-    
 	cell.row = self;
     [cell prepareForReuse];
     cell.selected = (index == grid.selectedRowIndex) && (i == grid.selectedCellIndex);
@@ -133,7 +122,7 @@
 }
 
 - (NSUInteger)numberOfObjectsInLayout:(TUILayout *)l {
-    return [cells count];
+    return numberOfCells;
 }
 
 - (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {

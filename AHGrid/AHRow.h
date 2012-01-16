@@ -16,13 +16,13 @@
 
 @interface AHRow : TUIView <TUILayoutDataSource>
 
+@property (nonatomic) NSInteger numberOfCells;
 @property (nonatomic, strong) AHGridExpandedCell *expandedCell;
 @property (nonatomic) BOOL animating;
 @property (nonatomic, weak) AHGrid *grid;
 @property (nonatomic) NSUInteger index;
 @property (nonatomic, strong) TUILayout *listView;
 @property (nonatomic) BOOL expanded;
-@property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic) BOOL selected;
 
 
