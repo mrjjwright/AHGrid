@@ -51,9 +51,9 @@
 -(CGRect) frameForMainLabel {
     CGRect b = self.bounds;
     b.size.width *= 0.8;
+    b.size.height *= 0.8;
     return ABRectCenteredInRect(b, self.bounds);
 }
-
 
 
 -(id) initWithFrame:(CGRect)frame {
@@ -98,6 +98,8 @@
         {
             [self addSubview:mainLabel];
             mainLabel.attributedString = cell.mainString;
+            TUIAttributedString *s = cell.mainString;
+            mainLabel.attributedString = s;
             mainLabel.frame = [self frameForMainLabel];
             self.contentSize = CGSizeMake(self.bounds.size.width, mainLabel.frame.size.height); 
         }

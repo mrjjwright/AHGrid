@@ -12,11 +12,11 @@
 #import "TUIImageView+AHExtensions.h"
 
 @implementation AHCell {
-    TUILabel *mainTextLabel;
+    AHLabel *mainTextLabel;
     TUITextRenderer *userTextRenderer;
     BOOL showingCommentEditor;
     
-    TUIImageView *smallPhotoImageView;
+    TUIImageView *imageView;
     TUIImageView *profileImageView;
     
     AHActionButton *firstButton;
@@ -47,6 +47,7 @@
 @synthesize dateString;
 @synthesize mainString;
 @synthesize likesString;
+@synthesize linkURL;
 @synthesize linkDescriptonString;
 @synthesize commentsString;
 @synthesize commentsTextInputPlaceholderString;
@@ -76,7 +77,7 @@
         self.layer.cornerRadius = 4;
         
         self.backgroundColor = [TUIColor whiteColor];
-        
+        self.opaque = YES;
         userTextRenderer = [[TUITextRenderer alloc] init];
         self.textRenderers = [NSArray arrayWithObjects:userTextRenderer, nil];
         headerView = [[TUIView alloc] initWithFrame:CGRectZero];
@@ -113,35 +114,46 @@
     self.mainString = nil;
     self.largePhotoImage = nil;
     if (commentEditor && commentEditor.text && commentEditor.text.length > 0) commentEditor.text = @"";
+    self.backgroundColor = [TUIColor whiteColor];
+}
+
+-(void) initImageView:(TUIImage*) image {
+    
+    if ( image && !imageView) {
+        imageView = [[TUIImageView alloc] initWithImage:image];
+        imageView.layer.cornerRadius = 3;
+        imageView.layer.contentsGravity = kCAGravityResizeAspect;
+        imageView.clipsToBounds = YES;
+        [self addSubview:imageView];
+        [self sendSubviewToBack:imageView];
+    } 
+    imageView.image = image;
+    
+    if (!image && imageView && imageView.superview) {
+        [imageView removeFromSuperview];
+    }
+    
+    if (image && imageView && !imageView.superview) {
+        [self addSubview:imageView];
+    }    
+}
+
+
+-(void) setLinkImage:(TUIImage *)l {
+    linkImage = l;
+    [self initImageView:linkImage];
 }
 
 
 -(void) setSmallPhotoImage:(TUIImage *)s {
     smallPhotoImage = s;
-    
-    if ( smallPhotoImage && !smallPhotoImageView) {
-        smallPhotoImageView = [[TUIImageView alloc] initWithImage:smallPhotoImage];
-        smallPhotoImageView.layer.cornerRadius = 3;
-        smallPhotoImageView.layer.contentsGravity = kCAGravityResizeAspect;
-        smallPhotoImageView.clipsToBounds = YES;
-        [self addSubview:smallPhotoImageView];
-        [self sendSubviewToBack:smallPhotoImageView];
-    } 
-    smallPhotoImageView.image = smallPhotoImage;
-    
-    if (!smallPhotoImage && smallPhotoImageView && smallPhotoImageView.superview) {
-        [smallPhotoImageView removeFromSuperview];
-    }
-    
-    if (smallPhotoImage && smallPhotoImageView && !smallPhotoImageView.superview) {
-        [self addSubview:smallPhotoImageView];
-    }
+    [self initImageView:smallPhotoImage];
 }
 
 -(void) setProfileImage:(TUIImage *)s {
     profileImage = s;
     
-    if ( profileImage && !smallPhotoImageView) {
+    if ( profileImage && !imageView) {
         profileImageView = [[TUIImageView alloc] initWithImage:profileImage];
         profileImageView.layer.cornerRadius = 3;
         profileImageView.layer.contentsGravity = kCAGravityResizeAspect;
@@ -198,16 +210,16 @@
 }
 
 
--(void) setUserString:(NSAttributedString *)u  {
+-(void) setUserString:(TUIAttributedString *)u  {
     userString = [u copy];
     userTextRenderer.attributedString = userString;
 }
 
--(void) setMainString:(NSAttributedString *)m  {
+-(void) setMainString:(TUIAttributedString *)m  {
     mainString = [m copy];
     if (!mainTextLabel) {
-        mainTextLabel = [[TUILabel alloc] initWithFrame:CGRectZero];
-        mainTextLabel.backgroundColor = [TUIColor clearColor];
+        mainTextLabel = [[AHLabel alloc] initWithFrame:CGRectZero];
+        mainTextLabel.backgroundColor = [TUIColor whiteColor];
     }
     
     if (mainString) {
@@ -218,8 +230,6 @@
     if (!mainString && mainTextLabel.superview) {
         [mainTextLabel removeFromSuperview];
     }
-    
-    
 }
 
 
@@ -231,6 +241,7 @@
     frame.size.height = 40;
     return frame;
 }
+
 
 
 -(void) layoutSubviews {
@@ -286,15 +297,26 @@
                                                             
     switch (type) {
         case AHGridCellTypePhoto:
-            [smallPhotoImageView constrainToSize:CGSizeMake(b.size.width, b.size.height - headerFrame.size.height - 10)];
-            CGRect smallPhotoImageFrame = smallPhotoImageView.frame;
-            smallPhotoImageFrame.origin.x = (b.size.width - smallPhotoImageFrame.size.width)/2;
-            smallPhotoImageFrame.origin.y = padding;
-            smallPhotoImageView.frame = smallPhotoImageFrame;
+        {
+            [imageView constrainToSize:CGSizeMake(b.size.width, b.size.height - 40)];
+            CGRect frame = imageView.frame;
+            frame.origin.x = (b.size.width - frame.size.width)/2;
+            frame.origin.y = ((b.size.height - 40) - frame.size.height)/2;
+            imageView.frame = frame;
             break;
+        }
         case AHGridCellTypeText:
             mainTextLabel.frame = mainFrame;
             break;
+        case AHGridCellTypeLink:
+        {
+            [imageView constrainToSize:CGSizeMake(90, 90)];
+            CGRect frame = imageView.frame;
+            frame.origin.x = padding + padding;
+            frame.origin.y = NSMaxY(mainFrame) - imageView.frame.size.height - padding;
+            imageView.frame = frame;
+            break;
+        }
         default:
             break;
     }
@@ -373,9 +395,9 @@
     commentEditor.hidden = NO;
     animating = YES;
     [TUIView animateWithDuration:0.3 animations:^{
-        CGRect frame = smallPhotoImageView.frame;
+        CGRect frame = imageView.frame;
         frame.origin.y = NSMaxY(commentEditor.frame);
-        smallPhotoImageView.frame = frame;
+        imageView.frame = frame;
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:commentEditor];
     } completion:^(BOOL finished) {
         animating = NO;
@@ -390,7 +412,7 @@
     if (commentEditor && !commentEditor.hidden) {
         [[self nsWindow] tui_makeFirstResponder:self];
         [TUIView animateWithDuration:0.3 animations:^{
-            smallPhotoImageView.frame = self.bounds;
+            imageView.frame = self.bounds;
         } completion:^(BOOL finished) {
             animating = NO;
             commentEditor.hidden = YES;

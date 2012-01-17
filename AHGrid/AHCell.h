@@ -9,6 +9,7 @@
 #import <AppKit/AppKit.h>
 #import "AHGrid.h"
 #import "TUIKit.h"
+#import "AHLabel.h"
 
 
 typedef enum {
@@ -35,13 +36,14 @@ typedef enum {
 @property (nonatomic) CGFloat profilePictureHeight;
 
 // Text
-@property (nonatomic, copy) NSAttributedString *userString;
-@property (nonatomic, copy) NSAttributedString *dateString;
-@property (nonatomic, copy) NSAttributedString *mainString;
-@property (nonatomic, copy) NSAttributedString *linkDescriptonString;
-@property (nonatomic, copy) NSAttributedString *likesString;
-@property (nonatomic, copy) NSAttributedString *commentsString;
-@property (nonatomic, copy) NSAttributedString *commentsTextInputPlaceholderString;
+@property (nonatomic, copy) TUIAttributedString *userString;
+@property (nonatomic, copy) TUIAttributedString *dateString;
+@property (nonatomic, copy) TUIAttributedString *mainString;
+@property (nonatomic, copy) TUIAttributedString *linkURL;
+@property (nonatomic, copy) TUIAttributedString *linkDescriptonString;
+@property (nonatomic, copy) TUIAttributedString *likesString;
+@property (nonatomic, copy) TUIAttributedString *commentsString;
+@property (nonatomic, copy) TUIAttributedString *commentsTextInputPlaceholderString;
 
 // Images
 @property (nonatomic, strong) TUIImage *backgroundImage;
