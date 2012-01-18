@@ -9,67 +9,38 @@
 #import "AHGridDetailView.h"
 
 @implementation AHGridDetailView {
-    TUILabel *userLabel;
+    AHCell *_cell;
 }
 
-@synthesize profileImageWidth;
-@synthesize profileImageHeight;
-@synthesize commentsTableView;
-@synthesize profilePictureImageView;
-@synthesize userString;
-@synthesize dateString;
+@synthesize grid;
 
-- (CGRect) frameForProfilePictureImageView {
-    CGRect frame = self.bounds;
-    frame.origin.y = NSMaxY(frame) - profileImageHeight - 5;
-    frame.origin.x = 5;
-    frame.size = CGSizeMake(profileImageWidth, profileImageHeight);
-    return frame;
+-(CGRect) frameForCell {
+    CGRect b = self.bounds;
+    b.origin.y = NSMaxY(b) - 250;
+    b.size.height = 250;
+    return b;
 }
-
-- (CGRect) frameForUserLabel {
-    CGRect frame = [self frameForProfilePictureImageView];
-    frame.origin.x = NSMaxX(frame) + 5;
-    frame.origin.y += 20;
-    frame.size.width = 250;
-    frame.size.height = 25;
-    return frame;
-}
-
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
-        // Default value for sizing properties
-        profileImageHeight = 50;
-        profileImageWidth = 50;
-        
-        profilePictureImageView = [[TUIImageView alloc] initWithFrame:[self frameForProfilePictureImageView]];
-        [self addSubview:profilePictureImageView];
-        
-        userLabel = [[TUILabel alloc] initWithFrame:[self frameForUserLabel]];
-        userLabel.font = [TUIFont boldSystemFontOfSize:11];
-        userLabel.backgroundColor = [TUIColor clearColor];
-        [self addSubview:userLabel];
-
+        _cell = [[AHCell alloc] initWithFrame:[self frameForCell]];
+        [self addSubview:_cell];
     }
-    
     return self;
 }
 
 -(void) layoutSubviews {
-    profilePictureImageView.frame = [self frameForProfilePictureImageView];
-    userLabel.frame = [self frameForUserLabel];
+    _cell.frame = [self frameForCell];
     [super layoutSubviews];
 }
 
--(void) setUserString:(NSAttributedString *)u {
-    userString = [u copy];
-    userLabel.attributedString = u;
-    [self setNeedsDisplay];
+-(void) update {
+    [_cell prepareForReuse];
+    grid.configureCellBlock(grid, grid.selectedCell.row, _cell, grid.selectedCell.index); 
 }
 
-
+ 
 @end

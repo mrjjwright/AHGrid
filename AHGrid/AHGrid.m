@@ -27,8 +27,10 @@
 
 @synthesize expandedRowIndex;
 @synthesize inConfigurationMode;
-@synthesize rowConfigureBlock;
-@synthesize cellConfigureBlock;
+@synthesize configureRowBlock;
+@synthesize configureCellBlock;
+@synthesize numberOfCommentsBlock;
+@synthesize configureCommentBlock;
 @synthesize selectedRow;
 @synthesize selectedCell;
 @synthesize selectedRowIndex;
@@ -108,8 +110,8 @@
     } else {
         rowView.expanded = NO;
     }
-    if (rowConfigureBlock) {
-        rowConfigureBlock(self, rowView, index);
+    if (configureRowBlock) {
+        configureRowBlock(self, rowView, index);
     }
     if (!rowView.titleString) {
         rowView.titleString = [NSString stringWithFormat:@"Example Row %d", index];
@@ -237,8 +239,7 @@
 }
 
 -(void) populateDetailView {
-    self.detailView.userString = self.selectedCell.userString;
-    self.detailView.profilePictureImageView.image = self.selectedCell.profileImage;
+    [self.detailView update];
     [self.selectedRow.expandedCell setCellToExpand:self.selectedCell    ];    
 }
 

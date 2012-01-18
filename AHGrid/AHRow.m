@@ -115,8 +115,8 @@
     cell.grid = grid;
     cell.index = i;
     
-    if (grid.cellConfigureBlock) {
-        grid.cellConfigureBlock(grid, self, cell, i);
+    if (grid.configureCellBlock) {
+        grid.configureCellBlock(grid, self, cell, i);
     }
     return cell;
 }

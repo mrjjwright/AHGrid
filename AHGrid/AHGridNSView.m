@@ -78,6 +78,7 @@
     detailViewContainer = [[TUINSView alloc] initWithFrame:self.bounds];
     detailViewContainer.rootView = detailView;
     grid.detailView = detailView;
+    detailView.grid = grid;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleDetailView:) name:kAHGridWillToggleExpansionOfRow object:nil];
     
     splitView = [[NSSplitView alloc]initWithFrame:self.bounds];
@@ -159,7 +160,8 @@ constrainMaxCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset {
 -(void) toggleDetailView:(NSNotification*) notification {
     if (!grid.selectedRow.expanded) {
         [splitView replaceSubview:picker with:detailViewContainer];
-        detailViewContainer.frame = [self frameForPicker];        
+        detailViewContainer.frame = [self frameForPicker];  
+        detailView.frame = detailViewContainer.bounds;
     } else {
         [splitView replaceSubview:detailViewContainer with:picker];
         picker.frame = [self frameForPicker];

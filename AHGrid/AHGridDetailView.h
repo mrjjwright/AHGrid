@@ -8,14 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 #import "TUIKit.h"
+#import "AHGrid.h"
+
+@class AHCell;
 
 @interface AHGridDetailView : TUIView
 
-@property (nonatomic) CGFloat profileImageHeight;
-@property (nonatomic) CGFloat profileImageWidth;
-@property (nonatomic, strong) TUIImageView *profilePictureImageView;
-@property (nonatomic, strong) TUITableView *commentsTableView;
-@property (nonatomic, copy ) NSAttributedString *userString;
-@property (nonatomic, copy) NSString *dateString;
+@property (nonatomic, weak) AHGrid *grid;
+
+-(void) update;
+
 
 @end

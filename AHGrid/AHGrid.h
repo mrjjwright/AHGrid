@@ -14,6 +14,7 @@
 #import "AHGridExpandedCell.h"
 #import "AHGridPickerView.h"
 #import "AHGridDetailView.h"
+#import "AHCommentsList.h"
 
 @class AHGrid;
 @class AHRow;
@@ -24,9 +25,11 @@
 
 #define kAHGridWillToggleExpansionOfRow @"kAHGridWillToggleExpansionOfRow"
 
-typedef void(^AHGridRowConfigureBlock)(AHGrid* grid, AHRow *row, NSUInteger index);
-typedef void(^AHGridCellConfigureBlock)(AHGrid* grid, AHRow *row, AHCell *cell, NSUInteger index);
+typedef void(^AHGridConfigureRowBlock)(AHGrid* grid, AHRow *row, NSUInteger index);
+typedef void(^AHGridConfigureCellBlock)(AHGrid* grid, AHRow *row, AHCell *cell, NSUInteger index);
 typedef NSInteger(^AHGridNumberOfCellsBlock)(AHGrid *grid, AHRow *row);
+typedef NSInteger(^AHGridNumberOfCommentsBlock)(AHGrid *grid, AHRow *row, AHCell *cell);
+typedef void(^AHGridConfigureCommentBlock)(AHGrid* grid, AHRow *row, AHCell *cell, AHCommentsList* commentList, AHComment *comment, NSUInteger index);
 
 @interface AHGrid : TUILayout  <TUILayoutDataSource>
 
@@ -41,9 +44,11 @@ typedef NSInteger(^AHGridNumberOfCellsBlock)(AHGrid *grid, AHRow *row);
 @property (nonatomic) NSInteger selectedCellIndex;
 @property (nonatomic) NSInteger expandedRowIndex;
 @property (nonatomic) BOOL inConfigurationMode;
-@property (nonatomic, copy) AHGridRowConfigureBlock rowConfigureBlock; 
-@property (nonatomic, copy) AHGridCellConfigureBlock cellConfigureBlock; 
+@property (nonatomic, copy) AHGridConfigureRowBlock configureRowBlock; 
+@property (nonatomic, copy) AHGridConfigureCellBlock configureCellBlock;
 @property (nonatomic, copy) AHGridNumberOfCellsBlock numberOfCellsBlock;
+@property (nonatomic, copy) AHGridNumberOfCommentsBlock numberOfCommentsBlock;
+@property (nonatomic, copy) AHGridConfigureCommentBlock configureCommentBlock;
 
 -(void) toggleSelectedRowExpanded;
 -(void) showCommentEditorOnSelectedCell;

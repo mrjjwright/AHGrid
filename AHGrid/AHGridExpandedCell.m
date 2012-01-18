@@ -9,7 +9,6 @@
 #import "AHGridExpandedCell.h"
 
 @implementation AHGridExpandedCell {
-    TUILabel *mainLabel;
     TUIImageView *photoImageView;
 }
 
@@ -48,12 +47,7 @@
     return frame;
 }
 
--(CGRect) frameForMainLabel {
-    CGRect b = self.bounds;
-    b.size.width *= 0.8;
-    b.size.height *= 0.8;
-    return ABRectCenteredInRect(b, self.bounds);
-}
+
 
 
 -(id) initWithFrame:(CGRect)frame {
@@ -66,16 +60,11 @@
         photoImageView.layer.contents = kCAGravityResizeAspect;
         [self addSubview:photoImageView];
         
-        // Main Label
-        mainLabel = [[TUILabel alloc] initWithFrame:[self frameForMainLabel]];
-        mainLabel.backgroundColor = [TUIColor clearColor];
-        self.contentSize = frame.size;
     }
     return self;
 }
 
 -(void) layoutSubviews {
-    mainLabel.frame = [self frameForMainLabel];
     photoImageView.frame = [self frameForPhotoImageView];
     [super layoutSubviews];
 }
@@ -84,7 +73,6 @@
 -(void) setCellToExpand:(AHCell *)cell {
     photoImageView.image = nil;
     [photoImageView removeFromSuperview];
-    [mainLabel removeFromSuperview];
     switch (cell.type) {
         case AHGridCellTypePhoto:
         {   
@@ -96,12 +84,8 @@
         }    
         case AHGridCellTypeText:
         {
-            [self addSubview:mainLabel];
-            mainLabel.attributedString = cell.mainString;
-            TUIAttributedString *s = cell.mainString;
-            mainLabel.attributedString = s;
-            mainLabel.frame = [self frameForMainLabel];
-            self.contentSize = CGSizeMake(self.bounds.size.width, mainLabel.frame.size.height); 
+            // Load more info on this person in this space, such as their last few posts
+            self.contentSize = CGSizeMake(0, 0); 
         }
         case AHGridCellTypeLink:
         {
