@@ -7,7 +7,7 @@
 //
 
 #import "TUILabel.h"
-
+#import "TUIKit.h"
 @interface AHLabel : TUILabel
 
 @end

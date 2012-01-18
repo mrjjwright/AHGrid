@@ -13,6 +13,7 @@
 
 @implementation AHCell {
     AHLabel *mainTextLabel;
+    AHLabel *linkLabel;
     TUITextRenderer *userTextRenderer;
     BOOL showingCommentEditor;
     
@@ -35,6 +36,7 @@
 @synthesize selected;
 @synthesize commentEditor;
 @synthesize expanded;
+@synthesize linkText;
 
 // Sizing
 @synthesize padding;
@@ -113,6 +115,7 @@
     self.userString = nil;
     self.mainString = nil;
     self.largePhotoImage = nil;
+    [linkLabel removeFromSuperview];
     if (commentEditor && commentEditor.text && commentEditor.text.length > 0) commentEditor.text = @"";
     self.backgroundColor = [TUIColor whiteColor];
 }
@@ -215,11 +218,12 @@
     userTextRenderer.attributedString = userString;
 }
 
+
 -(void) setMainString:(TUIAttributedString *)m  {
     mainString = [m copy];
     if (!mainTextLabel) {
         mainTextLabel = [[AHLabel alloc] initWithFrame:CGRectZero];
-        mainTextLabel.backgroundColor = [TUIColor whiteColor];
+        mainTextLabel.backgroundColor = [TUIColor clearColor];
     }
     
     if (mainString) {
@@ -232,6 +236,16 @@
     }
 }
 
+-(void) initLink {
+    if (!linkLabel) {
+        linkLabel = [[AHLabel alloc] initWithFrame:CGRectZero];
+        linkLabel.backgroundColor = [TUIColor clearColor];
+    }
+    linkLabel.attributedString = linkText;
+    [self addSubview:linkLabel];
+}
+
+
 
 #pragma mark - Layout
 
@@ -241,8 +255,6 @@
     frame.size.height = 40;
     return frame;
 }
-
-
 
 -(void) layoutSubviews {
     
@@ -310,11 +322,16 @@
             break;
         case AHGridCellTypeLink:
         {
+            //Link text
+            [self initLink];
+            
+            // Link pic
             [imageView constrainToSize:CGSizeMake(90, 90)];
             CGRect frame = imageView.frame;
             frame.origin.x = padding + padding;
-            frame.origin.y = NSMaxY(mainFrame) - imageView.frame.size.height - padding;
+            frame.origin.y = NSMaxY(mainFrame) - imageView.frame.size.height;
             imageView.frame = frame;
+            linkLabel.frame = CGRectMake(NSMaxX(imageView.frame) + 5, 5, mainFrame.size.width - NSMaxX(imageView.frame), mainFrame.size.height);
             break;
         }
         default:
@@ -332,7 +349,6 @@
 {
     return YES;
 }
-
 
 
 -(NSMenu*) menuForEvent:(NSEvent *)event {
@@ -461,6 +477,7 @@
 }
 
 -(void) mouseEntered:(NSEvent *)theEvent {
+
     [TUIView animateWithDuration:0.3 animations:^{
         firstButton.hidden = NO;
         secondButton.hidden = NO;

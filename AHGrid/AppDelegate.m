@@ -14,6 +14,7 @@
     TUIFont *userStringFont;
     TUIFont *headerFont;
     TUIFont *pickerCellFont;
+    TUIFont *linkFont;
 }
 
 @synthesize gridNSView;
@@ -27,6 +28,7 @@
     userStringFont = [TUIFont boldSystemFontOfSize:11];
     pickerCellFont = [TUIFont fontWithName:@"HelveticaNeue" size:12];
     headerFont = [TUIFont fontWithName:@"HelveticaNeue-Bold" size:12];
+    linkFont = [TUIFont boldSystemFontOfSize:11];
 
     // Setup model
     NSInteger numberOfRows = 10;
@@ -38,7 +40,7 @@
     NSArray *pictures =[NSArray arrayWithObjects:@"jw_profile.jpg", @"girl_bubble.jpg",@"john_amy.jpg", @"wide.jpg", nil];
     NSArray *names =[NSArray arrayWithObjects:@"John Wright", @"Dana Brown",@"Heather Gault", @"Rob Capillo", nil];
     NSArray *text =[NSArray arrayWithObjects:@".....finally watching Black Swan....damn, why didn't I keep taking that tap dancing class...LMAO..", @"SNOW DAY! I get to play with the ponies completely uninterrupted today! It would be swell if the temp would get above 28 degrees, though... Sure glad I stocked up on food and warming beverages yesterday. :)",@"\"Darkness cannot drive out darkness; only light can do that. Hate cannot drive out hate; only love can do that\" MLK Jr.", @"Application Done!", nil];
-    NSArray *linkDescriptions =[NSArray arrayWithObjects:@"Works in Progress…", @"Capitalism Magazine - What We Should Remember on Martin Luther King Day: Judge People by Their Chara",@"London Show Offers | Current Offers - On One Bikes", @"Superhero School: An Epicenter for Disruptive Innovation", nil];
+    NSArray *linkTexts =[NSArray arrayWithObjects:@"Works in Progress…", @"Capitalism Magazine - What We Should Remember on Martin Luther King Day: Judge People by Their Chara",@"London Show Offers | Current Offers - On One Bikes", @"Superhero School: An Epicenter for Disruptive Innovation", nil];
     NSArray *links =[NSArray arrayWithObjects:@" http://www.facebook.com/l.php?u=http%3A%2F%2Fwp.me%2Fp11rIR-4X&h=3AQHfsf_PAQFk8SSMwg-YZsaxB-MZgmKS-3-5g9LJYCWmcA", @"http://www.facebook.com/l.php?u=http%3A%2F%2Fwww.capitalismmagazine.com%2Fculture%2Fhistory%2F2399-what-we-should-remember-on-martin-luther-king-day-judge-people-by-their-character-not-skin-color.html&h=_AQFfH398AQELPwd7JPEosNO18dVdBGWqLFjFy1KyuvquNg",@"http://www.on-one.co.uk/c/q/current_offers/london_show_offers", @"http://emergentbydesign.com/2011/11/09/superhero-school-an-epicenter-for-disruptive-innovation/", nil];
     NSArray *linkPics = [NSArray arrayWithObjects:@"wip.jpg", @"mlk.jpg", @"bike_frame.jpg", @"school.png", nil];
     
@@ -56,7 +58,7 @@
                     [cellModel setObject:[text objectAtIndex:j % [text count]] forKey:@"mainText"];
                     break;
                 case AHGridCellTypeLink:
-                    [cellModel setObject:[linkDescriptions objectAtIndex:j % [linkDescriptions count]] forKey:@"linkDescription"];                    
+                    [cellModel setObject:[linkTexts objectAtIndex:j % [linkTexts count]] forKey:@"linkText"];                    
                     [cellModel setObject:[links objectAtIndex:j % [links count]] forKey:@"linkURL"];                    
                     [cellModel setObject:[linkPics objectAtIndex:j % [linkPics count]] forKey:@"linkPic"]; 
                     break;
@@ -111,9 +113,15 @@
                 break;
             }
             case AHGridCellTypeLink:
-                cell.linkDescriptonString = [TUIAttributedString stringWithString:[cellModel objectForKey:@"linkDescription"]];
+            {
+                TUIAttributedString *linkText = [TUIAttributedString stringWithString:[cellModel objectForKey:@"linkText"]];
+                //[linkText addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:1] range:NSMakeRange(0, linkText.length)];
+                linkText.color = [TUIColor colorWithRed:0.34 green:0.45 blue:0.67 alpha:1.0];
+                linkText.font = linkFont;
+                cell.linkText = linkText;
                 cell.linkImage = [TUIImage imageNamed:[cellModel objectForKey:@"linkPic"] cache:YES];
                 break;
+            }
             default:
                 break;
         }
@@ -136,7 +144,7 @@
     grid.picker.cellConfigureBlock = ^(AHGridPickerView *masterView, AHGridPickerCellView *cell, NSUInteger section, NSUInteger row) {
         TUIAttributedString *s = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"example cell %d", row]];
         s.color = [TUIColor blackColor];
-        s.font = headerFont;
+        s.font = pickerCellFont;
         [s setFont:pickerCellFont inRange:NSMakeRange(8, 4)]; // make the word "cell" bold
         cell.attributedString = s; 
     };

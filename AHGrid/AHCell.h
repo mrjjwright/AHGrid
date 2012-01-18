@@ -40,6 +40,7 @@ typedef enum {
 @property (nonatomic, copy) TUIAttributedString *dateString;
 @property (nonatomic, copy) TUIAttributedString *mainString;
 @property (nonatomic, copy) TUIAttributedString *linkURL;
+@property (nonatomic, copy) TUIAttributedString *linkText;
 @property (nonatomic, copy) TUIAttributedString *linkDescriptonString;
 @property (nonatomic, copy) TUIAttributedString *likesString;
 @property (nonatomic, copy) TUIAttributedString *commentsString;
