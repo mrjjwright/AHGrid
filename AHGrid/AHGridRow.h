@@ -25,7 +25,6 @@
 @property (nonatomic, strong) TUILayout *listView;
 @property (nonatomic) BOOL expanded;
 @property (nonatomic) BOOL selected;
-@property (nonatomic, weak) Class cellClass;
 
 @property (nonatomic,strong) NSString * titleString;
 

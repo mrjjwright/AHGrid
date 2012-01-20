@@ -25,7 +25,6 @@
 @synthesize selected;
 @synthesize titleString;
 @synthesize numberOfCells;
-@synthesize cellClass;
 
 -(CGRect) frameForHeaderView {
     CGRect b = self.bounds;
@@ -59,7 +58,6 @@
         listView.horizontalScrolling = YES;
         listView.spaceBetweenViews = 5;
         listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
-        listView.viewClass = cellClass ? cellClass : [AHGridCell class];
         [self addSubview:listView];
         
         titleLabel = [[TUILabel alloc] initWithFrame:CGRectMake(10, self.bounds.size.height - 25, 300, 25)];

@@ -70,7 +70,7 @@
         [rows addObject:rowInfo];
         AHGridRow *rowView = (AHGridRow*) [[AHGridRow alloc] initWithFrame:CGRectZero];
         rowView.index = i;
-        rowView.cellClass = cellClass;
+        rowView.listView.viewClass = cellClass ? cellClass : [AHGridCell class];
         if (numberOfCellsBlock) {
             rowView.numberOfCells = numberOfCellsBlock(self, rowView);
         } else {
