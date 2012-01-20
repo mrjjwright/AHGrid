@@ -62,7 +62,6 @@
         [image drawInRect:self.bounds];
     }
     
-    
     textRenderer.frame = self.bounds;
     if (textRenderer) {
         [textRenderer draw];

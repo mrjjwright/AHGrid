@@ -265,6 +265,8 @@
             [self.selectedRow.expandedCell layoutSubviews];
             [ self.selectedRow.expandedCell scrollToTopAnimated:NO];
         }
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kAHGridChangedCellSelection object:[NSNumber numberWithInteger:self.selectedCellIndex]]];
+
     }
 }
 
