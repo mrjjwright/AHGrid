@@ -7,12 +7,12 @@
 //
 
 #import "AHGrid.h"
-#import "AHRow.h"
+#import "AHGridRow.h"
 
 
 @interface AHGrid()
 
--(void) selectCellInAdjacentRow:(AHRow*) row;
+-(void) selectCellInAdjacentRow:(AHGridRow*) row;
 
 @end
 
@@ -29,21 +29,20 @@
 @synthesize inConfigurationMode;
 @synthesize configureRowBlock;
 @synthesize configureCellBlock;
-@synthesize numberOfCommentsBlock;
-@synthesize configureCommentBlock;
+@synthesize configureExpandedCellBlock;
 @synthesize selectedRow;
 @synthesize selectedCell;
 @synthesize selectedRowIndex;
 @synthesize selectedCellIndex;
 @synthesize initDelegate;
 @synthesize numberOfRows;
-@synthesize picker;
-@synthesize detailView;
 @synthesize numberOfCellsBlock;
+@synthesize cellClass;
 
 - (id)initWithFrame:(CGRect)frame
 {
 	if((self = [super initWithFrame:frame])) {
+        self.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
         self.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
         self.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenScrolling;
         self.autoresizingMask = TUIViewAutoresizingFlexibleSize;    
@@ -54,8 +53,7 @@
         expandedRowIndex = -1;
         self.dataSource = self;
         self.spaceBetweenViews = 15;
-        self.viewClass = [AHRow class];
-        
+        self.viewClass = [AHGridRow class];
     }
     return self;
 }
@@ -70,8 +68,9 @@
     for (int i = 0; i < numberOfRows; i++) {
         NSDictionary *rowInfo = [NSDictionary dictionary];
         [rows addObject:rowInfo];
-        AHRow *rowView = (AHRow*) [[AHRow alloc] initWithFrame:CGRectZero];
+        AHGridRow *rowView = (AHGridRow*) [[AHGridRow alloc] initWithFrame:CGRectZero];
         rowView.index = i;
+        rowView.cellClass = cellClass;
         if (numberOfCellsBlock) {
             rowView.numberOfCells = numberOfCellsBlock(self, rowView);
         } else {
@@ -81,7 +80,6 @@
         [rowViews addObject:rowView];
     }
     [super reloadData];
-    [picker.pickerTableView reloadData];
 }
 
 -(void) layoutSubviews {
@@ -100,7 +98,7 @@
 #pragma mark - TUILayoutDataSource methods
 
 -(TUIView*) layout:(TUILayout *)l viewForObjectAtIndex:(NSInteger)index {
-    AHRow *rowView = [rowViews objectAtIndex:index];
+    AHGridRow *rowView = [rowViews objectAtIndex:index];
     rowView.index = index;
     rowView.grid = self;
     
@@ -145,7 +143,6 @@
 {    
     if (!self.selectedRow || !self.selectedCell) return YES;
     
-    
     NSUInteger oldCellIndex = selectedCellIndex;
     NSUInteger newCellIndex = selectedCellIndex;
     NSUInteger oldRowIndex = selectedRowIndex;
@@ -158,14 +155,14 @@
             newCellIndex -= 1;
             newCellIndex = MAX(newCellIndex, 0);
             if (oldCellIndex != newCellIndex && newCellIndex < numberOfCellsInSelectedRow) {
-                self.selectedCell = (AHCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
+                self.selectedCell = (AHGridCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
             }
             return YES;;
         }
         case NSRightArrowFunctionKey:  {
             newCellIndex +=1;
             if (oldCellIndex != newCellIndex && (newCellIndex < numberOfCellsInSelectedRow)) {
-                self.selectedCell = (AHCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
+                self.selectedCell = (AHGridCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
             }
             return YES;
         }
@@ -173,7 +170,7 @@
             if (self.selectedRow.expanded == YES) return YES;
             newRowIndex += 1;
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
-                [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
+                [self selectCellInAdjacentRow:(AHGridRow*) [self viewForIndex:newRowIndex]];
             }
             return YES;
         }
@@ -182,7 +179,7 @@
             newRowIndex -= 1;
             newRowIndex = MAX(newRowIndex, 0);
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
-                [self selectCellInAdjacentRow:(AHRow*) [self viewForIndex:newRowIndex]];
+                [self selectCellInAdjacentRow:(AHGridRow*) [self viewForIndex:newRowIndex]];
             }
             return YES;
         }
@@ -204,21 +201,21 @@
 }
 
 
--(AHRow*) selectedRow {
+-(AHGridRow*) selectedRow {
     if (selectedRowIndex >=0) {
-        return (AHRow*) [self viewForIndex:selectedRowIndex];        
+        return (AHGridRow*) [self viewForIndex:selectedRowIndex];        
     }
     return  nil;
 }
 
--(AHCell*) selectedCell {
+-(AHGridCell*) selectedCell {
     if (selectedCellIndex >= 0) {
-        return (AHCell*) [self.selectedRow.listView viewForIndex:selectedCellIndex];
+        return (AHGridCell*) [self.selectedRow.listView viewForIndex:selectedCellIndex];
     }
     return nil;
 }
 
-- (void) setSelectedRow:(AHRow *) row 
+- (void) setSelectedRow:(AHGridRow *) row 
 {
     if (row.index == selectedRowIndex) return;
     if (self.selectedRow) {
@@ -238,12 +235,13 @@
     }
 }
 
--(void) populateDetailView {
-    [self.detailView update];
-    [self.selectedRow.expandedCell setCellToExpand:self.selectedCell    ];    
+-(void) setExpandedCell:(AHGridCell*) cell {
+    if (configureExpandedCellBlock) configureExpandedCellBlock(self, self.selectedRow, self.selectedCell, self.selectedRow.expandedCell, self.selectedRowIndex);
+    else
+        [self.selectedRow.expandedCell setCellToExpand:self.selectedCell ];
 }
 
-- (void) setSelectedCell:(AHCell *) cell 
+- (void) setSelectedCell:(AHGridCell *) cell 
 {
     if (cell.index == selectedCellIndex && cell.row.index == selectedRowIndex) return;
     if (self.selectedCell) {
@@ -262,7 +260,7 @@
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedCell];
         
         if (expandedRowIndex >= 0) {
-            [self populateDetailView];
+            [self setExpandedCell:self.selectedCell];    
             self.selectedCell.expanded = YES;
             [self.selectedRow.expandedCell layoutSubviews];
             [ self.selectedRow.expandedCell scrollToTopAnimated:NO];
@@ -270,14 +268,14 @@
     }
 }
 
--(void) selectCellInAdjacentRow:(AHRow*) row {
+-(void) selectCellInAdjacentRow:(AHGridRow*) row {
     CGRect v = self.selectedRow.listView.visibleRect;
     CGRect r = self.selectedCell.frame;
     // Adjust the point for the scroll position
     CGFloat relativeOffset = r.origin.x - (v.origin.x - roundf(self.selectedCell.bounds.size.width/2));
     CGRect rowVisible = row.listView.visibleRect;
     CGPoint point = CGPointMake(NSMinX(rowVisible) + relativeOffset, 0);
-    self.selectedCell = (AHCell*) [row.listView viewAtPoint:point];
+    self.selectedCell = (AHGridCell*) [row.listView viewAtPoint:point];
 }
 
 # pragma mark - Configuration
@@ -292,8 +290,7 @@
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kAHGridWillToggleExpansionOfRow object:self]];
     [self resizeObjectAtIndex:self.selectedRow.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         
-        // Set properties on the detail view
-        [self populateDetailView];
+        [self setExpandedCell:self.selectedCell];
         
         // Fade in the expanded Cell view
         CGFloat alpha = expandedRowIndex >=0 ? 0.0 : 1.0;
@@ -345,13 +342,30 @@
 //}
 
 
-# pragma mark - Actions
 
+#pragma mark - Scrolling
 
--(void) showCommentEditorOnSelectedCell {
-    if (self.selectedCell) {
-        [self.selectedCell showCommentEditor];
+- (BOOL)shouldScrollWheel:(NSEvent *)event {
+    
+    if ([event phase] == NSEventPhaseBegan) {
+        return YES;
+    } else if ([event phase] == NSEventPhaseChanged){
+        // Horizontal
+        if (fabs([event scrollingDeltaX]) > fabs([event scrollingDeltaY])) {
+            return YES;
+            
+        } else if (fabs([event scrollingDeltaX]) < fabs([event scrollingDeltaY])) { // Vertical
+            if (self.selectedCell && (self.selectedRowIndex != -1) && self.selectedRow.expanded && self.selectedRow.expandedCell) {
+                [self.selectedRow.expandedCell scrollWheel:event];
+            } else {
+                [self scrollWheel:event];
+            }
+            return NO;
+            
+        }
     }
+    [self scrollWheel:event];
+    return NO;
 }
 
 

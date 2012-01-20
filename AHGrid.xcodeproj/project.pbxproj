@@ -18,16 +18,15 @@
 		9A2C9AA514C5A60D00F361CE /* AHLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A2C9AA414C5A60D00F361CE /* AHLabel.m */; };
 		9A2C9AAB14C718BD00F361CE /* gymnast.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9AAA14C718BD00F361CE /* gymnast.jpg */; };
 		9A2C9AAD14C7193100F361CE /* henri.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9AAC14C7193100F361CE /* henri.jpg */; };
-		9A2C9AB014C71A1F00F361CE /* AHCommentsList.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A2C9AAF14C71A1E00F361CE /* AHCommentsList.m */; };
 		9A363DD114B65262004F31C7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A363DD014B65262004F31C7 /* Cocoa.framework */; };
 		9A363DDB14B65262004F31C7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A363DD914B65262004F31C7 /* InfoPlist.strings */; };
 		9A363DDD14B65262004F31C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DDC14B65262004F31C7 /* main.m */; };
 		9A363DE114B65262004F31C7 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 9A363DDF14B65262004F31C7 /* Credits.rtf */; };
 		9A363DE414B65262004F31C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DE314B65262004F31C7 /* AppDelegate.m */; };
 		9A363DE714B65263004F31C7 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9A363DE514B65263004F31C7 /* MainMenu.xib */; };
-		9A363DF414B6531E004F31C7 /* AHCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DEE14B6531E004F31C7 /* AHCell.m */; };
+		9A363DF414B6531E004F31C7 /* AHGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DEE14B6531E004F31C7 /* AHGridCell.m */; };
 		9A363DF514B6531E004F31C7 /* AHGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DF014B6531E004F31C7 /* AHGrid.m */; };
-		9A363DF614B6531E004F31C7 /* AHRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DF214B6531E004F31C7 /* AHRow.m */; };
+		9A363DF614B6531E004F31C7 /* AHGridRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DF214B6531E004F31C7 /* AHGridRow.m */; };
 		9A363DF714B6531E004F31C7 /* pet_plumes.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A363DF314B6531E004F31C7 /* pet_plumes.jpg */; };
 		9A363E6514B6533C004F31C7 /* ABActiveRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DFB14B6533B004F31C7 /* ABActiveRange.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A363E6614B6533C004F31C7 /* CoreText+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A363DFD14B6533B004F31C7 /* CoreText+Additions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -96,10 +95,7 @@
 		9ABA08A714BBD29600A187B3 /* heart.png in Resources */ = {isa = PBXBuildFile; fileRef = 9ABA08A614BBD29600A187B3 /* heart.png */; };
 		9ACC13C914BFB3370062A438 /* AHGridExpandedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ACC13C814BFB3370062A438 /* AHGridExpandedCell.m */; };
 		9ACC13D714C006C60062A438 /* john_amy.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9ACC13D614C006C60062A438 /* john_amy.jpg */; };
-		9ACC13DA14C0BF380062A438 /* AHGridNSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ACC13D914C0BF380062A438 /* AHGridNSView.m */; };
 		9ACC13DC14C0E7C30062A438 /* wide.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9ACC13DB14C0E7C30062A438 /* wide.jpg */; };
-		9ACC13DF14C10E410062A438 /* AHGridPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9ACC13DE14C10E400062A438 /* AHGridPickerView.m */; };
-		9AEA425614C37D66003AAFD7 /* AHGridDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AEA425514C37D66003AAFD7 /* AHGridDetailView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -119,8 +115,6 @@
 		9A2C9AA414C5A60D00F361CE /* AHLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHLabel.m; sourceTree = "<group>"; };
 		9A2C9AAA14C718BD00F361CE /* gymnast.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = gymnast.jpg; sourceTree = "<group>"; };
 		9A2C9AAC14C7193100F361CE /* henri.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = henri.jpg; sourceTree = "<group>"; };
-		9A2C9AAE14C71A1C00F361CE /* AHCommentsList.h */ = {isa = PBXFileReference; fileEncoding = 4; path = AHCommentsList.h; sourceTree = "<group>"; };
-		9A2C9AAF14C71A1E00F361CE /* AHCommentsList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHCommentsList.m; sourceTree = "<group>"; };
 		9A363DCC14B65262004F31C7 /* AHGrid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AHGrid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A363DD014B65262004F31C7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9A363DD314B65262004F31C7 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -134,12 +128,12 @@
 		9A363DE214B65262004F31C7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9A363DE314B65262004F31C7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9A363DE614B65263004F31C7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		9A363DED14B6531E004F31C7 /* AHCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHCell.h; sourceTree = "<group>"; };
-		9A363DEE14B6531E004F31C7 /* AHCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHCell.m; sourceTree = "<group>"; };
+		9A363DED14B6531E004F31C7 /* AHGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; path = AHGridCell.h; sourceTree = "<group>"; };
+		9A363DEE14B6531E004F31C7 /* AHGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridCell.m; sourceTree = "<group>"; };
 		9A363DEF14B6531E004F31C7 /* AHGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGrid.h; sourceTree = "<group>"; };
 		9A363DF014B6531E004F31C7 /* AHGrid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGrid.m; sourceTree = "<group>"; };
-		9A363DF114B6531E004F31C7 /* AHRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHRow.h; sourceTree = "<group>"; };
-		9A363DF214B6531E004F31C7 /* AHRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHRow.m; sourceTree = "<group>"; };
+		9A363DF114B6531E004F31C7 /* AHGridRow.h */ = {isa = PBXFileReference; fileEncoding = 4; path = AHGridRow.h; sourceTree = "<group>"; };
+		9A363DF214B6531E004F31C7 /* AHGridRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridRow.m; sourceTree = "<group>"; };
 		9A363DF314B6531E004F31C7 /* pet_plumes.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pet_plumes.jpg; sourceTree = "<group>"; };
 		9A363DFA14B6533B004F31C7 /* ABActiveRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABActiveRange.h; path = libs/TUIKit/ABActiveRange.h; sourceTree = "<group>"; };
 		9A363DFB14B6533B004F31C7 /* ABActiveRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABActiveRange.m; path = libs/TUIKit/ABActiveRange.m; sourceTree = "<group>"; };
@@ -262,13 +256,7 @@
 		9ACC13C714BFB3370062A438 /* AHGridExpandedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGridExpandedCell.h; sourceTree = "<group>"; };
 		9ACC13C814BFB3370062A438 /* AHGridExpandedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridExpandedCell.m; sourceTree = "<group>"; };
 		9ACC13D614C006C60062A438 /* john_amy.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = john_amy.jpg; sourceTree = "<group>"; };
-		9ACC13D814C0BF370062A438 /* AHGridNSView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGridNSView.h; sourceTree = "<group>"; };
-		9ACC13D914C0BF380062A438 /* AHGridNSView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridNSView.m; sourceTree = "<group>"; };
 		9ACC13DB14C0E7C30062A438 /* wide.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wide.jpg; sourceTree = "<group>"; };
-		9ACC13DD14C10E3F0062A438 /* AHGridPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGridPickerView.h; sourceTree = "<group>"; };
-		9ACC13DE14C10E400062A438 /* AHGridPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridPickerView.m; sourceTree = "<group>"; };
-		9AEA425414C37D66003AAFD7 /* AHGridDetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGridDetailView.h; sourceTree = "<group>"; };
-		9AEA425514C37D66003AAFD7 /* AHGridDetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridDetailView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -344,24 +332,16 @@
 			children = (
 				9AEA425714C38DC9003AAFD7 /* extensions */,
 				9A363DF814B65324004F31C7 /* libs */,
-				9A363DED14B6531E004F31C7 /* AHCell.h */,
-				9A363DEE14B6531E004F31C7 /* AHCell.m */,
+				9A363DED14B6531E004F31C7 /* AHGridCell.h */,
+				9A363DEE14B6531E004F31C7 /* AHGridCell.m */,
 				9ACC13C714BFB3370062A438 /* AHGridExpandedCell.h */,
 				9ACC13C814BFB3370062A438 /* AHGridExpandedCell.m */,
 				9A0E548B14BD260800C0AE80 /* AHActionButton.h */,
 				9A0E548C14BD260800C0AE80 /* AHActionButton.m */,
 				9A363DEF14B6531E004F31C7 /* AHGrid.h */,
 				9A363DF014B6531E004F31C7 /* AHGrid.m */,
-				9A363DF114B6531E004F31C7 /* AHRow.h */,
-				9A363DF214B6531E004F31C7 /* AHRow.m */,
-				9A2C9AAE14C71A1C00F361CE /* AHCommentsList.h */,
-				9A2C9AAF14C71A1E00F361CE /* AHCommentsList.m */,
-				9AEA425414C37D66003AAFD7 /* AHGridDetailView.h */,
-				9AEA425514C37D66003AAFD7 /* AHGridDetailView.m */,
-				9ACC13DD14C10E3F0062A438 /* AHGridPickerView.h */,
-				9ACC13DE14C10E400062A438 /* AHGridPickerView.m */,
-				9ACC13D814C0BF370062A438 /* AHGridNSView.h */,
-				9ACC13D914C0BF380062A438 /* AHGridNSView.m */,
+				9A363DF114B6531E004F31C7 /* AHGridRow.h */,
+				9A363DF214B6531E004F31C7 /* AHGridRow.m */,
 				9A363DE214B65262004F31C7 /* AppDelegate.h */,
 				9A363DE314B65262004F31C7 /* AppDelegate.m */,
 				9A363DE514B65263004F31C7 /* MainMenu.xib */,
@@ -627,9 +607,9 @@
 			files = (
 				9A363DDD14B65262004F31C7 /* main.m in Sources */,
 				9A363DE414B65262004F31C7 /* AppDelegate.m in Sources */,
-				9A363DF414B6531E004F31C7 /* AHCell.m in Sources */,
+				9A363DF414B6531E004F31C7 /* AHGridCell.m in Sources */,
 				9A363DF514B6531E004F31C7 /* AHGrid.m in Sources */,
-				9A363DF614B6531E004F31C7 /* AHRow.m in Sources */,
+				9A363DF614B6531E004F31C7 /* AHGridRow.m in Sources */,
 				9A363E6514B6533C004F31C7 /* ABActiveRange.m in Sources */,
 				9A363E6614B6533C004F31C7 /* CoreText+Additions.m in Sources */,
 				9A363E6714B6533C004F31C7 /* TUIAccessibility.m in Sources */,
@@ -689,13 +669,9 @@
 				9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */,
 				9A24FA2B14BE365400FDFD78 /* INAppStoreWindow.m in Sources */,
 				9ACC13C914BFB3370062A438 /* AHGridExpandedCell.m in Sources */,
-				9ACC13DA14C0BF380062A438 /* AHGridNSView.m in Sources */,
-				9ACC13DF14C10E410062A438 /* AHGridPickerView.m in Sources */,
-				9AEA425614C37D66003AAFD7 /* AHGridDetailView.m in Sources */,
 				9A2C9A9414C3EA8A00F361CE /* PPNavigationController.m in Sources */,
 				9A2C9A9714C3EEA900F361CE /* TUIImageView+AHExtensions.m in Sources */,
 				9A2C9AA514C5A60D00F361CE /* AHLabel.m in Sources */,
-				9A2C9AB014C71A1F00F361CE /* AHCommentsList.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

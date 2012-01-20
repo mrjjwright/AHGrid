@@ -157,7 +157,7 @@ typedef enum {
 @property (nonatomic) BOOL horizontalScrolling;
 @property (nonatomic) CGSize resizeKnobSize;
 @property (nonatomic) TUIEdgeInsets contentInset;
-@property (nonatomic, assign) id<TUIScrollViewDelegate> delegate;
+@property (nonatomic, weak) id<TUIScrollViewDelegate> delegate;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic) TUIScrollViewIndicatorVisibility horizontalScrollIndicatorVisibility;
 @property (nonatomic) TUIScrollViewIndicatorVisibility verticalScrollIndicatorVisibility;

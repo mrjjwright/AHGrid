@@ -6,10 +6,10 @@
 //  Copyright (c) 2012 AirHeart. All rights reserved.
 //
 
-#import "AHRow.h"
-#import "AHCell.h"
+#import "AHGridRow.h"
+#import "AHGridCell.h"
 
-@implementation AHRow {
+@implementation AHGridRow {
     TUIImageView *largeImageView;
     TUIView *headerView;
     BOOL dataLoaded;
@@ -25,6 +25,7 @@
 @synthesize selected;
 @synthesize titleString;
 @synthesize numberOfCells;
+@synthesize cellClass;
 
 -(CGRect) frameForHeaderView {
     CGRect b = self.bounds;
@@ -47,6 +48,8 @@
 {
 	if((self = [super initWithFrame:frame])) {
         self.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
+        
+        self.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
                 
         listView = [[TUILayout alloc] initWithFrame:CGRectZero];
         listView.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
@@ -56,7 +59,7 @@
         listView.horizontalScrolling = YES;
         listView.spaceBetweenViews = 5;
         listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
-        listView.viewClass = [AHCell class];
+        listView.viewClass = cellClass ? cellClass : [AHGridCell class];
         [self addSubview:listView];
         
         titleLabel = [[TUILabel alloc] initWithFrame:CGRectMake(10, self.bounds.size.height - 25, 300, 25)];
@@ -108,7 +111,7 @@
 
 -(TUIView*) layout:(TUILayout *)l viewForObjectAtIndex:(NSInteger)i {
     
-    AHCell *cell = (AHCell*) [listView dequeueReusableView];
+    AHGridCell *cell = (AHGridCell*) [listView dequeueReusableView];
 	cell.row = self;
     [cell prepareForReuse];
     cell.selected = (index == grid.selectedRowIndex) && (i == grid.selectedCellIndex);

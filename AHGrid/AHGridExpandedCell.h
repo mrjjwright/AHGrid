@@ -9,11 +9,10 @@
 #import "TUIKit.h"
 #import "AHGrid.h"
 
-@class AHCell;
+@class AHGridCell;
 
 @interface AHGridExpandedCell : TUIScrollView
 
-
--(void) setCellToExpand:(AHCell*) cell;
+-(void) setCellToExpand:(AHGridCell*) cell;
 
 @end

@@ -48,18 +48,9 @@
 }
 
 
-
-
 -(id) initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
-        
         // Add subviews
-        photoImageView = [[TUIImageView alloc] initWithFrame:[self frameForPhotoImageView]];
-        //photoImageView.layer.cornerRadius = 6;
-        photoImageView.clipsToBounds = YES;
-        photoImageView.layer.contents = kCAGravityResizeAspect;
-        [self addSubview:photoImageView];
-        
     }
     return self;
 }
@@ -70,30 +61,21 @@
 }
 
 
--(void) setCellToExpand:(AHCell *)cell {
+// this is only called if there is no AHGridConfigureExpandedCellBlock on the grid
+-(void) setCellToExpand:(AHGridCell *)cell { 
+    if (cell.image && !photoImageView) {
+        photoImageView = [[TUIImageView alloc] initWithFrame:[self frameForPhotoImageView]];
+        //photoImageView.layer.cornerRadius = 6;
+        photoImageView.clipsToBounds = YES;
+        photoImageView.layer.contents = kCAGravityResizeAspect;
+        [self addSubview:photoImageView];
+    }
     photoImageView.image = nil;
     [photoImageView removeFromSuperview];
-    switch (cell.type) {
-        case AHGridCellTypePhoto:
-        {   
-            [self addSubview:photoImageView];
-            photoImageView.image = cell.smallPhotoImage;
-            photoImageView.frame = [self frameForPhotoImageView];
-            self.contentSize = CGSizeMake(self.bounds.size.width,[self photoImageSize].height); 
-            break;
-        }    
-        case AHGridCellTypeText:
-        {
-            // Load more info on this person in this space, such as their last few posts
-            self.contentSize = CGSizeMake(0, 0); 
-        }
-        case AHGridCellTypeLink:
-        {
-            
-        }
-        default:
-            break;
-    }
+    [self addSubview:photoImageView];
+    photoImageView.image = cell.image;
+    photoImageView.frame = [self frameForPhotoImageView];
+    self.contentSize = CGSizeMake(self.bounds.size.width,[self photoImageSize].height); 
     [self setNeedsLayout];
 }
 

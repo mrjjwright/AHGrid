@@ -14,7 +14,8 @@
 
 @class AHGrid;
 @class AHGridExpandedCell;
-@interface AHRow : TUIView <TUILayoutDataSource>
+
+@interface AHGridRow : TUIView <TUILayoutDataSource>
 
 @property (nonatomic) NSInteger numberOfCells;
 @property (nonatomic, strong) AHGridExpandedCell *expandedCell;
@@ -24,7 +25,7 @@
 @property (nonatomic, strong) TUILayout *listView;
 @property (nonatomic) BOOL expanded;
 @property (nonatomic) BOOL selected;
-
+@property (nonatomic, weak) Class cellClass;
 
 @property (nonatomic,strong) NSString * titleString;
 
