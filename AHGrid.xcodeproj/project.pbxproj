@@ -13,7 +13,6 @@
 		9A2C9A9D14C47F6500F361CE /* bike_frame.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9914C47F6500F361CE /* bike_frame.jpg */; };
 		9A2C9A9E14C47F6500F361CE /* mlk.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9A14C47F6500F361CE /* mlk.jpg */; };
 		9A2C9A9F14C47F6500F361CE /* wip.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9B14C47F6500F361CE /* wip.jpg */; };
-		9A2C9AA514C5A60D00F361CE /* AHLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A2C9AA414C5A60D00F361CE /* AHLabel.m */; };
 		9A2C9AAD14C7193100F361CE /* henri.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9AAC14C7193100F361CE /* henri.jpg */; };
 		9A363DD114B65262004F31C7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A363DD014B65262004F31C7 /* Cocoa.framework */; };
 		9A363DDB14B65262004F31C7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A363DD914B65262004F31C7 /* InfoPlist.strings */; };
@@ -104,8 +103,6 @@
 		9A2C9A9914C47F6500F361CE /* bike_frame.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bike_frame.jpg; sourceTree = "<group>"; };
 		9A2C9A9A14C47F6500F361CE /* mlk.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mlk.jpg; sourceTree = "<group>"; };
 		9A2C9A9B14C47F6500F361CE /* wip.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wip.jpg; sourceTree = "<group>"; };
-		9A2C9AA314C5A60D00F361CE /* AHLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHLabel.h; sourceTree = "<group>"; };
-		9A2C9AA414C5A60D00F361CE /* AHLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHLabel.m; sourceTree = "<group>"; };
 		9A2C9AAC14C7193100F361CE /* henri.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = henri.jpg; sourceTree = "<group>"; };
 		9A363DCC14B65262004F31C7 /* AHGrid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AHGrid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A363DD014B65262004F31C7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -489,8 +486,6 @@
 			children = (
 				9A2C9A9514C3EEA900F361CE /* TUIImageView+AHExtensions.h */,
 				9A2C9A9614C3EEA900F361CE /* TUIImageView+AHExtensions.m */,
-				9A2C9AA314C5A60D00F361CE /* AHLabel.h */,
-				9A2C9AA414C5A60D00F361CE /* AHLabel.m */,
 			);
 			name = extensions;
 			sourceTree = "<group>";
@@ -639,7 +634,6 @@
 				9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */,
 				9ACC13C914BFB3370062A438 /* AHGridExpandedCell.m in Sources */,
 				9A2C9A9714C3EEA900F361CE /* TUIImageView+AHExtensions.m in Sources */,
-				9A2C9AA514C5A60D00F361CE /* AHLabel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,6 +13,7 @@
 
 -(void) constrainToSize:(CGSize) constrainedSize {
     CGSize size = self.image.size;
+    if (CGSizeEqualToSize(size, CGSizeZero)) return;
     CGFloat heightFactor = constrainedSize.height / size.height;
     CGFloat widthFactor = constrainedSize.width / size.width;
     CGFloat scaleFactor = 0.0;
