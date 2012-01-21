@@ -75,7 +75,8 @@
     [self addSubview:photoImageView];
     photoImageView.image = cell.image;
     photoImageView.frame = [self frameForPhotoImageView];
-    self.contentSize = CGSizeMake(self.bounds.size.width,[self photoImageSize].height); 
+    CGFloat contentHeight = photoImageView.image ? [self photoImageSize].height : self.bounds.size.height;
+    self.contentSize = CGSizeMake(self.bounds.size.width,contentHeight); 
     [self setNeedsLayout];
 }
 
