@@ -29,6 +29,7 @@ typedef NSInteger(^AHGridNumberOfCellsBlock)(AHGrid *grid, AHGridRow *row);
 @interface AHGrid : TUILayout  <TUILayoutDataSource, TUIScrollingInterceptor>
 
 @property (nonatomic, weak) Class cellClass; 
+@property (nonatomic, weak) Class expandedCellClass; 
 @property (nonatomic, weak) id<AHGridInitDelegate> initDelegate;
 @property (nonatomic) NSInteger numberOfRows;
 @property (nonatomic, weak) AHGridRow *selectedRow;

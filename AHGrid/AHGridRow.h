@@ -28,4 +28,7 @@
 
 @property (nonatomic,strong) NSString * titleString;
 
+
+- (id)initWithFrame:(CGRect)frame andGrid:(AHGrid*) g;
+
 @end

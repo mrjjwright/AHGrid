@@ -13,6 +13,6 @@
 
 @interface AHGridExpandedCell : TUIScrollView
 
--(void) setCellToExpand:(AHGridCell*) cell;
+-(void) expandCell:(AHGridCell*) cell;
 
 @end

@@ -38,6 +38,7 @@
 @synthesize numberOfRows;
 @synthesize numberOfCellsBlock;
 @synthesize cellClass;
+@synthesize expandedCellClass;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -68,7 +69,7 @@
     for (int i = 0; i < numberOfRows; i++) {
         NSDictionary *rowInfo = [NSDictionary dictionary];
         [rows addObject:rowInfo];
-        AHGridRow *rowView = (AHGridRow*) [[AHGridRow alloc] initWithFrame:CGRectZero];
+        AHGridRow *rowView = (AHGridRow*) [[AHGridRow alloc] initWithFrame:CGRectZero andGrid:self];
         rowView.index = i;
         rowView.listView.viewClass = cellClass ? cellClass : [AHGridCell class];
         if (numberOfCellsBlock) {
@@ -238,7 +239,7 @@
 -(void) setExpandedCell:(AHGridCell*) cell {
     if (configureExpandedCellBlock) configureExpandedCellBlock(self, self.selectedRow, self.selectedCell, self.selectedRow.expandedCell, self.selectedRowIndex);
     else
-        [self.selectedRow.expandedCell setCellToExpand:self.selectedCell ];
+        [self.selectedRow.expandedCell expandCell:self.selectedCell ];
 }
 
 - (void) setSelectedCell:(AHGridCell *) cell 

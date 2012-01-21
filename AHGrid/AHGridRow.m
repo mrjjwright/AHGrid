@@ -35,7 +35,7 @@
     
 }
 
--(CGRect) frameForexpandedCell {
+-(CGRect) frameForExpandedCell {
     CGRect expandedCellFrame = self.bounds;
     expandedCellFrame.origin.y += 200;
     expandedCellFrame.size.height -= 200;
@@ -43,9 +43,10 @@
 } 
 
 
-- (id)initWithFrame:(CGRect)frame
+- (id)initWithFrame:(CGRect)frame andGrid:(AHGrid*) g
 {
 	if((self = [super initWithFrame:frame])) {
+        grid = g;
         self.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
         
         self.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
@@ -67,7 +68,8 @@
         titleLabel.backgroundColor = [TUIColor clearColor];
         [self addSubview:titleLabel];
         
-        expandedCell = [[AHGridExpandedCell alloc] initWithFrame:[self frameForexpandedCell]];
+        Class expandedCellClass = grid.expandedCellClass ? grid.expandedCellClass : [AHGridExpandedCell class];
+        self.expandedCell = [[expandedCellClass alloc] initWithFrame:[self frameForExpandedCell]];
         expandedCell.autoresizingMask = TUIViewAutoresizingFlexibleSize;
         [self addSubview:expandedCell];
         expandedCell.alpha = 0;
@@ -96,7 +98,7 @@
     }
     
     if (!self.expanded || (self.expanded && !animating)) {
-        expandedCell.frame = [self frameForexpandedCell];
+        expandedCell.frame = [self frameForExpandedCell];
         [expandedCell setNeedsLayout];
     }
 

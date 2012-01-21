@@ -62,7 +62,7 @@
 
 
 // this is only called if there is no AHGridConfigureExpandedCellBlock on the grid
--(void) setCellToExpand:(AHGridCell *)cell { 
+-(void) expandCell:(AHGridCell *)cell { 
     if (cell.image && !photoImageView) {
         photoImageView = [[TUIImageView alloc] initWithFrame:[self frameForPhotoImageView]];
         //photoImageView.layer.cornerRadius = 6;

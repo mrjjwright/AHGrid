@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import "AHGrid.h"
-#import "INAppStoreWindow.h"
 #import "TUIKit.h"
 
 #define IN_RUNNING_LION (NSClassFromString(@"NSPopover") != nil)

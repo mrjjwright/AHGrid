@@ -8,15 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A0E548C14BD260800C0AE80 /* AHActionButton.m */; };
-		9A24FA2B14BE365400FDFD78 /* INAppStoreWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A24FA2A14BE365400FDFD78 /* INAppStoreWindow.m */; };
-		9A2C9A9414C3EA8A00F361CE /* PPNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9314C3EA8A00F361CE /* PPNavigationController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		9A2C9A9714C3EEA900F361CE /* TUIImageView+AHExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9614C3EEA900F361CE /* TUIImageView+AHExtensions.m */; };
 		9A2C9A9C14C47F6500F361CE /* school.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9814C47F6500F361CE /* school.png */; };
 		9A2C9A9D14C47F6500F361CE /* bike_frame.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9914C47F6500F361CE /* bike_frame.jpg */; };
 		9A2C9A9E14C47F6500F361CE /* mlk.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9A14C47F6500F361CE /* mlk.jpg */; };
 		9A2C9A9F14C47F6500F361CE /* wip.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9A9B14C47F6500F361CE /* wip.jpg */; };
 		9A2C9AA514C5A60D00F361CE /* AHLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A2C9AA414C5A60D00F361CE /* AHLabel.m */; };
-		9A2C9AAB14C718BD00F361CE /* gymnast.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9AAA14C718BD00F361CE /* gymnast.jpg */; };
 		9A2C9AAD14C7193100F361CE /* henri.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9A2C9AAC14C7193100F361CE /* henri.jpg */; };
 		9A363DD114B65262004F31C7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A363DD014B65262004F31C7 /* Cocoa.framework */; };
 		9A363DDB14B65262004F31C7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9A363DD914B65262004F31C7 /* InfoPlist.strings */; };
@@ -101,10 +98,6 @@
 /* Begin PBXFileReference section */
 		9A0E548B14BD260800C0AE80 /* AHActionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHActionButton.h; sourceTree = "<group>"; };
 		9A0E548C14BD260800C0AE80 /* AHActionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHActionButton.m; sourceTree = "<group>"; };
-		9A24FA2914BE365400FDFD78 /* INAppStoreWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = INAppStoreWindow.h; sourceTree = "<group>"; };
-		9A24FA2A14BE365400FDFD78 /* INAppStoreWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = INAppStoreWindow.m; sourceTree = "<group>"; };
-		9A2C9A9214C3EA8A00F361CE /* PPNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPNavigationController.h; sourceTree = "<group>"; };
-		9A2C9A9314C3EA8A00F361CE /* PPNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPNavigationController.m; sourceTree = "<group>"; };
 		9A2C9A9514C3EEA900F361CE /* TUIImageView+AHExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TUIImageView+AHExtensions.h"; sourceTree = "<group>"; };
 		9A2C9A9614C3EEA900F361CE /* TUIImageView+AHExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TUIImageView+AHExtensions.m"; sourceTree = "<group>"; };
 		9A2C9A9814C47F6500F361CE /* school.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = school.png; sourceTree = "<group>"; };
@@ -113,7 +106,6 @@
 		9A2C9A9B14C47F6500F361CE /* wip.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wip.jpg; sourceTree = "<group>"; };
 		9A2C9AA314C5A60D00F361CE /* AHLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHLabel.h; sourceTree = "<group>"; };
 		9A2C9AA414C5A60D00F361CE /* AHLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHLabel.m; sourceTree = "<group>"; };
-		9A2C9AAA14C718BD00F361CE /* gymnast.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = gymnast.jpg; sourceTree = "<group>"; };
 		9A2C9AAC14C7193100F361CE /* henri.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = henri.jpg; sourceTree = "<group>"; };
 		9A363DCC14B65262004F31C7 /* AHGrid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AHGrid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A363DD014B65262004F31C7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -128,11 +120,11 @@
 		9A363DE214B65262004F31C7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9A363DE314B65262004F31C7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9A363DE614B65263004F31C7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		9A363DED14B6531E004F31C7 /* AHGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; path = AHGridCell.h; sourceTree = "<group>"; };
+		9A363DED14B6531E004F31C7 /* AHGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGridCell.h; sourceTree = "<group>"; };
 		9A363DEE14B6531E004F31C7 /* AHGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridCell.m; sourceTree = "<group>"; };
 		9A363DEF14B6531E004F31C7 /* AHGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGrid.h; sourceTree = "<group>"; };
 		9A363DF014B6531E004F31C7 /* AHGrid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGrid.m; sourceTree = "<group>"; };
-		9A363DF114B6531E004F31C7 /* AHGridRow.h */ = {isa = PBXFileReference; fileEncoding = 4; path = AHGridRow.h; sourceTree = "<group>"; };
+		9A363DF114B6531E004F31C7 /* AHGridRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHGridRow.h; sourceTree = "<group>"; };
 		9A363DF214B6531E004F31C7 /* AHGridRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHGridRow.m; sourceTree = "<group>"; };
 		9A363DF314B6531E004F31C7 /* pet_plumes.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = pet_plumes.jpg; sourceTree = "<group>"; };
 		9A363DFA14B6533B004F31C7 /* ABActiveRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABActiveRange.h; path = libs/TUIKit/ABActiveRange.h; sourceTree = "<group>"; };
@@ -272,24 +264,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9A24FA2714BE363C00FDFD78 /* InAppStoreWindow */ = {
-			isa = PBXGroup;
-			children = (
-				9A24FA2914BE365400FDFD78 /* INAppStoreWindow.h */,
-				9A24FA2A14BE365400FDFD78 /* INAppStoreWindow.m */,
-			);
-			name = InAppStoreWindow;
-			sourceTree = "<group>";
-		};
-		9A2C9A9014C3EA7B00F361CE /* PushPopController */ = {
-			isa = PBXGroup;
-			children = (
-				9A2C9A9214C3EA8A00F361CE /* PPNavigationController.h */,
-				9A2C9A9314C3EA8A00F361CE /* PPNavigationController.m */,
-			);
-			name = PushPopController;
-			sourceTree = "<group>";
-		};
 		9A363DC114B65262004F31C7 = {
 			isa = PBXGroup;
 			children = (
@@ -354,7 +328,6 @@
 			isa = PBXGroup;
 			children = (
 				9A2C9AAC14C7193100F361CE /* henri.jpg */,
-				9A2C9AAA14C718BD00F361CE /* gymnast.jpg */,
 				9A2C9A9814C47F6500F361CE /* school.png */,
 				9A2C9A9914C47F6500F361CE /* bike_frame.jpg */,
 				9A2C9A9A14C47F6500F361CE /* mlk.jpg */,
@@ -382,8 +355,6 @@
 		9A363DF814B65324004F31C7 /* libs */ = {
 			isa = PBXGroup;
 			children = (
-				9A2C9A9014C3EA7B00F361CE /* PushPopController */,
-				9A24FA2714BE363C00FDFD78 /* InAppStoreWindow */,
 				9A363EB214B78A43004F31C7 /* TUILayout */,
 				9A363DF914B6532A004F31C7 /* TUIKit */,
 			);
@@ -593,7 +564,6 @@
 				9A2C9A9D14C47F6500F361CE /* bike_frame.jpg in Resources */,
 				9A2C9A9E14C47F6500F361CE /* mlk.jpg in Resources */,
 				9A2C9A9F14C47F6500F361CE /* wip.jpg in Resources */,
-				9A2C9AAB14C718BD00F361CE /* gymnast.jpg in Resources */,
 				9A2C9AAD14C7193100F361CE /* henri.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -667,9 +637,7 @@
 				9A363E9C14B6533C004F31C7 /* TUIViewNSViewContainer.m in Sources */,
 				9A363EB514B78A6C004F31C7 /* TUILayout.m in Sources */,
 				9A0E548D14BD260800C0AE80 /* AHActionButton.m in Sources */,
-				9A24FA2B14BE365400FDFD78 /* INAppStoreWindow.m in Sources */,
 				9ACC13C914BFB3370062A438 /* AHGridExpandedCell.m in Sources */,
-				9A2C9A9414C3EA8A00F361CE /* PPNavigationController.m in Sources */,
 				9A2C9A9714C3EEA900F361CE /* TUIImageView+AHExtensions.m in Sources */,
 				9A2C9AA514C5A60D00F361CE /* AHLabel.m in Sources */,
 			);
