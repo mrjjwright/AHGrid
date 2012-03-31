@@ -56,7 +56,6 @@ enum {
 
 @synthesize decelerationRate;
 @synthesize resizeKnobSize;
-@synthesize scrollingDelegate;
 
 + (Class)layerClass
 {
@@ -75,6 +74,7 @@ enum {
 		_scrollViewFlags.alwaysBounceVertical = FALSE;
 		_scrollViewFlags.alwaysBounceHorizontal = FALSE;
         _scrollViewFlags.horizontalScrolling = FALSE;
+        
 		
 		_scrollViewFlags.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleDefault;
 		_scrollViewFlags.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleDefault;
@@ -99,13 +99,6 @@ enum {
 - (void)dealloc
 {
 	[scrollTimer invalidate];
-	[scrollTimer release];
-	scrollTimer = nil;
-	
-	[_horizontalScrollKnob release];
-	[_verticalScrollKnob release];
-	
-	[super dealloc];
 }
 
 - (id<TUIScrollViewDelegate>)delegate
@@ -197,6 +190,17 @@ enum {
     return _scrollViewFlags.verticalScrollIndicatorShowing;
 }
 
+
+-(BOOL) horizontalScrolling 
+{
+    return _scrollViewFlags.horizontalScrolling;
+}
+
+- (void) setHorizontalScrolling:(BOOL)b 
+{
+    _scrollViewFlags.horizontalScrolling = b;
+}
+
 /**
  * @brief Determine if the horizontal scroll indicator is currently showing
  * @return showing or not
@@ -213,16 +217,6 @@ enum {
 - (void)setScrollEnabled:(BOOL)b
 {
 	_scrollViewFlags.scrollDisabled = !b;
-}
-
--(BOOL) horizontalScrolling 
-{
-    return _scrollViewFlags.horizontalScrolling;
-}
-
-- (void) setHorizontalScrolling:(BOOL)b 
-{
-    _scrollViewFlags.horizontalScrolling = b;
 }
 
 - (TUIEdgeInsets)contentInset
@@ -272,7 +266,7 @@ enum {
 	_bounce.bouncing = NO;
 	
 	if(!scrollTimer) {
-		scrollTimer = [[NSTimer scheduledTimerWithTimeInterval:1/60. target:self selector:@selector(tick:) userInfo:nil repeats:YES] retain];
+		scrollTimer = [NSTimer scheduledTimerWithTimeInterval:1/60. target:self selector:@selector(tick:) userInfo:nil repeats:YES];
 	}
 }
 
@@ -280,7 +274,6 @@ enum {
 {
 	if(scrollTimer) {
 		[scrollTimer invalidate];
-		[scrollTimer release];
 		scrollTimer = nil;
 	}
 	_scrollViewFlags.animationMode = AnimationModeNone;
@@ -941,7 +934,6 @@ static float clampBounce(float x) {
 		_throw.throwing = 0;
 		_scrollViewFlags.gestureBegan = 1; // this won't happen if window isn't key on 10.6, lame
 	}
-    [self.superview beginGestureWithEvent:event];
 	
 }
 
@@ -1007,40 +999,8 @@ static float clampBounce(float x) {
 			_scrollViewFlags.ignoreNextScrollPhaseNormal_10_7 = 1;
 		}
 	}
-	[self.superview endGestureWithEvent:event];
+	
 }
-
-#pragma mark - Scrolling
-
-
--(BOOL) isVerticalScroll:(NSEvent*) event {
-    
-    // Get the amount of scrolling
-    double dx = 0.0;
-    double dy = 0.0;
-    
-    CGEventRef cgEvent = [event CGEvent];
-    const int64_t isContinuous = CGEventGetIntegerValueField(cgEvent, kCGScrollWheelEventIsContinuous);
-    
-    if(isContinuous) {
-        dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis2);
-        dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis1);
-    } else {
-        CGEventSourceRef source = CGEventCreateSourceFromEvent(cgEvent);
-        if(source) {
-            const double pixelsPerLine = CGEventSourceGetPixelsPerLine(source);
-            dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis2) * pixelsPerLine;
-            dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis1) * pixelsPerLine;
-            CFRelease(source);
-        } else {
-            NSLog(@"Critical: NULL source from CGEventCreateSourceFromEvent");
-        }
-    }
-    
-    if (fabsf(dx) > fabsf(dy)) return NO;
-    return YES;
-}
-
 
 - (void)scrollWheel:(NSEvent *)event
 {
@@ -1093,7 +1053,7 @@ static float clampBounce(float x) {
 				double dy = 0.0;
 				
 				if(isContinuous) {
-                    if(_scrollViewFlags.alwaysBounceHorizontal || _scrollViewFlags.horizontalScrolling)
+                    if(_scrollViewFlags.alwaysBounceHorizontal || [self _horizontalScrollKnobNeededForContentSize:self.contentSize])
                         dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis2);
                     if(_scrollViewFlags.alwaysBounceVertical || [self _verticalScrollKnobNeededForContentSize:self.contentSize])
                         dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventPointDeltaAxis1);
@@ -1101,7 +1061,7 @@ static float clampBounce(float x) {
 					CGEventSourceRef source = CGEventCreateSourceFromEvent(cgEvent);
 					if(source) {
 						const double pixelsPerLine = CGEventSourceGetPixelsPerLine(source);
-						if(_scrollViewFlags.alwaysBounceHorizontal || _scrollViewFlags.horizontalScrolling)
+						if(_scrollViewFlags.alwaysBounceHorizontal || [self _horizontalScrollKnobNeededForContentSize:self.contentSize])
                             dx = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis2) * pixelsPerLine;
                         if(_scrollViewFlags.alwaysBounceVertical || [self _verticalScrollKnobNeededForContentSize:self.contentSize])
                             dy = CGEventGetDoubleValueField(cgEvent, kCGScrollWheelEventFixedPtDeltaAxis1) * pixelsPerLine;
@@ -1115,12 +1075,13 @@ static float clampBounce(float x) {
                     dy = 0;
                 } 
                 
+				
 				if(MAX(fabsf(dx), fabsf(dy)) > 0.00001) { // ignore 0.0, 0.0
 					_lastScroll.dx = dx;
 					_lastScroll.dy = dy;
 					_lastScroll.t = CFAbsoluteTimeGetCurrent();
 				}
-                
+				
 				CGPoint o = _unroundedContentOffset;
 				
 				if(!_pull.xPulling) o.x = o.x + dx;

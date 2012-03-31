@@ -23,19 +23,14 @@
     [containerView addSubview:grid];
     grid.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     nsView.rootView = containerView;
-    nsView.scrollingInterceptor = grid;
-    grid.initDelegate = self;
-    [grid reloadData];
-}
+    nsView.scrollingInterceptor = (id<TUIScrollingInterceptor>) grid;    
 
-
--(void) initGrid:(AHGrid *)grid {
     
     textFont = [TUIFont fontWithName:@"HelveticaNeue" size:12];
     
     // Setup model
-    NSInteger numberOfRows = 10;
-    NSInteger numExampleCellsPerRow = 20;
+    NSUInteger numberOfRows = 10;
+    NSUInteger numExampleCellsPerRow = 20;
     
     //Setup an example model
     gridModel = [NSMutableDictionary dictionary];
@@ -54,17 +49,19 @@
         [gridModel setObject:cellModels forKey:[NSNumber numberWithInteger:i]];
     }
     
+
     // Setup grid properties
-    grid.numberOfRows = numberOfRows;
     
-    
-    // Configure rows
     grid.configureRowBlock = ^(AHGrid* grid, AHGridRow *row, NSUInteger index) {
         row.titleString = [NSString stringWithFormat:@"Example Row %d", index];
     };
     
+    grid.numberOfRowsBlock = ^(AHGrid *grid) {
+        return numberOfRows;
+    };
+    
     grid.numberOfCellsBlock = ^(AHGrid *grid, AHGridRow *row) {
-        return numExampleCellsPerRow;  
+        return numExampleCellsPerRow;
     };
     
     // Configure cells
@@ -77,6 +74,8 @@
         textString.font = textFont;
         cell.text = textString;
     };
+    
+    [grid reloadData];
     
 }
 

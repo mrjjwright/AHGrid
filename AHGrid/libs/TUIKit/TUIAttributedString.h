@@ -81,7 +81,7 @@ typedef enum {
 - (void)setShadow:(NSShadow *)shadow inRange:(NSRange)range;
 - (void)setKerning:(CGFloat)f inRange:(NSRange)range;
 - (void)setLineHeight:(CGFloat)f inRange:(NSRange)range;
-- (void) maximizeFontSizeToFitSize:(CGSize) size;
+
 @end
 
 @interface NSShadow (TUIAdditions)

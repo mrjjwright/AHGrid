@@ -26,7 +26,7 @@
 
 @interface TUITextView : TUIControl
 {
-	id<TUITextViewDelegate> delegate;
+	id<TUITextViewDelegate> __unsafe_unretained delegate;
 	TUIViewDrawRect drawFrame;
 	
 	NSString *placeholder;
@@ -44,7 +44,6 @@
 
 	TUIEdgeInsets contentInset;
 
-	TUITextEditor *renderer;
 	TUIView *cursor;
 	
 	CGRect _lastTextRect;
@@ -57,12 +56,12 @@
 
 - (Class)textEditorClass;
 
-@property (nonatomic, assign) id<TUITextViewDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id<TUITextViewDelegate> delegate;
 
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, copy) NSString *placeholder;
-@property (nonatomic, retain) TUIFont *font;
-@property (nonatomic, retain) TUIColor *textColor;
+@property (nonatomic, strong) TUIFont *font;
+@property (nonatomic, strong) TUIColor *textColor;
 @property (nonatomic, assign) TUITextAlignment textAlignment;
 @property (nonatomic, assign) TUIEdgeInsets contentInset;
 
@@ -70,13 +69,13 @@
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 @property (nonatomic, assign, getter=isSpellCheckingEnabled) BOOL spellCheckingEnabled;
 @property (nonatomic, assign, getter=isAutocorrectionEnabled) BOOL autocorrectionEnabled;
+@property (nonatomic, strong) TUITextEditor *renderer;
 
 @property (nonatomic, copy) TUIViewDrawRect drawFrame;
 
 - (BOOL)hasText;
 
 - (BOOL)doCommandBySelector:(SEL)selector;
-
 
 @end
 

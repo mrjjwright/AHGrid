@@ -18,30 +18,30 @@
 #import "TUIGeometry.h"
 
 typedef enum {
-  /** Dark scroll indicator style suitable for light background */
-  TUIScrollViewIndicatorStyleDark,
-  /** Light scroll indicator style suitable for dark backgrounds */
-  TUIScrollViewIndicatorStyleLight,
-  /** Default scroll indicator style (dark) */
-  TUIScrollViewIndicatorStyleDefault = TUIScrollViewIndicatorStyleDark
+    /** Dark scroll indicator style suitable for light background */
+    TUIScrollViewIndicatorStyleDark,
+    /** Light scroll indicator style suitable for dark backgrounds */
+    TUIScrollViewIndicatorStyleLight,
+    /** Default scroll indicator style (dark) */
+    TUIScrollViewIndicatorStyleDefault = TUIScrollViewIndicatorStyleDark
 } TUIScrollViewIndicatorStyle;
 
 typedef enum {
-  /** Never show scrollers */
-  TUIScrollViewIndicatorVisibleNever,
-  /** Show scrollers only during an animated scroll (not particularly useful yet) */
-  TUIScrollViewIndicatorVisibleWhenScrolling,
-  /** Show scrollers only when the mouse is inside the scroll view */
-  TUIScrollViewIndicatorVisibleWhenMouseInside,
-  /** Always show scrollers */
-  TUIScrollViewIndicatorVisibleAlways,
-  /** Default scroller visibility (always) */
-  TUIScrollViewIndicatorVisibleDefault = TUIScrollViewIndicatorVisibleAlways
+    /** Never show scrollers */
+    TUIScrollViewIndicatorVisibleNever,
+    /** Show scrollers only during an animated scroll (not particularly useful yet) */
+    TUIScrollViewIndicatorVisibleWhenScrolling,
+    /** Show scrollers only when the mouse is inside the scroll view */
+    TUIScrollViewIndicatorVisibleWhenMouseInside,
+    /** Always show scrollers */
+    TUIScrollViewIndicatorVisibleAlways,
+    /** Default scroller visibility (always) */
+    TUIScrollViewIndicatorVisibleDefault = TUIScrollViewIndicatorVisibleAlways
 } TUIScrollViewIndicatorVisibility;
 
 typedef enum {
-  TUIScrollViewIndicatorVertical,
-  TUIScrollViewIndicatorHorizontal,
+    TUIScrollViewIndicatorVertical,
+    TUIScrollViewIndicatorHorizontal,
 } TUIScrollViewIndicator;
 
 @protocol TUIScrollViewDelegate;
@@ -72,15 +72,15 @@ typedef enum {
 
 @interface TUIScrollView : TUIView
 {
-  CGPoint         _unroundedContentOffset;
-  CGSize          _contentSize;
-  CGSize          resizeKnobSize;
-  TUIEdgeInsets   _contentInset;
+    CGPoint         _unroundedContentOffset;
+    CGSize          _contentSize;
+    CGSize          resizeKnobSize;
+    TUIEdgeInsets   _contentInset;
 	
 	id _delegate;
 	
-  TUIScrollKnob * _verticalScrollKnob;
-  TUIScrollKnob * _horizontalScrollKnob;
+    TUIScrollKnob * _verticalScrollKnob;
+    TUIScrollKnob * _horizontalScrollKnob;
 	
 	NSTimer *scrollTimer;
 	CGPoint destinationOffset;
@@ -110,12 +110,12 @@ typedef enum {
 		BOOL bouncing;
 	} _bounce;
 	
-  struct {
-    float x;
-    float y;
-    BOOL  xPulling;
-    BOOL  yPulling;
-  } _pull;
+    struct {
+        float x;
+        float y;
+        BOOL  xPulling;
+        BOOL  yPulling;
+    } _pull;
 	
 	CGPoint  _dragScrollLocation;
 	
@@ -148,7 +148,6 @@ typedef enum {
 	} _scrollViewFlags;
 }
 
-@property (nonatomic, assign) id scrollingDelegate;
 @property (nonatomic) CGPoint contentOffset;
 @property (nonatomic) CGSize contentSize;
 @property (nonatomic) BOOL bounces;
@@ -157,7 +156,7 @@ typedef enum {
 @property (nonatomic) BOOL horizontalScrolling;
 @property (nonatomic) CGSize resizeKnobSize;
 @property (nonatomic) TUIEdgeInsets contentInset;
-@property (nonatomic, weak) id<TUIScrollViewDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id<TUIScrollViewDelegate> delegate;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic) TUIScrollViewIndicatorVisibility horizontalScrollIndicatorVisibility;
 @property (nonatomic) TUIScrollViewIndicatorVisibility verticalScrollIndicatorVisibility;
@@ -170,7 +169,7 @@ typedef enum {
 - (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated;
 - (void)scrollToTopAnimated:(BOOL)animated;
 - (void)scrollToBottomAnimated:(BOOL)animated;
-- (CGFloat)topDestinationOffset;
+
 - (void)beginContinuousScrollForDragAtPoint:(CGPoint)dragLocation animated:(BOOL)animated;
 - (void)endContinuousScrollAnimated:(BOOL)animated;
 

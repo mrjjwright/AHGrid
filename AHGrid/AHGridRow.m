@@ -1,6 +1,6 @@
 //
 //  AHRow.m
-//  Crew
+//  Swift
 //
 //  Created by John Wright on 1/3/12.
 //  Copyright (c) 2012 AirHeart. All rights reserved.
@@ -8,74 +8,76 @@
 
 #import "AHGridRow.h"
 #import "AHGridCell.h"
+#import "AHGrid.h"
 
 @implementation AHGridRow {
-    TUIImageView *largeImageView;
-    TUIView *headerView;
-    BOOL dataLoaded;
-    TUILabel *titleLabel;
 }
 
 @synthesize animating;
-@synthesize expandedCell;
 @synthesize grid;
 @synthesize index;
 @synthesize listView;
-@synthesize expanded;
 @synthesize selected;
 @synthesize titleString;
 @synthesize numberOfCells;
+@synthesize associatedObject;
+@synthesize headerView;
+
+@synthesize logicalSize;
+@synthesize xLargeCell;
 
 -(CGRect) frameForHeaderView {
     CGRect b = self.bounds;
-    b.size = CGSizeMake(300, 25);
+    b.size.height = grid.rowHeaderHeight;
     b.origin.x = 10;
-    b.origin.y = NSMaxY(listView.frame) + 5;
+    b.origin.y = NSMaxY(listView.frame);
     return b;
-    
 }
 
--(CGRect) frameForExpandedCell {
-    CGRect expandedCellFrame = self.bounds;
-    expandedCellFrame.origin.y += 200;
-    expandedCellFrame.size.height -= 200;
-    return expandedCellFrame;
+-(CGRect) frameForXLargeCell {
+    if (!xLargeCell) return CGRectZero;
+    CGRect xlargeCellFrame = self.bounds;
+    xlargeCellFrame.origin.y = (listView.frame.size.height + grid.rowHeaderHeight + 15);
+    xlargeCellFrame.size.height -= xlargeCellFrame.origin.y;
+    return xlargeCellFrame;
 } 
+
+-(CGRect) frameForListView {
+    CGRect b = self.bounds;
+    CGRect listRect = b;
+    listRect.size.height -= [self frameForHeaderView].size.height;
+    if (self.logicalSize == AHGridLogicalSizeXLarge) {
+        listRect.size.height = [grid cellSizeForLogicalSize:AHGridLogicalSizeSmall].height;
+    }
+    return listRect;
+}
 
 
 - (id)initWithFrame:(CGRect)frame andGrid:(AHGrid*) g
 {
 	if((self = [super initWithFrame:frame])) {
         grid = g;
-        self.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
-        
-        self.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
-                
+        self.backgroundColor = grid.backgroundColor;
         listView = [[TUILayout alloc] initWithFrame:CGRectZero];
-        listView.backgroundColor = [TUIColor colorWithWhite:0.9 alpha:1.0];
-        listView.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
+        listView.backgroundColor = grid.backgroundColor;
         listView.dataSource = self;
+        listView.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
         listView.typeOfLayout = TUILayoutHorizontal;
         listView.horizontalScrolling = YES;
-        listView.spaceBetweenViews = 5;
-        listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleWhenMouseInside;
-        [self addSubview:listView];
-        
-        titleLabel = [[TUILabel alloc] initWithFrame:CGRectMake(10, self.bounds.size.height - 25, 300, 25)];
-        titleLabel.text = titleString;
-        titleLabel.font = [TUIFont boldSystemFontOfSize:12];
-        titleLabel.textColor = [TUIColor blackColor];
-        titleLabel.backgroundColor = [TUIColor clearColor];
-        [self addSubview:titleLabel];
-        
-        Class expandedCellClass = grid.expandedCellClass ? grid.expandedCellClass : [AHGridExpandedCell class];
-        self.expandedCell = [[expandedCellClass alloc] initWithFrame:[self frameForExpandedCell]];
-        expandedCell.autoresizingMask = TUIViewAutoresizingFlexibleSize;
-        [self addSubview:expandedCell];
-        expandedCell.alpha = 0;
-        [self sendSubviewToBack:expandedCell];
+        listView.spaceBetweenViews = 15;
+        listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
+        self.logicalSize = AHGridLogicalSizeMedium;
+        [self addSubview:listView];  
     }
     return self;
+}
+
+-(void) setHeaderView:(TUIView *)h {
+    headerView = h;
+    if (!headerView.superview) {
+        [self addSubview:headerView];
+    }
+    headerView.frame = [self frameForHeaderView];
 }
 
 -(void) setGrid:(AHGrid *)g {
@@ -86,24 +88,30 @@
 
 -(void) layoutSubviews {
     if (animating) {
+        if(xLargeCell) {
+            CGRect r = [self frameForXLargeCell];
+            xLargeCell.frame = r;
+        }
         return [super layoutSubviews];
     }
-    CGRect b = self.bounds;
-    CGRect listRect = b;
-    listRect.size.height = 175;
-    listView.frame = listRect;
-    if (!dataLoaded) {
-        [listView reloadData];
-        dataLoaded = YES;
-    }
+    listView.frame = [self frameForListView];
     
-    if (!self.expanded || (self.expanded && !animating)) {
-        expandedCell.frame = [self frameForExpandedCell];
-        [expandedCell setNeedsLayout];
+    if (xLargeCell) {
+        xLargeCell.frame = [self frameForXLargeCell];
+        [xLargeCell setNeedsLayout];
     }
 
-    titleLabel.frame = [self frameForHeaderView];
-    titleLabel.text = titleString;
+    if (headerView) {
+        headerView.frame = [self frameForHeaderView];
+        [self sendSubviewToBack:headerView];
+    }
+    
+    
+    if (!listView.reloadedDate) {
+        //In case the the list view hasn't been loaded yet
+        [listView reloadData];
+    }
+    [listView setNeedsLayout];
     [super layoutSubviews];
 }
 
@@ -117,6 +125,8 @@
     cell.selected = (index == grid.selectedRowIndex) && (i == grid.selectedCellIndex);
     cell.grid = grid;
     cell.index = i;
+    cell.logicalSize = self.logicalSize;
+    if (self.logicalSize == AHGridLogicalSizeXLarge) cell.logicalSize = AHGridLogicalSizeSmall;
     
     if (grid.configureCellBlock) {
         grid.configureCellBlock(grid, self, cell, i);
@@ -125,14 +135,17 @@
 }
 
 - (NSUInteger)numberOfObjectsInLayout:(TUILayout *)l {
+    if (grid.numberOfCellsBlock) {
+        return grid.numberOfCellsBlock(grid, self);
+    };
     return numberOfCells;
 }
 
 - (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {
-    CGSize size = self.bounds.size;
-    size.height -= 25;
-    size.width = 275;
-    return size;
+    if (self.logicalSize == AHGridLogicalSizeXLarge) {
+        [grid cellSizeForLogicalSize:AHGridLogicalSizeSmall];
+    }
+    return [grid cellSizeForLogicalSize:self.logicalSize];
 }
 
 
@@ -155,8 +168,6 @@
     return menu;
 }
 
-
-#pragma mark - Expansion
 
 
 #pragma mark - Key Handling

@@ -47,7 +47,6 @@
 
 NSInteger makeFirstResponderCount = 0;
 
-
 - (BOOL)tui_containsObjectInResponderChain:(NSResponder *)r
 {
 	NSResponder *responder = [self firstResponder];
@@ -152,7 +151,6 @@ NSInteger makeFirstResponderCount = 0;
 			TUINSWindowFrame *contentView = [[TUINSWindowFrame alloc] initWithFrame:b];
 			contentView->w = self;
 			[self setContentView:contentView];
-			[contentView release];
 		} else {
 			[self setOpaque:YES];
 		}
@@ -162,18 +160,12 @@ NSInteger makeFirstResponderCount = 0;
 		nsView = [[TUINSView alloc] initWithFrame:b];
 		[nsView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 		[[self contentView] addSubview:nsView];
-		[nsView release];
 		
 		altUINSViews = [[NSMutableArray alloc] init];
 	}
 	return self;
 }
 
-- (void)dealloc
-{
-	[altUINSViews release];
-	[super dealloc];
-}
 
 - (void)drawBackground:(CGRect)rect
 {

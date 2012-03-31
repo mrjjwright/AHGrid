@@ -25,7 +25,6 @@
 - (CTFrameRef)ctFrame;
 - (CGPathRef)ctPath;
 - (CFRange)_selectedRange;
-- (CGRect)rectForRange:(CFRange)range;
 @end
 
 @implementation TUITextRenderer (Event)
@@ -112,7 +111,7 @@
 		_selectionStart = saveStart;
 		_selectionEnd = saveEnd;
 		
-		NSImage *image = [[[NSImage alloc] initWithCGImage:dragImage.CGImage size:NSZeroSize] autorelease];
+		NSImage *image = [[NSImage alloc] initWithCGImage:dragImage.CGImage size:NSZeroSize];
 		
 		[view.nsView dragImage:image 
 							at:f.origin

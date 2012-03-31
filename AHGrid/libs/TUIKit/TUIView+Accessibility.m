@@ -35,7 +35,6 @@
 {
 	if(label == accessibilityLabel) return;
 	
-	[accessibilityLabel release];
 	accessibilityLabel = [label copy];
 }
 
@@ -48,7 +47,6 @@
 {
 	if(hint == accessibilityHint) return;
 	
-	[accessibilityHint release];
 	accessibilityHint = [hint copy];
 }
 
@@ -61,7 +59,6 @@
 {
 	if(value == accessibilityValue) return;
 	
-	[accessibilityValue release];
 	accessibilityValue = [value copy];
 }
 
@@ -178,24 +175,24 @@
 
 #pragma mark API
 
-- (NSString *)accessibilityTraitsToRole
-{
-	if((self.accessibilityTraits & TUIAccessibilityTraitButton) != 0) {
-		return NSAccessibilityButtonRole;
-	} else if((self.accessibilityTraits & TUIAccessibilityTraitLink) != 0) {
-		return NSAccessibilityLinkRole;
-	} else if((self.accessibilityTraits & TUIAccessibilityTraitStaticText) != 0) {
-		return NSAccessibilityStaticTextRole;
-	} else {
-		return NSAccessibilityUnknownRole;
-	}
-}
-
-- (NSString *)accessibilityTraitsToRoleDescription
-{
-	// use this handy function for now--might want to customize this more later on
-	return NSAccessibilityRoleDescriptionForUIElement(self);
-}
+//- (NSString *)accessibilityTraitsToRole
+//{
+//	if((self.accessibilityTraits & TUIAccessibilityTraitButton) != 0) {
+//		return NSAccessibilityButtonRole;
+//	} else if((self.accessibilityTraits & TUIAccessibilityTraitLink) != 0) {
+//		return NSAccessibilityLinkRole;
+//	} else if((self.accessibilityTraits & TUIAccessibilityTraitStaticText) != 0) {
+//		return NSAccessibilityStaticTextRole;
+//	} else {
+//		return NSAccessibilityUnknownRole;
+//	}
+//}
+//
+//- (NSString *)accessibilityTraitsToRoleDescription
+//{
+//	// use this handy function for now--might want to customize this more later on
+//	return NSAccessibilityRoleDescriptionForUIElement(self);
+//}
 
 - (NSArray *)accessibleSubviews
 {
@@ -206,7 +203,7 @@
 		}
 	}
 	
-	return [[accessibleSubviews copy] autorelease];
+	return [accessibleSubviews copy];
 }
 
 @end

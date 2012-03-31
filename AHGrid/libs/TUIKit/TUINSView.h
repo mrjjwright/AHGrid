@@ -21,8 +21,9 @@
 
 @protocol TUIScrollingInterceptor<NSObject>
 @required
--(BOOL) shouldScrollWheel:(NSEvent*) event;
+-(TUIScrollView*) delegateScrollViewForEvent:(NSEvent*) event;
 @end
+
 
 /**
  TUINSView is the bridge that hosts a TUIView-based interface heirarchy. You may add it as the contentView of your window if you want to build a pure TwUI-based UI, or you can use it for a small part.
@@ -31,17 +32,16 @@
 {
 	TUIView *rootView;
 	TUIView *_hoverView;
-	TUIView *_trackingView; // dragging view, weak
-    
-    id<TUIScrollingInterceptor> _scrollingInterceptor;
 
-	TUIView *_hyperFocusView; // weak
+	__unsafe_unretained TUIView *_trackingView; // dragging view, weak
+	__unsafe_unretained TUIView *_hyperFocusView; // weak
+
 	TUIView *_hyperFadeView;
 	void(^_hyperCompletion)(BOOL);
 	
 	NSTrackingArea *_trackingArea;
 	
-	TUITextRenderer *_tempTextRendererForTextInputClient; // weak, set temporarily while NSTextInputClient dicks around
+	__unsafe_unretained TUITextRenderer *_tempTextRendererForTextInputClient; // weak, set temporarily while NSTextInputClient dicks around
 	
 	BOOL deliveringEvent;
 	BOOL inLiveResize;
@@ -52,8 +52,8 @@
 /**
  Set this as the root TUIView-based view.
  */
-@property (nonatomic, retain) TUIView *rootView;
-@property (nonatomic, assign) id<TUIScrollingInterceptor> scrollingInterceptor;
+@property (nonatomic, strong) TUIView *rootView;
+@property (nonatomic, weak) id<TUIScrollingInterceptor> scrollingInterceptor;
 
 - (TUIView *)viewForLocationInWindow:(NSPoint)locationInWindow;
 - (TUIView *)viewForEvent:(NSEvent *)event; // ignores views with 'userInteractionEnabled=NO'
@@ -70,7 +70,5 @@
 - (void)ab_setIsOpaque:(BOOL)o __attribute__((deprecated)); // don't use this
 
 @end
-
-
 
 #import "TUINSView+Hyperfocus.h"

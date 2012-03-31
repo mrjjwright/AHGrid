@@ -26,7 +26,7 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
 
-@property(nonatomic,retain) TUIView *view;
+@property(nonatomic,strong) TUIView *view;
 
 - (void)loadView;
 - (void)viewDidLoad;
@@ -40,10 +40,8 @@
 
 - (void)didReceiveMemoryWarning;
 
-@property(nonatomic,assign) TUIViewController *parentViewController; // If this view controller is inside a navigation controller or tab bar controller, or has been presented modally by another view controller, return it.
+@property(nonatomic,weak) TUIViewController *parentViewController; // If this view controller is inside a navigation controller or tab bar controller, or has been presented modally by another view controller, return it.
 
-/* deprecated */
-- (TUIView *)setupStandardViewInnerClippingView __attribute__((deprecated)); // returns inner clipping view
-@property(nonatomic, readonly) TUIView *clippingView __attribute__((deprecated)); // available when you use setupStandardViewInnerClippingView
+- (TUIView *)setupStandardView; // don't use this
 
 @end

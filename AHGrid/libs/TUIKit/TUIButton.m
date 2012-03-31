@@ -43,13 +43,6 @@
 	return self;
 }
 
-- (void)dealloc
-{
-	[_contentLookup release];
-	[_titleView release];
-	[popUpMenu release];
-	[super dealloc];
-}
 
 + (id)button
 {
@@ -59,7 +52,7 @@
 + (id)buttonWithType:(TUIButtonType)buttonType
 {
 	TUIButton *b = [[self alloc] initWithFrame:CGRectZero];
-	return [b autorelease];
+	return b;
 }
 
 - (BOOL)acceptsFirstResponder
@@ -212,9 +205,6 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
 	CGContextRestoreGState(ctx);
 }
 
-
-
-
 - (void)mouseDown:(NSEvent *)event
 {
 	[super mouseDown:event];
@@ -226,7 +216,7 @@ static CGRect ButtonRectCenteredInRect(CGRect a, CGRect b)
 		p.y -= 2;
 		[menu popUpMenuPositioningItem:nil atLocation:p inView:self.nsView];
 		/*
-		 after this happens, we never get a mouseUp: in the TUINSView.  this screws up _trackingView
+		 after this happens, we never get a mouseUp: in the TUINSView.  this sswifts up _trackingView
 		 for now, fake it with a fake mouseUp:
 		 */
 		[self.nsView performSelector:@selector(mouseUp:) withObject:event afterDelay:0.0];

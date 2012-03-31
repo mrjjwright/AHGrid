@@ -17,12 +17,12 @@
 #import "TUITableViewCell.h"
 #import "TUITableView.h"
 #import "TUITableView+Cell.h"
+#import "TUINSWindow.h"
 
 @implementation TUITableViewCell
 
 - (void)setReuseIdentifier:(NSString *)r
 {
-	[_reuseIdentifier release];
 	_reuseIdentifier = [r copy];
 }
 
@@ -35,11 +35,6 @@
 	return self;
 }
 
-- (void)dealloc
-{
-	[_reuseIdentifier release];
-	[super dealloc];
-}
 
 - (NSString *)reuseIdentifier
 {
@@ -88,7 +83,9 @@
   [self.tableView __mouseDownInCell:self offset:_mouseOffset event:event];
   
 	TUITableView *tableView = self.tableView;
-	[tableView selectRowAtIndexPath:self.indexPath animated:tableView.animateSelectionChanges scrollPosition:TUITableViewScrollPositionNone];
+  [self.nsWindow makeFirstResponder:tableView];
+	[tableView selectRowAtIndexPath:self.indexPath animated:YES scrollPosition:TUITableViewScrollPositionNone];
+
 	[super mouseDown:event]; // may make the text renderer first responder, so we want to do the selection before this
 	
 	if(![tableView.delegate respondsToSelector:@selector(tableView:shouldSelectRowAtIndexPath:forEvent:)] || [tableView.delegate tableView:tableView shouldSelectRowAtIndexPath:self.indexPath forEvent:event]){

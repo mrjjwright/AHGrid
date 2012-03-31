@@ -18,6 +18,7 @@
 #import "TUIControl+Private.h"
 #import "TUIView+Accessibility.h"
 #import "TUIAccessibility.h"
+#import "TUINSWindow.h"
 
 @implementation TUIControl
 
@@ -25,7 +26,6 @@
 {
 	self = [super initWithFrame:rect];
 	if(self == nil) {
-		[self release];
 		return nil;
 	}
 	
@@ -34,11 +34,6 @@
 	return self;
 }
 
-- (void)dealloc
-{
-	[_targetActions release];
-	[super dealloc];
-}
 
 - (BOOL)isEnabled
 {
@@ -113,16 +108,6 @@
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
 {
 	return self.acceptsFirstMouse;
-}
-
-- (void) mouseDown:(NSEvent *)theEvent onSubview:(TUIView *)subview {
-    [self mouseDown:theEvent];
-    [super mouseDown:theEvent onSubview:subview];
-}
-
-- (void) mouseUp:(NSEvent *)theEvent fromSubview:(TUIView *)subview {
-    [self mouseUp:theEvent];
-    [super mouseUp:theEvent fromSubview:subview];
 }
 
 - (void)mouseDown:(NSEvent *)event

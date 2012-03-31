@@ -38,7 +38,7 @@
 
 - (CGSize)ab_sizeConstrainedToSize:(CGSize)size
 {
-	TUITextRenderer *t = [[[TUITextRenderer alloc] init] autorelease];
+	TUITextRenderer *t = [self ab_sharedTextRenderer];
 	t.attributedString = self;
 	t.frame = CGRectMake(0, 0, size.width, size.height);
 	return [t size];
@@ -108,7 +108,5 @@
 	s.font = font;
 	return [s ab_drawInRect:rect];
 }
-
-
 
 @end

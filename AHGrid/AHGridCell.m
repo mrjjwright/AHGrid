@@ -1,6 +1,6 @@
 //
 //  AHCell.m
-//  Crew
+//  Swift
 //
 //  Created by John Wright on 12/10/11.
 //  Copyright (c) 2011 AirHeart. All rights reserved.
@@ -10,9 +10,12 @@
 #import "TUIKit.h"
 #import "AHActionButton.h"
 #import "TUIImageView+AHExtensions.h"
+#import "AHGrid.h"
 
 @implementation AHGridCell {
     TUITextRenderer *textRenderer;
+    TUIImage *mediumThumbnail;
+    TUIImage *smallThumbnail;
 }
 
 @synthesize row;
@@ -22,11 +25,14 @@
 @synthesize expanded;
 @synthesize text;
 @synthesize image;
+@synthesize logicalSize;
+@synthesize resizing;
 
 - (id)initWithFrame:(CGRect)frame
 {
 	if((self = [super initWithFrame:frame])) {
         self.opaque = YES;
+        self.backgroundColor = [TUIColor whiteColor];
         textRenderer = [[TUITextRenderer alloc] init];
         self.textRenderers = [NSArray arrayWithObjects:textRenderer, nil];
 	}
@@ -37,9 +43,12 @@
 
 -(void) prepareForReuse {
     self.image = nil;
+    smallThumbnail = nil;
+    mediumThumbnail =  nil;
     textRenderer.attributedString = nil;
     self.selected = NO;
     expanded = NO;
+    logicalSize = AHGridLogicalSizeMedium;
 }
 
 -(void) setText:(TUIAttributedString *)t {
@@ -48,18 +57,42 @@
     [self setNeedsDisplay];
 }
 
--(void) layoutSubviews {
-    if (self.selected) {
-        self.layer.borderColor = [TUIColor yellowColor].CGColor;
-        self.layer.borderWidth = 4;
-    } else {
-        self.layer.borderWidth = 0;
-    }    
+-(void) setSelected:(BOOL)s {
+    selected = s;
+    [self setNeedsLayout];
+    [self setNeedsDisplay];
 }
 
 -(void) drawRect:(CGRect)rect {
+    
+    CGContextRef ctx = TUIGraphicsGetCurrentContext();
+    CGRect b = self.bounds;
+    
+    // First draw the background color for proper blending    
+    CGContextSetFillColorWithColor(ctx, self.backgroundColor.CGColor);
+    CGContextFillRect(ctx, b);
+    
+    // Make sure somebody doesn't turn this off
+    CGContextSetShouldSmoothFonts(ctx, TRUE);
+
     if (image) {
-        [image drawInRect:self.bounds];
+        TUIImage *imageToDraw = image;
+        
+        if (self.logicalSize == AHGridLogicalSizeSmall) {
+            if (!smallThumbnail) {
+                smallThumbnail = [image thumbnail:[grid cellSizeForLogicalSize:AHGridLogicalSizeSmall]];
+            }
+            imageToDraw = smallThumbnail;
+        }
+        
+        if (self.logicalSize == AHGridLogicalSizeMedium) {
+            if (!mediumThumbnail) {
+                mediumThumbnail = [image thumbnail:[grid cellSizeForLogicalSize:AHGridLogicalSizeMedium]];
+            }
+            imageToDraw = mediumThumbnail;
+        }
+        
+        [imageToDraw drawInRect:self.bounds];
     }
     
     textRenderer.frame = self.bounds;
@@ -84,12 +117,6 @@
 #pragma mark - Key Handling 
 
 - (BOOL)performKeyAction:(NSEvent *)event {
-    NSString *chars = [event characters];
-    unichar character = [chars characterAtIndex: 0];
-    if ((character == 13 || character == 32) && !expanded) {
-        [grid toggleSelectedRowExpanded];
-        return YES;
-    }
     return [grid performKeyAction:event];
 }
 
@@ -99,18 +126,24 @@
     [super mouseUp:theEvent];
 }
 
+
 - (void)mouseDown:(NSEvent *)event
 {
     if ([event clickCount] == 2) {
-        if (!row.expanded || (row.expanded && grid.selectedCell == self && self.expanded)) {
-            grid.selectedCell = self;
-            [grid toggleSelectedRowExpanded];
-        }
+        [grid toggleSelectedCellSize];
     } else if ([event clickCount] == 1) {
         grid.selectedCell = self;
     }
 	[super mouseDown:event]; // may make the text renderer first responder, so we want to do the selection before this	
 }
+
+-(void) setLogicalSize:(AHGridLogicalSize)c {
+    logicalSize = c;
+    [self setNeedsLayout];
+    [self setNeedsDisplay];
+}
+
+
 
 
 

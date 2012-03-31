@@ -20,8 +20,8 @@
 {
 	void *context;
 	NSString *animationID;
-    
-	id delegate;
+
+	id __unsafe_unretained delegate;
 	SEL animationWillStartSelector;
 	SEL animationDidStopSelector;
 	void (^animationCompletionBlock)(BOOL finished);
@@ -32,12 +32,12 @@
 @property (nonatomic, assign) void *context;
 @property (nonatomic, copy) NSString *animationID;
 
-@property (nonatomic, assign) id delegate;
+@property (nonatomic, unsafe_unretained) id delegate;
 @property (nonatomic, assign) SEL animationWillStartSelector;
 @property (nonatomic, assign) SEL animationDidStopSelector;
 @property (nonatomic, copy) void (^animationCompletionBlock)(BOOL finished);
 
-@property (nonatomic, readonly) CABasicAnimation *basicAnimation;
+@property (nonatomic, strong, readonly) CABasicAnimation *basicAnimation;
 
 @end
 
@@ -59,28 +59,26 @@
 {
 	if((self = [super init]))
 	{
-		basicAnimation = [[CABasicAnimation animation] retain];
-        //		NSLog(@"+anims %d", ++animcount);
+		basicAnimation = [CABasicAnimation animation];
+//		NSLog(@"+anims %d", ++animcount);
 	}
 	return self;
 }
 
 - (void)dealloc
 {
-    //	NSLog(@"-anims %d", --animcount);
-	[animationID release];
-	[basicAnimation release];
+//	NSLog(@"-anims %d", --animcount);
 	if(animationCompletionBlock != nil) {
 		animationCompletionBlock(NO);
 		NSLog(@"Error: completion block didn't complete! %@", self);
+		
+		NSAssert(animationCompletionBlock == nil, @"animationCompletionBlock should be nil after executing from dealloc");
 	}
-	[animationCompletionBlock release]; // should be nil at this point
-	[super dealloc];
 }
 
 - (void)runActionForKey:(NSString *)event object:(id)anObject arguments:(NSDictionary *)dict
 {
-	CAAnimation *animation = [[basicAnimation copyWithZone:nil] autorelease];
+	CAAnimation *animation = [basicAnimation copyWithZone:nil];
 	animation.delegate = self;
 	[animation runActionForKey:event object:anObject arguments:dict];
 }
@@ -89,7 +87,7 @@
 
 - (void)animationDidStart:(CAAnimation *)anim
 {
-//    NSLog(@"+animstart %d", ++animstart);
+//	NSLog(@"+animstart %d", ++animstart);
 	if(delegate && animationWillStartSelector) {
 		void (*animationWillStartIMP)(id,SEL,NSString*,void*) = (void(*)(id,SEL,NSString*,void*))[(NSObject *)delegate methodForSelector:animationWillStartSelector];
 		animationWillStartIMP(delegate, animationWillStartSelector, animationID, context);
@@ -99,7 +97,7 @@
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
-//    NSLog(@"-animstart %d", --animstart);
+//	NSLog(@"-animstart %d", --animstart);
 	if(delegate && animationDidStopSelector) {
 		void (*animationDidStopIMP)(id,SEL,NSString*,NSNumber*,void*) = (void(*)(id,SEL,NSString*,NSNumber*,void*))[(NSObject *)delegate methodForSelector:animationDidStopSelector];
 		animationDidStopIMP(delegate, animationDidStopSelector, animationID, [NSNumber numberWithBool:flag], context);
@@ -140,11 +138,7 @@ static NSMutableArray *AnimationStack = nil;
 	[self setAnimationDuration:duration];
 	[[self _currentAnimation] setAnimationCompletionBlock:completion];
 	animations();
-    [TUIView commitAnimations];  
-}
-
-+ (void) setAnimationCompletionBlock:(void (^)(BOOL))completion {
-    [[self _currentAnimation] setAnimationCompletionBlock:completion];
+	[self commitAnimations];
 }
 
 + (void)beginAnimations:(NSString *)animationID context:(void *)context
@@ -153,20 +147,19 @@ static NSMutableArray *AnimationStack = nil;
 	animation.context = context;
 	animation.animationID = animationID;
 	[[self _animationStack] addObject:animation];
-	[animation release];
 	
 	// setup defaults
 	[self setAnimationDuration:0.25];
 	[self setAnimationCurve:TUIViewAnimationCurveEaseInOut];
 	
-    //	NSLog(@"+++ %d", [[self _animationStack] count]);
+//	NSLog(@"+++ %d", [[self _animationStack] count]);
 }
 
 + (void)commitAnimations
 {
 	[[self _animationStack] removeLastObject];
 	
-    //	NSLog(@"--- %d", [[self _animationStack] count]);
+//	NSLog(@"--- %d", [[self _animationStack] count]);
 }
 
 + (void)setAnimationDelegate:(id)delegate
@@ -245,7 +238,7 @@ static CGFloat SlomoTime()
 
 + (void)setAnimationBeginsFromCurrentState:(BOOL)fromCurrentState  // default = NO. If YES, the current view position is always used for new animations -- allowing animations to "pile up" on each other. Otherwise, the last end state is used for the animation (the default).
 {
-	NSLog(@"%@ %@ unimplemented", self, NSStringFromSelector(_cmd));
+    //[self _currentAnimation].basicAnimation.fillMode = kCAFillModeForwards;
 }
 
 + (void)setAnimationTransition:(TUIViewAnimationTransition)transition forView:(TUIView *)view cache:(BOOL)cache  // current limitation - only one per begin/commit block

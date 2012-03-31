@@ -12,7 +12,7 @@
 
 #define IN_RUNNING_LION (NSClassFromString(@"NSPopover") != nil)
 
-@interface AppDelegate : NSObject <NSApplicationDelegate, AHGridInitDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet TUINSView *nsView;
 

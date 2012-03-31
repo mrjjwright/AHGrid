@@ -1,6 +1,6 @@
 //
 //  TUILayout.h
-//  Crew
+//  Swift
 //
 //  Created by John Wright on 11/13/11.
 //  Copyright (c) 2011 AirHeart. All rights reserved.
@@ -19,6 +19,8 @@
 
 #define kTUILayoutAnimation @"TUILayoutAnimation"
 
+@class TUILayout;
+typedef void(^TUILayoutHandler)(TUILayout *layout);
 
 typedef enum {
 	TUILayoutScrollPositionNone,        
@@ -30,7 +32,6 @@ typedef enum {
 
 
 // a callback handler to be used in various layout operations
-typedef void(^TUILayoutHandler)();
 typedef enum {
 	TUILayoutVertical,
     TUILayoutHorizontal,
@@ -46,6 +47,10 @@ typedef enum {
 @property (nonatomic, weak) Class viewClass;
 @property (nonatomic) TUILayoutType typeOfLayout;
 @property (nonatomic) CGFloat spaceBetweenViews;
+@property (nonatomic, readonly) NSInteger numberOfCells;
+@property (nonatomic, strong) NSDate *reloadedDate;
+@property (nonatomic, copy) TUILayoutHandler reloadHandler;
+@property (nonatomic, readonly) NSArray *visibleViews;
 
 #pragma mark - General
 
@@ -55,17 +60,20 @@ typedef enum {
 - (TUIView*) viewAtPoint:(CGPoint) point;
 - (void)scrollToObjectAtIndex:(NSUInteger)index atScrollPosition:(TUILayoutScrollPosition)scrollPosition animated:(BOOL)animated;
 - (CGRect) rectForObjectAtIndex:(NSUInteger) index;
+-(TUIView*) replaceViewForObjectAtIndex:(NSUInteger) index withSize:(CGSize) size;
 
 #pragma mark - Layout transactions
 -(void) beginUpdates;
 -(void) endUpdates;
 
 #pragma mark - Resizing
-- (void) resizeObjectsToSize:(CGSize) size animated:(BOOL) animated completion:(void (^)())completion;
+- (void) resizeObjectAtIndexes:(NSArray*) objectIndexes sizes:(NSArray*) sizes animationBlock:(void (^)())animationBlock completion:(void (^)())completionBlock;
+-(void) resizeObjectsToSize:(CGSize) size animationBlock:(void (^)())animationBlock completionBlock:(void (^)())completion; 
 - (void) resizeObjectAtIndex:(NSUInteger) index toSize:(CGSize) size animationBlock:(void (^)())animationBlock  completionBlock:(void (^)())completionBlock;
 
 #pragma mark - Adding and removing views
 -(void) insertObjectAtIndex:(NSUInteger) index;
+-(void) insertObjectAtIndex:(NSUInteger) index  animationBlock:(void (^)())animationBlock  completionBlock:(void (^)())completionBlock;
 -(void) removeObjectsAtIndexes:(NSIndexSet *)indexes;
 
 # pragma mark - Scrolling

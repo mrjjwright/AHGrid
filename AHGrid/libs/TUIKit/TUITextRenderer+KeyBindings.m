@@ -16,6 +16,7 @@
 
 #import "TUITextRenderer.h"
 #import "TUITextEditor.h"
+#import "TUIView.h"
 
 @interface NSString (ABTokenizerAdditions)
 @end
@@ -80,6 +81,7 @@
 	[self.view setNeedsDisplay];
 }
 
+
 - (void)moveLeft:(id)sender
 {
 	NSInteger selectionLength = abs((int)(_selectionStart - _selectionEnd));
@@ -143,6 +145,17 @@
 	_selectionStart = _selectionEnd = 0;
 	[self.view setNeedsDisplay];
 }
+
+- (void) moveUp:(id)sender {
+	_selectionStart = _selectionEnd = 0;
+	[self.view setNeedsDisplay];
+}
+
+- (void) moveDown:(id)sender {
+    _selectionStart = _selectionEnd = [TEXT length];
+	[self.view setNeedsDisplay];
+}
+
 
 - (void)moveToEndOfLine:(id)sender
 {
