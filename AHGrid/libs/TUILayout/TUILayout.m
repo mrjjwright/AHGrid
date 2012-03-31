@@ -13,6 +13,7 @@
 #endif
 
 #import "TUILayout.h"
+#import "AHGrid.h"
 
 @implementation NSString(TUICompare)
 
@@ -170,6 +171,14 @@ typedef enum {
 -(void) applyLayout {
     
     CGRect bounds = layout.bounds;
+    if  ([layout.superview isKindOfClass:[AHGridRow class]]) {
+        NSLog(@"AHGridRow");
+    }
+    
+    if  ([layout isKindOfClass:[AHGrid class]]) {
+        NSLog(@"AHGrid");
+    }
+
     if (!calculated || !CGSizeEqualToSize(bounds.size, lastBounds.size)) {
         [self calculateContentSize];
         [self calculateContentOffset];
@@ -184,6 +193,7 @@ typedef enum {
     if (self.shouldAnimate && state != TUILayoutTransactionStateDoneAnimating) {
         if (state == TUILayoutTransactionStateNormal) {
             state = TUILayoutTransactionStatePrelayout;
+            self.shouldAnimate = NO;
             [CATransaction begin];
             __weak NSMutableArray *weakCompletionBlocks = completionBlocks;
             __weak TUILayoutTransaction *weakSelf = self;
@@ -214,6 +224,14 @@ typedef enum {
                         weakSelf.layout.contentOffset = contentOffset;
                     }
                     [weakSelf layoutObjects];
+                    if  ([layout.superview isKindOfClass:[AHGridRow class]]) {
+                        NSLog(@"AHGridRow");
+                    }
+                    
+                    if  ([layout isKindOfClass:[AHGrid class]]) {
+                        NSLog(@"AHGrid");
+                    }
+
                     if (weakSelf.animationBlock) weakSelf.animationBlock(weakSelf.layout);
                 }];
                 [CATransaction commit];
@@ -274,11 +292,13 @@ typedef enum {
         TUIView * v = [layout.dataSource layout:layout viewForObjectAtIndex:index];
         v.tag = index;
         if (state != TUILayoutTransactionStateNormal && !CGRectIsNull(object.oldFrame)) {
+            if  ([layout.superview isKindOfClass:[AHGridRow class]]  && object.index == 3) {
+                NSLog(@"AHGridRow");
+            }
             v.frame = object.oldFrame;
         } else {
             v.frame = object.calculatedFrame;
         }
-        
         [v removeAllAnimations];
         // Only add subviews if they are on screen
         if (!v.superview) {
@@ -357,8 +377,12 @@ typedef enum {
             object.animation = nil;
         }
         
-        CGRect oldFrame = v.frame; 
-        if (!CGRectEqualToRect(object.calculatedFrame, oldFrame)) 
+        if  ([layout.superview isKindOfClass:[AHGridRow class]]  && object.index == 3) {
+            NSLog(@"AHGridRow");
+        }
+
+        object.oldFrame = v.frame; 
+        if (!CGRectEqualToRect(object.calculatedFrame, object.oldFrame)) 
         {
             v.frame = object.calculatedFrame;
         } 
@@ -526,7 +550,7 @@ typedef enum {
 - (void) calculateObjectOffsetsVertical {
     CGFloat offset = self.contentSize.height;  
     for (TUILayoutObject *object in layout.objects) {
-        object.oldFrame = object.calculatedFrame;
+        object.oldFrame = object.calculatedFrame;        
         offset -= object.size.height + layout.spaceBetweenViews;
         object.y = offset + layout.spaceBetweenViews;
     }
@@ -539,7 +563,7 @@ typedef enum {
         if (i==0) {
             offset += layout.spaceBetweenViews;
         }
-        object.oldFrame = object.calculatedFrame;
+        
         object.x = offset;
         i += 1;
         offset += object.size.width + layout.spaceBetweenViews;
@@ -891,9 +915,11 @@ typedef enum {
         [self.updatingTransaction addCompletionBlock:completionBlock];
         self.updatingTransaction.animationBlock = animationBlock;
         self.updatingTransaction.animationDuration = 2.3;
+        TUILayoutObject *oldObject = [self.objects objectAtIndex:index];
         TUILayoutObject *object = [[TUILayoutObject alloc] init];
         NSValue *objectSize = [sizes objectAtIndex:idx];
         object.size = [objectSize sizeValue];
+        object.oldFrame = oldObject.oldFrame;
         object.markedForUpdate = YES;
         object.index = index;
         object.indexString = [NSString stringWithFormat:@"%d", index];
@@ -912,6 +938,7 @@ typedef enum {
     [self.objects enumerateObjectsUsingBlock:^(TUILayoutObject *obj, NSUInteger idx, BOOL *stop) {
         TUILayoutObject *object = [[TUILayoutObject alloc] init];
         object.size = size;
+        object.oldFrame = obj.oldFrame;
         object.markedForUpdate = YES;
         object.index = obj.index;
         object.indexString = [NSString stringWithFormat:@"%d", idx];
@@ -925,8 +952,10 @@ typedef enum {
     [self.updatingTransaction addCompletionBlock:completionBlock];
     self.updatingTransaction.animationBlock = animationBlock;
     self.updatingTransaction.animationDuration = 0.5;
+    TUILayoutObject *oldObject = [self.objects objectAtIndex:index];
     TUILayoutObject *object = [[TUILayoutObject alloc] init];
     object.size = size;
+    object.oldFrame = oldObject.oldFrame;
     object.markedForUpdate = YES;
     object.index = index;
     object.indexString = [NSString stringWithFormat:@"%d", index];

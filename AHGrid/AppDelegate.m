@@ -12,6 +12,7 @@
 @implementation AppDelegate {
     NSMutableDictionary *gridModel;
     TUIFont *textFont;
+    TUIColor *textColor;
 }
 
 @synthesize nsView;
@@ -26,7 +27,8 @@
     nsView.scrollingInterceptor = (id<TUIScrollingInterceptor>) grid;    
 
     
-    textFont = [TUIFont fontWithName:@"HelveticaNeue" size:12];
+    textFont = [TUIFont fontWithName:@"HelveticaNeue-Medium" size:12];
+    textColor = [TUIColor whiteColor];
     
     // Setup model
     NSUInteger numberOfRows = 10;
@@ -72,6 +74,7 @@
         cell.backgroundColor = [TUIColor whiteColor];
         TUIAttributedString *textString = [TUIAttributedString stringWithString:[cellModel objectForKey:@"text"]];
         textString.font = textFont;
+        textString.color = textColor;
         cell.text = textString;
     };
     

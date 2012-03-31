@@ -16,6 +16,7 @@
     TUITextRenderer *textRenderer;
     TUIImage *mediumThumbnail;
     TUIImage *smallThumbnail;
+    TUIImage *largeThumbnail;
 }
 
 @synthesize row;
@@ -32,6 +33,8 @@
 {
 	if((self = [super initWithFrame:frame])) {
         self.opaque = YES;
+        self.layer.cornerRadius = 10;
+        self.clipsToBounds = YES;
         self.backgroundColor = [TUIColor whiteColor];
         textRenderer = [[TUITextRenderer alloc] init];
         self.textRenderers = [NSArray arrayWithObjects:textRenderer, nil];
@@ -92,6 +95,14 @@
             imageToDraw = mediumThumbnail;
         }
         
+        if (self.logicalSize == AHGridLogicalSizeLarge) {
+            if (!largeThumbnail) {
+                largeThumbnail = [image thumbnail:[grid cellSizeForLogicalSize:AHGridLogicalSizeLarge]];
+            }
+            imageToDraw = largeThumbnail;
+        }
+
+        
         [imageToDraw drawInRect:self.bounds];
     }
     
@@ -99,6 +110,15 @@
     if (textRenderer) {
         [textRenderer draw];
     }
+    
+    if(self.selected && self.logicalSize != AHGridLogicalSizeXLarge)
+    {
+        self.layer.borderColor = [TUIColor yellowColor].CGColor;
+        self.layer.borderWidth = 3;
+    } else {
+        self.layer.borderWidth = 0;
+    }
+
 }
 
 

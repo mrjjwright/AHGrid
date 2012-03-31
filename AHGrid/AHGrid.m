@@ -462,8 +462,8 @@
     [self resizeObjectAtIndex:self.selectedRow.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
         [self scrollRectToVisible:self.selectedRow.frame animated:YES];
         self.selectedRow.logicalSize = logicalSize;  
-        if (animationBlock) animationBlock();
         [self.selectedRow layoutSubviews];
+        if (animationBlock) animationBlock();
     } completionBlock:^{
         if (self.selectedRow.logicalSize == AHGridLogicalSizeXLarge) {
             self.verticalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
