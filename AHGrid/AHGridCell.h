@@ -23,7 +23,9 @@
 
 @property (nonatomic, strong) TUIImage *image;
 @property (nonatomic, copy) TUIAttributedString *text;
-
+@property (nonatomic, strong) TUIFont *textFont;
+@property (nonatomic, strong) TUIColor *textColor;
+@property (nonatomic) BOOL displayLogInfo;
 
 -(void) prepareForReuse;
 

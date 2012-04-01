@@ -238,7 +238,10 @@ static CGFloat SlomoTime()
 
 + (void)setAnimationBeginsFromCurrentState:(BOOL)fromCurrentState  // default = NO. If YES, the current view position is always used for new animations -- allowing animations to "pile up" on each other. Otherwise, the last end state is used for the animation (the default).
 {
-    //[self _currentAnimation].basicAnimation.fillMode = kCAFillModeForwards;
+    if (fromCurrentState) {
+        [self _currentAnimation].basicAnimation.fillMode = kCAFillModeForwards;
+        [self _currentAnimation].basicAnimation.removedOnCompletion = NO;
+    }
 }
 
 + (void)setAnimationTransition:(TUIViewAnimationTransition)transition forView:(TUIView *)view cache:(BOOL)cache  // current limitation - only one per begin/commit block

@@ -28,6 +28,8 @@
 @synthesize image;
 @synthesize logicalSize;
 @synthesize resizing;
+@synthesize textFont, textColor;
+@synthesize displayLogInfo;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -38,6 +40,7 @@
         self.backgroundColor = [TUIColor whiteColor];
         textRenderer = [[TUITextRenderer alloc] init];
         self.textRenderers = [NSArray arrayWithObjects:textRenderer, nil];
+
 	}
 	return self;
 }
@@ -48,11 +51,13 @@
     self.image = nil;
     smallThumbnail = nil;
     mediumThumbnail =  nil;
+    largeThumbnail = nil;
     textRenderer.attributedString = nil;
     self.selected = NO;
     expanded = NO;
     logicalSize = AHGridLogicalSizeMedium;
 }
+
 
 -(void) setText:(TUIAttributedString *)t {
     text = [t copy];
@@ -104,6 +109,14 @@
 
         
         [imageToDraw drawInRect:self.bounds];
+    }
+    
+    if (displayLogInfo) {
+        TUIAttributedString *logString = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"%d %@", index, NSStringFromRect(self.frame)]];
+        if (textFont) logString.font = textFont;
+        
+        if (textColor)logString.color = textColor;
+        textRenderer.attributedString = logString;
     }
     
     textRenderer.frame = self.bounds;

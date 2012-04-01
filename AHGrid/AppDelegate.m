@@ -27,8 +27,8 @@
     nsView.scrollingInterceptor = (id<TUIScrollingInterceptor>) grid;    
 
     
-    textFont = [TUIFont fontWithName:@"HelveticaNeue-Medium" size:12];
-    textColor = [TUIColor whiteColor];
+    textFont = [TUIFont fontWithName:@"HelveticaNeue-Medium" size:28];
+    textColor = [TUIColor redColor];
     
     // Setup model
     NSUInteger numberOfRows = 10;
@@ -70,12 +70,11 @@
     grid.configureCellBlock = ^(AHGrid *grid, AHGridRow* row, AHGridCell *cell, NSUInteger index) {
         NSMutableArray *rows = [gridModel objectForKey:[NSNumber numberWithInteger:row.index]];
         NSMutableDictionary *cellModel = [rows objectAtIndex:index];
-        cell.image = [TUIImage imageNamed:[cellModel objectForKey:@"image"] cache:YES];
+        //cell.image = [TUIImage imageNamed:[cellModel objectForKey:@"image"] cache:YES];
         cell.backgroundColor = [TUIColor whiteColor];
-        TUIAttributedString *textString = [TUIAttributedString stringWithString:[cellModel objectForKey:@"text"]];
-        textString.font = textFont;
-        textString.color = textColor;
-        cell.text = textString;
+        cell.textColor = textColor;
+        cell.textFont = textFont;
+        cell.displayLogInfo = YES;
     };
     
     [grid reloadData];

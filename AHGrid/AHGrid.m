@@ -312,6 +312,7 @@
     if (logicalSize != AHGridLogicalSizeXLarge) {
         return CGSizeMake(self.bounds.size.width,[self cellSizeForLogicalSize:logicalSize].height + self.rowHeaderHeight);
     } 
+    
     //xLarge rows take up the whole size of the grid
     return self.visibleRect.size;
 }
@@ -475,7 +476,6 @@
         animating = NO;
         self.selectedRow.animating = NO;
         if (completionBlock) completionBlock();
-        [self setNeedsLayout];
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kAHGridDidResizeRow object:[NSNumber numberWithInteger:logicalSize]]];
         
     }];    
@@ -483,6 +483,7 @@
 
 -(void) resizeCellsOfRow:(AHGridRow*) row toSize:(AHGridLogicalSize) logicalSize {
     CGSize size = [self cellSizeForLogicalSize:logicalSize];
+    [CATransaction begin];
     [row.listView.visibleViews enumerateObjectsUsingBlock:^(AHGridCell *cell, NSUInteger idx, BOOL *stop) {
         cell.resizing = YES;
     }];
@@ -491,14 +492,13 @@
     [row.listView resizeObjectsToSize:size animationBlock:^{
         [row.listView.visibleViews enumerateObjectsUsingBlock:^(AHGridCell *cell, NSUInteger idx, BOOL *stop) {
             cell.logicalSize = logicalSize;
-        }];
+        }];        
     } completionBlock:^{
-        // Tell all visible views they done being resized
         [row.listView.visibleViews enumerateObjectsUsingBlock:^(AHGridCell *cell, NSUInteger idx, BOOL *stop) {
             cell.resizing = NO;
-        }];
-        
+        }];        
     }];
+    [CATransaction commit];
 }
 
 // When moving to the xlarge state
@@ -517,7 +517,7 @@
         CGRect f = cell.frame;
         f.origin.x +=  -NSMinX(self.selectedRow.listView.visibleRect);
         cell.frame = f;
-        
+        self.selectedRow.animating = YES;
         // Let the current runloop finish so that visual changes needed for resizing, e.g. adding a subview,
         animating = YES;
         //can be applied after the last call.
@@ -525,24 +525,28 @@
             [self resizeRowToLogicalSize:AHGridLogicalSizeXLarge animationBlock:^{
                 [self resizeCellsOfRow:self.selectedRow toSize:AHGridLogicalSizeSmall];
                 self.selectedRow.xLargeCell = cell;
+                self.selectedRow.logicalSize = AHGridLogicalSizeXLarge;
                 [self.selectedRow addSubview:self.selectedRow.xLargeCell];
                 self.selectedRow.xLargeCell.logicalSize = AHGridLogicalSizeXLarge;
-                [self.selectedRow.xLargeCell layoutSubviews];
                 [self.selectedRow layoutSubviews];
             } completionBlock:^{
+                self.selectedRow.animating = NO;
                 animating = NO;
             }];
         });
         return NO;
     } else if (self.selectedRow.logicalSize == AHGridLogicalSizeXLarge && self.selectedRow.xLargeCell && self.selectedRow.xLargeCell.superview) {
         animating = YES;
+        self.selectedRow.animating = YES;
         // remove the xlarge cell and resize the row
         [self resizeRowToLogicalSize:AHGridLogicalSizeMedium animationBlock:^{
             [self resizeCellsOfRow:self.selectedRow toSize:AHGridLogicalSizeMedium];
             //fade out the xlarge cell
+            [self.selectedRow layoutSubviews];
             self.selectedRow.xLargeCell.alpha = 0;
         } completionBlock:^{
             animating = NO;
+            self.selectedRow.animating = YES;
             [self.selectedRow.xLargeCell removeFromSuperview];
             self.selectedRow.xLargeCell = nil;
         }];

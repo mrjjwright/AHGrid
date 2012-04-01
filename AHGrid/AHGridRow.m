@@ -92,6 +92,8 @@
             CGRect r = [self frameForXLargeCell];
             xLargeCell.frame = r;
         }
+        listView.frame = [self frameForListView];
+        headerView.frame = [self frameForHeaderView];
         return [super layoutSubviews];
     }
     listView.frame = [self frameForListView];
@@ -143,7 +145,7 @@
 
 - (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {
     if (self.logicalSize == AHGridLogicalSizeXLarge) {
-        [grid cellSizeForLogicalSize:AHGridLogicalSizeSmall];
+        return [grid cellSizeForLogicalSize:AHGridLogicalSizeSmall];
     }
     return [grid cellSizeForLogicalSize:self.logicalSize];
 }

@@ -80,11 +80,11 @@
 @end
 
 typedef enum {
-	TUILayoutTransactionStateNormal,
-	TUILayoutTransactionStatePrelayout,
-	TUILayoutTransactionStateAnimating,
-	TUILayoutTransactionStateDoneAnimating,
-} TUILayoutTransactionState;
+	TUILayoutTransactionPhaseNormal,
+	TUILayoutTransactionPhasePrelayout,
+	TUILayoutTransactionPhaseAnimating,
+	TUILayoutTransactionPhaseDoneAnimating,
+} TUILayoutTransactionPhase;
 
 
 @interface TUILayoutTransaction : NSObject
@@ -93,8 +93,8 @@ typedef enum {
 @property (nonatomic, copy) TUILayoutHandler animationBlock;
 @property (nonatomic) BOOL shouldAnimate;
 @property (nonatomic) CGSize contentSize;
-@property (nonatomic) CGRect rectForLayout;
-@property (nonatomic) TUILayoutTransactionState state;
+@property (nonatomic) CGRect nextVisibleRect;
+@property (nonatomic) TUILayoutTransactionPhase phase;
 @property (nonatomic, weak) TUILayoutObject *scrollToObject;
 @property (nonatomic, strong) NSMutableArray *changeList;
 @property (nonatomic) CGSize objectSize;
@@ -104,11 +104,10 @@ typedef enum {
 -(void) applyLayout;
 -(void) addCompletionBlock:(TUILayoutHandler) block;
 
--(void) calculate;
 -(void) calculateContentSize;
 -(void) calculateContentOffset;
 -(void) calculateContentOffsetIfScrolledRectToVisible:(CGRect) rect;
--(void) calculateRectForLayout;
+-(void) calculateNextVisibleRect;
 -(void) calculateObjectOffsets;
 -(void) calculateObjectOffsetsVertical;
 -(void) calculateObjectOffsetsHorizontal;
@@ -116,8 +115,8 @@ typedef enum {
 -(NSMutableArray *)objectIndexesInRect:(CGRect)rect;
 -(NSString*) indexKeyForObject:(TUILayoutObject*) object;
 
--(void) layoutObjects;
--(void) addSubviews;
+-(void) moveViews;
+-(void) addNewlyVisibleSubviews;
 -(TUIView*) addSubviewForObject:(TUILayoutObject*) object atIndex:(NSString*) objectIndex;
 -(void) rebaseForInsertionsAndRemovals;
 -(void) processChangeList;
@@ -140,8 +139,8 @@ typedef enum {
 @synthesize animationBlock;
 @synthesize shouldAnimate;
 @synthesize contentSize;
-@synthesize rectForLayout;
-@synthesize state;
+@synthesize nextVisibleRect;
+@synthesize phase;
 @synthesize scrollToObject;
 @synthesize changeList;
 @synthesize objectSize;
@@ -171,13 +170,6 @@ typedef enum {
 -(void) applyLayout {
     
     CGRect bounds = layout.bounds;
-    if  ([layout.superview isKindOfClass:[AHGridRow class]]) {
-        NSLog(@"AHGridRow");
-    }
-    
-    if  ([layout isKindOfClass:[AHGrid class]]) {
-        NSLog(@"AHGrid");
-    }
 
     if (!calculated || !CGSizeEqualToSize(bounds.size, lastBounds.size)) {
         [self calculateContentSize];
@@ -190,25 +182,31 @@ typedef enum {
     lastBounds = bounds;
     
         
-    if (self.shouldAnimate && state != TUILayoutTransactionStateDoneAnimating) {
-        if (state == TUILayoutTransactionStateNormal) {
-            state = TUILayoutTransactionStatePrelayout;
+    if (self.shouldAnimate && phase != TUILayoutTransactionPhaseDoneAnimating) {
+        if (phase == TUILayoutTransactionPhaseNormal) {
+            phase = TUILayoutTransactionPhasePrelayout;
             self.shouldAnimate = NO;
+            
+            // Perform a prelayout transaction where we bring in needed subviews
+            // into their old location so that the animations looks ok
             [CATransaction begin];
             __weak NSMutableArray *weakCompletionBlocks = completionBlocks;
             __weak TUILayoutTransaction *weakSelf = self;
             [CATransaction setCompletionBlock:^{
                 
-                // In this CATransaction we do the actual animation
-                weakSelf.state = TUILayoutTransactionStateAnimating;
+                // In this CATransaction we animate the layout
+                weakSelf.phase = TUILayoutTransactionPhaseAnimating;
                 [CATransaction begin];                
                 [CATransaction setCompletionBlock:^{
-                    weakSelf.state = TUILayoutTransactionStateNormal;
+                    weakSelf.phase = TUILayoutTransactionPhaseNormal;
                     shouldAnimate = NO;
+                    if (!CGRectEqualToRect(layout.visibleRect, nextVisibleRect)) {
+                        NSLog(@"Visible rect calculation is wrong\nTransaction: %@\nLayout: %@", NSStringFromRect(nextVisibleRect), NSStringFromRect(layout.visibleRect));
+                    }
                     for (TUILayoutHandler block in weakCompletionBlocks) block(weakSelf.layout);
                 }];
                                 
-                // Recalculate the offsets
+                // Recalculate the offsets since our content size was changed during the prelayout phase
                 [weakSelf calculateObjectOffsets];
                 
                 weakSelf.layout.contentSize = weakSelf.contentSize;
@@ -217,21 +215,16 @@ typedef enum {
                     if (weakSelf.scrollToObject) {
                         // scroll object to top
                         CGRect r = weakSelf.scrollToObject.calculatedFrame;
-                        r.origin.y -= (weakSelf.rectForLayout.size.height - r.size.height);
-                        r.size.height += (weakSelf.rectForLayout.size.height - r.size.height);
+                        r.origin.y -= (weakSelf.nextVisibleRect.size.height - r.size.height);
+                        r.size.height += (weakSelf.nextVisibleRect.size.height - r.size.height);
                         [weakSelf.layout scrollRectToVisible:r animated:NO];
                     } else  if (shouldChangeContentOffset) {
                         weakSelf.layout.contentOffset = contentOffset;
                     }
-                    [weakSelf layoutObjects];
-                    if  ([layout.superview isKindOfClass:[AHGridRow class]]) {
-                        NSLog(@"AHGridRow");
-                    }
                     
-                    if  ([layout isKindOfClass:[AHGrid class]]) {
-                        NSLog(@"AHGrid");
-                    }
-
+                    //Move the views animated
+                    [weakSelf moveViews];
+                    
                     if (weakSelf.animationBlock) weakSelf.animationBlock(weakSelf.layout);
                 }];
                 [CATransaction commit];
@@ -241,28 +234,40 @@ typedef enum {
             // Process insertions and removals
             [weakSelf rebaseForInsertionsAndRemovals];
 
-            // Bring in objects needed for the animation using their old positions
-            // Update the model
-            [self calculateRectForLayout];
-            objectIndexesToBringIntoView = [self objectIndexesInRect:rectForLayout];
-            [self addSubviews];
+            // If the caller hasn't already set a scrollToObject;
+            // then make sure the first visible view stays in view 
+            // through the animation
+            if (!scrollToObject) {
+                scrollToObject = [layout.objects objectAtIndex:0];
+                [self calculateContentOffset];
+            }
             
+            // Calculate the frame and views for the next layout
+            [self calculateNextVisibleRect];
+            objectIndexesToBringIntoView = [self objectIndexesInRect:nextVisibleRect];
+
+            // Bring in views needed for the animation using their old positions
+            [self addNewlyVisibleSubviews];
+            
+            // This ensures that the newly added subviews are added before the animation
             [CATransaction commit];
         } 
     } else {
-        layout.contentSize = contentSize;
-        [self calculateRectForLayout];
-        objectIndexesToBringIntoView = [self objectIndexesInRect:rectForLayout];
-        [self addSubviews];
-        [self layoutObjects];
-        [self cleanup];        
+        [TUIView setAnimationsEnabled:NO block:^{
+            layout.contentSize = contentSize;
+            [self calculateNextVisibleRect];
+            objectIndexesToBringIntoView = [self objectIndexesInRect:nextVisibleRect];
+            [self addNewlyVisibleSubviews];
+            [self moveViews];
+            [self cleanup];        
+        }];
     }
     
 }
 
-- (void) addSubviews {
+- (void) addNewlyVisibleSubviews {
     
-    // Process objects that need to be scrolled into view
+    // Process objects that need to be brought into view view
     NSMutableArray *objectIndexesToAdd = [objectIndexesToBringIntoView mutableCopy];
 	[objectIndexesToAdd removeObjectsInArray:[layout.objectViewsMap allKeys]];
     
@@ -291,15 +296,16 @@ typedef enum {
         NSInteger index = [objectIndex integerValue];
         TUIView * v = [layout.dataSource layout:layout viewForObjectAtIndex:index];
         v.tag = index;
-        if (state != TUILayoutTransactionStateNormal && !CGRectIsNull(object.oldFrame)) {
-            if  ([layout.superview isKindOfClass:[AHGridRow class]]  && object.index == 3) {
-                NSLog(@"AHGridRow");
+        [TUIView setAnimationsEnabled:NO block:^{
+            if (self.phase == TUILayoutTransactionPhasePrelayout) {
+                if (!CGRectIsNull(object.oldFrame)  && !CGRectEqualToRect(CGRectZero, object.oldFrame)) {
+                    //Bring subviews in under their oldFrame in the last transaction
+                    v.frame = object.oldFrame;
+                }
+            } else {
+                v.frame = object.calculatedFrame;
             }
-            v.frame = object.oldFrame;
-        } else {
-            v.frame = object.calculatedFrame;
-        }
-        [v removeAllAnimations];
+        }];
         // Only add subviews if they are on screen
         if (!v.superview) {
             if (object.markedForInsertion) {
@@ -311,7 +317,9 @@ typedef enum {
                 [fadeAnim setFromValue:[NSNumber numberWithFloat:0.0f]];
                 [fadeAnim setToValue:[NSNumber numberWithFloat:1.0f]];
                 [v.layer addAnimation:fadeAnim forKey:kTUILayoutAnimation];
-                v.frame = object.calculatedFrame;
+                [TUIView setAnimationsEnabled:NO block:^{
+                    v.frame = object.calculatedFrame;
+                }];
             } else {
                 [layout addSubview:v];
             }
@@ -333,8 +341,6 @@ typedef enum {
         }
     }
 }
-
-
 
 -(void) processChangeList {
     if ([changeList count] > 0) {
@@ -365,8 +371,8 @@ typedef enum {
     
 }
 
-
--(void) layoutObjects {
+// Update the frames of the visible subviews
+-(void) moveViews {
     __weak TUILayoutTransaction *weakSelf = self;
     [layout.objectViewsMap enumerateKeysAndObjectsUsingBlock:^(NSString* key, TUIView *v, BOOL *stop) {
         NSInteger index = [key integerValue];
@@ -377,16 +383,10 @@ typedef enum {
             object.animation = nil;
         }
         
-        if  ([layout.superview isKindOfClass:[AHGridRow class]]  && object.index == 3) {
-            NSLog(@"AHGridRow");
-        }
-
-        object.oldFrame = v.frame; 
-        if (!CGRectEqualToRect(object.calculatedFrame, object.oldFrame)) 
+        if (!CGRectEqualToRect(v.frame, object.calculatedFrame)) 
         {
             v.frame = object.calculatedFrame;
         } 
-        
         if (object.markedForInsertion) {
             // newly inserted views shouldn't be moved in
             [v.layer removeAnimationForKey:@"position"];
@@ -408,7 +408,7 @@ typedef enum {
         NSMutableArray *indexesToRemove = [[NSMutableArray alloc] init];
         [weakLayout.objectViewsMap enumerateKeysAndObjectsUsingBlock:^(NSString* key, TUIView *v, BOOL *stop) {
             // check if this view is still on screen
-            if (!CGRectIntersectsRect(rectForLayout, v.frame)) {
+            if (!CGRectIntersectsRect(nextVisibleRect, v.frame)) {
                 [indexesToRemove addObject:key];   
             }
         }];
@@ -443,16 +443,10 @@ typedef enum {
 
 #pragma mark - Calculations
 
--(void) calculate {
-    if (!calculated) {
-        calculated = YES;
-    }
-    [self calculateRectForLayout];
-}
-
 -(void) calculateContentOffset {
-    if (shouldAnimate && scrollToObject) {
+    if ((shouldAnimate || phase == TUILayoutTransactionPhasePrelayout) && scrollToObject) {
         // scroll object to top
+        shouldChangeContentOffset = YES;
         CGRect visible = layout.visibleRect;
         CGRect rect = scrollToObject.calculatedFrame;
         rect.origin.y -= (visible.size.height - rect.size.height);
@@ -462,10 +456,13 @@ typedef enum {
     else if (shouldAnimate) {
         shouldChangeContentOffset = YES;
         contentOffset = layout.contentOffset;
-        if (!CGSizeEqualToSize(layout.contentSize, CGSizeZero)) {
-            contentOffset.x *= contentSize.width / layout.contentSize.width;
-            contentOffset.y *= contentSize.height / layout.contentSize.height;
+       // NSLog(@"Layout: contentOffset: %@", NSStringFromPoint(layout.contentOffset));
+        if (layout.contentSize.height != 0 && layout.contentSize.width != 0) {
+            contentOffset.x *= roundf(contentSize.width / layout.contentSize.width);
+            contentOffset.y *= roundf(contentSize.height / layout.contentSize.height);
         }
+        contentOffset = [self fixContentOffset:contentOffset forSize:contentSize];
+       // NSLog(@"Transaction: contentOffset: %@", NSStringFromPoint(contentOffset));
     } else {
         shouldChangeContentOffset = NO;
     }
@@ -491,17 +488,17 @@ typedef enum {
     
 }
 
--(void) calculateRectForLayout {
-    if (!shouldAnimate) {
+-(void) calculateNextVisibleRect {
+    if (!shouldAnimate && !(phase == TUILayoutTransactionPhasePrelayout)) {
         // Update to the visibleRect of the scrollView
-        rectForLayout = layout.visibleRect;
+        nextVisibleRect = layout.visibleRect;
     } else {
         // Calculate the new visble rect
-        rectForLayout = layout.bounds;
+        nextVisibleRect = layout.bounds;
         CGPoint offset = contentOffset;
         offset.x = -offset.x;
         offset.y = -offset.y;
-        rectForLayout.origin = offset;
+        nextVisibleRect.origin = offset;
     }
 }
 
@@ -550,7 +547,6 @@ typedef enum {
 - (void) calculateObjectOffsetsVertical {
     CGFloat offset = self.contentSize.height;  
     for (TUILayoutObject *object in layout.objects) {
-        object.oldFrame = object.calculatedFrame;        
         offset -= object.size.height + layout.spaceBetweenViews;
         object.y = offset + layout.spaceBetweenViews;
     }
@@ -563,7 +559,6 @@ typedef enum {
         if (i==0) {
             offset += layout.spaceBetweenViews;
         }
-        
         object.x = offset;
         i += 1;
         offset += object.size.width + layout.spaceBetweenViews;
@@ -650,29 +645,6 @@ typedef enum {
 	return offset;
 }
 
-
-//- (CGPoint) relativeContentOffset {
-//    CGFloat previousYOffset =scrollView.contentSize.height + scrollView.contentOffset.y;
-//    CGFloat previousXOffset = la.contentSize.width + scrollView.contentOffset.x;
-//    CGFloat newYOffset = previousYOffset - self.updatingTransaction.contentSize.height;
-//    CGFloat newXOffset = previousXOffset - self.contentSize.width;
-//    CGPoint offset = CGPointMake(newXOffset, newYOffset);
-//    offset = [self fixContentOffset:offset forSize:self.updatingTransaction.contentSize];
-//    return offset;
-//}
-
-//-(CGRect) proposedVisibleRect {
-//    CGRect b = self.bounds;
-//    b.size.height += 100;
-//	CGPoint offset = [self proposedContentOffset];
-//	offset.x = -offset.x;
-//	offset.y = -offset.y;
-//	b.origin = offset;
-//	return b;
-//}
-//
-
-
 @end
 
 @implementation TUILayout {
@@ -715,7 +687,8 @@ typedef enum {
 
 - (void) layoutSubviews{
     // don't interfere with active animating transactions
-    if (!self.executingTransaction || (self.executingTransaction && self.executingTransaction.state != TUILayoutTransactionStateAnimating)) [self executeNextLayoutTransaction];
+    if (!self.executingTransaction || (self.executingTransaction && self.executingTransaction.phase != TUILayoutTransactionPhaseAnimating)) 
+        [self executeNextLayoutTransaction];
     [super layoutSubviews];
 }
 
@@ -729,14 +702,14 @@ typedef enum {
     if (!nextTransaction) nextTransaction = defaultTransaction;
     self.executingTransaction = nextTransaction;
     
-    if ([executionQueue count] >= 1 && nextTransaction.state == TUILayoutTransactionStateNormal) {
+    if ([executionQueue count] >= 1 && nextTransaction.phase == TUILayoutTransactionPhaseNormal) {
         __weak TUILayout* weakSelf = self;
         __weak NSMutableArray *weakExecutionQueue = executionQueue;
         [nextTransaction addCompletionBlock: ^(TUILayout* l){
-            if (weakSelf.executingTransaction.state == TUILayoutTransactionStateNormal) {
+            if (weakSelf.executingTransaction.phase == TUILayoutTransactionPhaseNormal) {
                 [weakExecutionQueue removeLastObject];
             }
-            [weakSelf performSelector:@selector(setNeedsLayout) withObject:nil afterDelay:0.01];
+            [weakSelf performSelector:@selector(setNeedsLayout) withObject:nil afterDelay:0];
         }];
     }
     [nextTransaction applyLayout];
@@ -799,7 +772,7 @@ typedef enum {
 
     if (self.executingTransaction) {
         self.executingTransaction = nil;
-        defaultTransaction.state = TUILayoutTransactionStatePrelayout;
+        defaultTransaction.phase = TUILayoutTransactionPhasePrelayout;
         defaultTransaction.calculated = false;
         defaultTransaction = [[TUILayoutTransaction alloc] init];
         defaultTransaction.layout = self;
@@ -919,7 +892,7 @@ typedef enum {
         TUILayoutObject *object = [[TUILayoutObject alloc] init];
         NSValue *objectSize = [sizes objectAtIndex:idx];
         object.size = [objectSize sizeValue];
-        object.oldFrame = oldObject.oldFrame;
+        object.oldFrame = oldObject.calculatedFrame;
         object.markedForUpdate = YES;
         object.index = index;
         object.indexString = [NSString stringWithFormat:@"%d", index];
@@ -938,7 +911,7 @@ typedef enum {
     [self.objects enumerateObjectsUsingBlock:^(TUILayoutObject *obj, NSUInteger idx, BOOL *stop) {
         TUILayoutObject *object = [[TUILayoutObject alloc] init];
         object.size = size;
-        object.oldFrame = obj.oldFrame;
+        object.oldFrame = obj.calculatedFrame;
         object.markedForUpdate = YES;
         object.index = obj.index;
         object.indexString = [NSString stringWithFormat:@"%d", idx];
@@ -955,7 +928,7 @@ typedef enum {
     TUILayoutObject *oldObject = [self.objects objectAtIndex:index];
     TUILayoutObject *object = [[TUILayoutObject alloc] init];
     object.size = size;
-    object.oldFrame = oldObject.oldFrame;
+    object.oldFrame = oldObject.calculatedFrame;
     object.markedForUpdate = YES;
     object.index = index;
     object.indexString = [NSString stringWithFormat:@"%d", index];
