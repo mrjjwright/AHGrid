@@ -548,29 +548,29 @@
         xlargeCell.alpha = 0;
         [self.selectedRow addSubview:xlargeCell];
         self.selectedRow.xLargeCell = xlargeCell;
-        self.selectedRow.logicalSize = AHGridLogicalSizeXLarge;
         
+        self.selectedRow.animating = YES;
+        animating = YES;
         [self resizeRowAtIndex:self.selectedRowIndex toLogicalSize:AHGridLogicalSizeXLarge animationBlock:^{
             [self resizeCellsOfRow:self.selectedRow toSize:AHGridLogicalSizeSmall];
             xlargeCell.alpha = 1;
             self.selectedRow.xLargeCell.logicalSize = AHGridLogicalSizeXLarge;
-            [self.selectedRow layoutSubviews];
         } completionBlock:^{
+            self.selectedRow.animating = NO;
+            [self.selectedRow layoutSubviews];
             animating = NO;
         }];
     } else if (self.selectedRow.logicalSize == AHGridLogicalSizeXLarge && self.selectedRow.xLargeCell && self.selectedRow.xLargeCell.superview) {
-        animating = YES;
-        self.selectedRow.animating = YES;
         // remove the xlarge cell and resize the row
         [self resizeRowAtIndex:self.selectedRowIndex toLogicalSize:AHGridLogicalSizeMedium animationBlock:^{
             [self resizeCellsOfRow:self.selectedRow toSize:AHGridLogicalSizeMedium];
             //fade out the xlarge cell
-            [self.selectedRow layoutSubviews];
             self.selectedRow.xLargeCell.alpha = 0;
         } completionBlock:^{
             [self.selectedRow.xLargeCell removeFromSuperview];
+            self.selectedRow.animating = NO;
+            [self.selectedRow layoutSubviews];
             animating = NO;
-            self.selectedRow.animating = YES;
             [self.selectedRow.xLargeCell removeFromSuperview];
             self.selectedRow.xLargeCell = nil;
         }];

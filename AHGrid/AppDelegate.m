@@ -55,7 +55,9 @@
     
     grid.configureRowBlock = ^(AHGrid* grid, AHGridRow *row) {
         row.titleString = [NSString stringWithFormat:@"Example Row %d", index];
-        [row.listView reloadData];
+        if (!row.listView.reloadedDate) {
+            [row.listView reloadData];
+        }
     };
     
     grid.numberOfRowsBlock = ^(AHGrid *grid) {
@@ -70,7 +72,7 @@
     grid.configureCellBlock = ^(AHGrid *grid, AHGridRow* row, AHGridCell *cell) {
         //NSMutableArray *rows = [gridModel objectForKey:[NSNumber numberWithInteger:row.index]];
         //cell.image = [TUIImage imageNamed:[cellModel objectForKey:@"image"] cache:YES];
-        cell.backgroundColor = [TUIColor redColor];
+        cell.backgroundColor = [TUIColor lightGrayColor];
         cell.textColor = textColor;
         cell.textFont = textFont;
         cell.displayLogInfo = YES;

@@ -800,9 +800,6 @@ typedef enum {
     TUIView *v = [reusableViews lastObject];
     if(v) [reusableViews removeLastObject];
     if (!v) v = [self createView];
-    if (!v) {
-        NSLog(@"got here");
-    }
 	return v;
 }
 
@@ -952,6 +949,9 @@ typedef enum {
     object.markedForUpdate = YES;
     object.index = index;
     object.indexString = [NSString stringWithFormat:@"%ld", index];
+    [self.objects enumerateObjectsUsingBlock:^(TUILayoutObject *obj, NSUInteger idx, BOOL *stop) {
+        obj.oldFrame = obj.calculatedFrame;
+    }];
     [self.updatingTransaction.changeList addObject:object];
 }    
 
@@ -1049,9 +1049,6 @@ typedef enum {
 
 
 - (TUIView *)createView {
-    if (!self.viewClass) {
-        self.viewClass = [TUIView class];
-    }
     TUIView *v = [[self.viewClass alloc] initWithFrame:CGRectZero];
     return v;
 }
