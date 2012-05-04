@@ -20,6 +20,7 @@
 @property (nonatomic) BOOL expanded;
 @property (nonatomic) AHGridLogicalSize logicalSize;
 @property (nonatomic) BOOL resizing;
+@property (nonatomic, strong) id associatedObject;
 
 @property (nonatomic, strong) TUIImage *image;
 @property (nonatomic, copy) TUIAttributedString *text;

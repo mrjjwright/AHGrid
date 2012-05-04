@@ -516,7 +516,7 @@
 		9A363DC314B65262004F31C7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = AirHeart;
 			};
 			buildConfigurationList = 9A363DC614B65262004F31C7 /* Build configuration list for PBXProject "AHGrid" */;

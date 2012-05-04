@@ -26,15 +26,14 @@
 #define kAHGridChangedCellSelection @"kAHGridChangedCellSelection"
 
 typedef NSUInteger(^AHGridNumberOfRowsBlock)(AHGrid *grid);
-typedef void(^AHGridConfigureRowBlock)(AHGrid* grid, AHGridRow *row, NSUInteger index);
-typedef void(^AHGridReloadedBlock)(AHGrid *grid);
-typedef void(^AHGridConfigureCellBlock)(AHGrid* grid, AHGridRow *row, AHGridCell *cell, NSUInteger index);
+typedef void(^AHGridConfigureRowBlock)(AHGrid* grid, AHGridRow *row);
 typedef NSUInteger(^AHGridNumberOfCellsBlock)(AHGrid *grid, AHGridRow *row);
-
+typedef void(^AHGridConfigureCellBlock)(AHGrid* grid, AHGridRow *row, AHGridCell *cell);
+typedef void(^AHGridRowLoadCallback)( NSUInteger numOfNewCells);
+typedef void (^AHGridRowLoadHandler) (AHGrid* grid, AHGridRow *row, AHGridRowLoadCallback callback);
 
 @interface AHGrid : TUILayout  <TUILayoutDataSource>
 
-@property (nonatomic, strong) NSMutableArray *rowViews;
 @property (nonatomic, weak) Class cellClass; 
 @property (nonatomic, weak) Class rowHeaderClass;
 
@@ -50,11 +49,12 @@ typedef NSUInteger(^AHGridNumberOfCellsBlock)(AHGrid *grid, AHGridRow *row);
 @property (nonatomic) CGFloat rowHeaderHeight;
 
 @property (nonatomic, copy) AHGridNumberOfRowsBlock numberOfRowsBlock;
-@property (nonatomic, copy) AHGridConfigureRowBlock configureRowBlock; 
-@property (nonatomic, copy) AHGridReloadedBlock reloadedBlock;
-
-@property (nonatomic, copy) AHGridConfigureCellBlock configureCellBlock;
+@property (nonatomic, copy) AHGridConfigureRowBlock configureRowBlock;
 @property (nonatomic, copy) AHGridNumberOfCellsBlock numberOfCellsBlock;
+@property (nonatomic, copy) AHGridConfigureCellBlock configureCellBlock;
+@property (nonatomic, copy) AHGridRowLoadHandler loadAllHandler;
+@property (nonatomic, copy) AHGridRowLoadHandler loadNewHandler;
+@property (nonatomic, copy) AHGridRowLoadHandler loadOldHandler;
 
 
 -(CGSize) rowSizeForLogicalSize:(AHGridLogicalSize) logicalSize;
@@ -62,5 +62,7 @@ typedef NSUInteger(^AHGridNumberOfCellsBlock)(AHGrid *grid, AHGridRow *row);
 -(void) resizeSelectedCellToSize:(AHGridLogicalSize) targetCellSize;
 -(void) resizeCell:(AHGridCell*) cell toSize:(AHGridLogicalSize) logicalSize completionBlock:(void (^)())completionBlock;
 -(void) toggleSelectedCellSize;
+-(void) selectAndScrollToCellWithIndex:(NSUInteger) cellIndex;
+-(void) selectCellInAdjacentRow:(AHGridRow*) row scrollTo:(BOOL) scrollTo;
 
 @end

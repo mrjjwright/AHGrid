@@ -13,7 +13,6 @@
 #endif
 
 #import "TUILayout.h"
-#import "AHGrid.h"
 
 @implementation NSString(TUICompare)
 
@@ -95,18 +94,19 @@ typedef enum {
 @property (nonatomic) CGSize contentSize;
 @property (nonatomic) CGRect nextVisibleRect;
 @property (nonatomic) TUILayoutTransactionPhase phase;
-@property (nonatomic, weak) TUILayoutObject *scrollToObject;
+@property (nonatomic) NSUInteger scrollToObjectIndex;
 @property (nonatomic, strong) NSMutableArray *changeList;
 @property (nonatomic) CGSize objectSize;
 @property (nonatomic) BOOL calculated;
 @property (nonatomic) CGFloat animationDuration;
+@property (nonatomic) CGPoint contentOffset;
 
 -(void) applyLayout;
 -(void) addCompletionBlock:(TUILayoutHandler) block;
 
+-(CGPoint) calculateNextContentOffset;
 -(void) calculateContentSize;
--(void) calculateContentOffset;
--(void) calculateContentOffsetIfScrolledRectToVisible:(CGRect) rect;
+- (CGPoint)modifyContentOffset:(CGPoint)c forRect:(CGRect)rect inVisibleRect:(CGRect) visible horizontal:(BOOL)horizontal;
 -(void) calculateNextVisibleRect;
 -(void) calculateObjectOffsets;
 -(void) calculateObjectOffsetsVertical;
@@ -127,7 +127,6 @@ typedef enum {
 
 @implementation TUILayoutTransaction {
     NSMutableArray *completionBlocks;
-    CGPoint contentOffset;
     BOOL calculatedContentSize;
     NSMutableArray *objectIndexesToBringIntoView;
     BOOL shouldChangeContentOffset;
@@ -141,11 +140,12 @@ typedef enum {
 @synthesize contentSize;
 @synthesize nextVisibleRect;
 @synthesize phase;
-@synthesize scrollToObject;
+@synthesize scrollToObjectIndex;
 @synthesize changeList;
 @synthesize objectSize;
 @synthesize calculated;
 @synthesize animationDuration;
+@synthesize contentOffset;
 
 #pragma mark - Getters and Setters
 
@@ -170,10 +170,9 @@ typedef enum {
 -(void) applyLayout {
     
     CGRect bounds = layout.bounds;
-
+    
     if (!calculated || !CGSizeEqualToSize(bounds.size, lastBounds.size)) {
         [self calculateContentSize];
-        [self calculateContentOffset];
         [self processChangeList];
         [self calculateObjectOffsets]; 
         [self processInsertions];
@@ -181,7 +180,7 @@ typedef enum {
     }
     lastBounds = bounds;
     
-        
+    
     if (self.shouldAnimate && phase != TUILayoutTransactionPhaseDoneAnimating) {
         if (phase == TUILayoutTransactionPhaseNormal) {
             phase = TUILayoutTransactionPhasePrelayout;
@@ -205,57 +204,53 @@ typedef enum {
                     }
                     for (TUILayoutHandler block in weakCompletionBlocks) block(weakSelf.layout);
                 }];
-                                
-                // Recalculate the offsets since our content size was changed during the prelayout phase
-                [weakSelf calculateObjectOffsets];
                 
-                weakSelf.layout.contentSize = weakSelf.contentSize;
                 CGFloat duration = weakSelf.animationDuration > 0 ? weakSelf.animationDuration :  kTUILayoutDefaultAnimationDuration;
+                
+                layout.contentSize = contentSize;
+                
                 [TUIView animateWithDuration:duration animations:^{
-                    if (weakSelf.scrollToObject) {
-                        // scroll object to top
-                        CGRect r = weakSelf.scrollToObject.calculatedFrame;
-                        r.origin.y -= (weakSelf.nextVisibleRect.size.height - r.size.height);
-                        r.size.height += (weakSelf.nextVisibleRect.size.height - r.size.height);
-                        [weakSelf.layout scrollRectToVisible:r animated:NO];
-                    } else  if (shouldChangeContentOffset) {
-                        weakSelf.layout.contentOffset = contentOffset;
-                    }
-                    
-                    //Move the views animated
+                    // Time for the key animation...
+                    // animate changing the content offset, moving the views,
+                    // and a user supplied animation block together
+                    weakSelf.layout.contentOffset = contentOffset;                        
                     [weakSelf moveViews];
-                    
                     if (weakSelf.animationBlock) weakSelf.animationBlock(weakSelf.layout);
                 }];
                 [CATransaction commit];
             }];
-
-                    
+            
+            
             // Process insertions and removals
             [weakSelf rebaseForInsertionsAndRemovals];
-
-            // If the caller hasn't already set a scrollToObject;
-            // then make sure the first visible view stays in view 
-            // through the animation
-            if (!scrollToObject) {
-                scrollToObject = [layout.objects objectAtIndex:0];
-                [self calculateContentOffset];
-            }
+            
+            TUILayoutObject *scrollToObject = [layout.objects objectAtIndex:scrollToObjectIndex];
             
             // Calculate the frame and views for the next layout
+            // First  calculate an almost right estimate on the next visibleRect based on content size
+            contentOffset = [self contentOffset:layout.contentOffset afterChangeInContentSizeFrom:layout.contentSize toSize:contentSize];
+            contentOffset = [self fixContentOffset:contentOffset forSize:contentSize inBounds:layout.bounds];            
             [self calculateNextVisibleRect];
+            // Now refine the contentOffset a bit more to make sure we scroll to the right object 
+            contentOffset = [self modifyContentOffset:contentOffset forRect:scrollToObject.calculatedFrame inVisibleRect:nextVisibleRect horizontal:(layout.typeOfLayout == TUILayoutHorizontal)];
+            contentOffset = [self fixContentOffset:contentOffset forSize:contentSize inBounds:layout.bounds];            
+            [self calculateNextVisibleRect];
+            
             objectIndexesToBringIntoView = [self objectIndexesInRect:nextVisibleRect];
-
-            // Bring in views needed for the animation using their old positions
+            
+            // Bring in any needed views needed for the animation 
+            // Existing subviews will come in using their old frames
             [self addNewlyVisibleSubviews];
             
             // This ensures that the newly added subviews are added before the animation
+            // This will kick off multiple layout passes all occuring with old frames before the animation
             [CATransaction commit];
         } 
     } else {
         [TUIView setAnimationsEnabled:NO block:^{
-            layout.contentSize = contentSize;
+            layout.contentSize = contentSize;                
             [self calculateNextVisibleRect];
+            
             objectIndexesToBringIntoView = [self objectIndexesInRect:nextVisibleRect];
             [self addNewlyVisibleSubviews];
             [self moveViews];
@@ -276,7 +271,7 @@ typedef enum {
     if (shouldAnimate && [changeList count] > 0) {
         for (TUILayoutObject * object in changeList) {
             if (object.markedForInsertion || object.markedForRemoval) {
-                NSString *objectIndex = [NSString stringWithFormat:@"%d", object.index];;
+                NSString *objectIndex = [NSString stringWithFormat:@"%ld", object.index];;
                 [objectIndexesToAdd removeObject:objectIndex];
             }
         }
@@ -350,9 +345,7 @@ typedef enum {
             } else if (object.markedForRemoval) {
                 [layout.objects removeObjectAtIndex:object.index];
             } else {
-                [layout.objects insertObject:object atIndex:object.index];
-                object.index = [layout.objects indexOfObject:object];
-                object.indexString = [NSString stringWithFormat:@"%ld", object.index];
+                
             }
         }
     }
@@ -383,14 +376,15 @@ typedef enum {
             object.animation = nil;
         }
         
-        if (!CGRectEqualToRect(v.frame, object.calculatedFrame)) 
+        if (self.phase == TUILayoutTransactionPhasePrelayout) {
+            if (!CGRectIsNull(object.oldFrame)  && !CGRectEqualToRect(CGRectZero, object.oldFrame) && !CGRectEqualToRect(v.frame, object.oldFrame)) {
+                v.frame = object.oldFrame;
+            }
+        } else if (!CGRectEqualToRect(v.frame, object.calculatedFrame)) 
         {
             v.frame = object.calculatedFrame;
         } 
         if (object.markedForInsertion) {
-            // newly inserted views shouldn't be moved in
-            [v.layer removeAnimationForKey:@"position"];
-            [v.layer removeAnimationForKey:@"bounds"];
             // send new views to back so other views can animate over it
             [weakSelf.layout sendSubviewToBack:v];
             object.markedForInsertion = NO;
@@ -429,7 +423,7 @@ typedef enum {
         [layout.objectViewsMap enumerateKeysAndObjectsUsingBlock:^(NSString* key, TUIView *v, BOOL *stop) {
             if (v.frame.origin.y < point.y) {
                 NSInteger index = [key intValue] + indexAmount;
-                NSString *newIndexKey = [NSString stringWithFormat:@"%d", index];
+                NSString *newIndexKey = [NSString stringWithFormat:@"%ld", index];
                 [newObjectViewsMap setValue:v forKey:newIndexKey];
                 [v setTag:index];
             } else {
@@ -443,53 +437,15 @@ typedef enum {
 
 #pragma mark - Calculations
 
--(void) calculateContentOffset {
-    if ((shouldAnimate || phase == TUILayoutTransactionPhasePrelayout) && scrollToObject) {
-        // scroll object to top
-        shouldChangeContentOffset = YES;
-        CGRect visible = layout.visibleRect;
-        CGRect rect = scrollToObject.calculatedFrame;
-        rect.origin.y -= (visible.size.height - rect.size.height);
-        rect.size.height += (visible.size.height - rect.size.height); 
-        [self calculateContentOffsetIfScrolledRectToVisible:rect];
-    }
-    else if (shouldAnimate) {
-        shouldChangeContentOffset = YES;
-        contentOffset = layout.contentOffset;
-       // NSLog(@"Layout: contentOffset: %@", NSStringFromPoint(layout.contentOffset));
-        if (layout.contentSize.height != 0 && layout.contentSize.width != 0) {
-            contentOffset.x *= roundf(contentSize.width / layout.contentSize.width);
-            contentOffset.y *= roundf(contentSize.height / layout.contentSize.height);
-        }
-        contentOffset = [self fixContentOffset:contentOffset forSize:contentSize];
-       // NSLog(@"Transaction: contentOffset: %@", NSStringFromPoint(contentOffset));
-    } else {
-        shouldChangeContentOffset = NO;
-    }
-}
-
--(void) calculateContentOffsetIfScrolledRectToVisible:(CGRect) rect {
-    CGRect visible = layout.visibleRect;
-    if (layout.typeOfLayout == TUILayoutHorizontal) {
-        if (rect.origin.x + rect.size.width > visible.origin.x + visible.size.width) {
-            //Scroll right, have rect be flush with right of visible view
-            contentOffset = CGPointMake(-rect.origin.x + visible.size.width - rect.size.width, 0);
-        } else if (rect.origin.x  < visible.origin.x) {
-            // Scroll left, rect flush with left of leftmost visible view
-            contentOffset = CGPointMake(-rect.origin.x, 0);
-        }
-    } else if (rect.origin.y < visible.origin.y) {
-        // scroll down, have rect be flush with bottom of visible view
-        contentOffset = CGPointMake(0, -rect.origin.y);
-    } else if (rect.origin.y + rect.size.height > visible.origin.y + visible.size.height) {
-        // scroll up, rect to be flush with top of view
-        contentOffset = CGPointMake(0, -rect.origin.y + visible.size.height - rect.size.height);
-    }
-    
+-(CGPoint) calculateNextContentOffset {
+    [self calculateContentSize];
+    [self calculateObjectOffsets];
+    CGPoint p = [self contentOffset:layout.contentOffset afterChangeInContentSizeFrom:layout.contentSize toSize:contentSize];
+    return [self fixContentOffset:p forSize:contentSize inBounds:layout.bounds];            
 }
 
 -(void) calculateNextVisibleRect {
-    if (!shouldAnimate && !(phase == TUILayoutTransactionPhasePrelayout)) {
+    if (!(phase == TUILayoutTransactionPhasePrelayout)) {
         // Update to the visibleRect of the scrollView
         nextVisibleRect = layout.visibleRect;
     } else {
@@ -500,6 +456,7 @@ typedef enum {
         offset.y = -offset.y;
         nextVisibleRect.origin = offset;
     }
+    nextVisibleRect = CGRectIntegral(nextVisibleRect);
 }
 
 -(void) calculateContentSize {
@@ -520,8 +477,7 @@ typedef enum {
         }
         idx +=1;
     }
-    // final contentSize is modified by the amount of insertions, removals, and resizes as reflected
-    // in contentWidthChange and contentHeightChange
+    // final contentSize is modified by the amount of insertions, removals, and resizs
     for (TUILayoutObject *object in changeList) {
         if (object.markedForUpdate) {
             TUILayoutObject *oldObject = [layout.objects objectAtIndex:object.index];
@@ -568,6 +524,42 @@ typedef enum {
 
 #pragma mark - Geometry
 
+-(CGPoint) contentOffset:(CGPoint) theContentOffset afterChangeInContentSizeFrom:(CGSize) oldContentSize toSize:(CGSize) newContentSize {
+    CGPoint c = theContentOffset;
+    if (oldContentSize.width > 0) {
+        c.x *= newContentSize.width/oldContentSize.width;
+        c.x = roundf(c.x);
+    }
+    if (oldContentSize.height > 0) {
+        c.y *= newContentSize.height/oldContentSize.height;
+        c.y = roundf(c.y);
+    }
+    return c;
+}
+
+- (CGPoint)modifyContentOffset:(CGPoint)c forRect:(CGRect)rect inVisibleRect:(CGRect) visible horizontal:(BOOL)horizontal
+{
+    // What about horizontal scrolling peeps
+    if (horizontal) {
+        if (rect.origin.x + rect.size.width > visible.origin.x + visible.size.width) {
+            //Scroll right, have rect be flush with right of visible view
+            c = CGPointMake(-rect.origin.x + visible.size.width - rect.size.width, 0);
+        } else if (rect.origin.x  < visible.origin.x) {
+            // Scroll left, rect flush with left of leftmost visible view
+            c = CGPointMake(-rect.origin.x, 0);
+        }
+    } else if (rect.origin.y < visible.origin.y) {
+		// scroll down, have rect be flush with bottom of visible view
+		c= CGPointMake(0, -rect.origin.y);
+	} else if (rect.origin.y + rect.size.height > visible.origin.y + visible.size.height) {
+		// scroll up, rect to be flush with top of view
+		c = CGPointMake(0, -rect.origin.y + visible.size.height - rect.size.height);
+	}
+    return c;
+}
+
+
+
 - (NSMutableArray *)objectIndexesInRect:(CGRect)rect
 {
 	NSMutableArray *foundObjects = [NSMutableArray arrayWithCapacity:5];
@@ -580,7 +572,7 @@ typedef enum {
 }
 
 -(NSString*) indexKeyForObject:(TUILayoutObject*) object {
-    return [NSString stringWithFormat:@"%d", [layout.objects indexOfObject:object]];
+    return [NSString stringWithFormat:@"%ld", [layout.objects indexOfObject:object]];
 }
 
 
@@ -596,9 +588,8 @@ typedef enum {
 
 
 
-- (CGPoint) fixContentOffset:(CGPoint)offset forSize:(CGSize) size
+- (CGPoint) fixContentOffset:(CGPoint)offset forSize:(CGSize) size inBounds:(CGRect) b
 {
-	CGRect b = layout.bounds;
 	CGSize s = size;
 	
 	//s.height += _contentInset.top;
@@ -665,6 +656,7 @@ typedef enum {
 @synthesize reloadedDate;
 @synthesize typeOfLayout;
 @synthesize reloadHandler;
+@synthesize scrollToObjectIndex;
 
 - (id)initWithFrame:(CGRect)frame {
     if((self = [super initWithFrame:frame])) {
@@ -686,10 +678,11 @@ typedef enum {
 #pragma mark - Execute Transactions
 
 - (void) layoutSubviews{
-    // don't interfere with active animating transactions
-    if (!self.executingTransaction || (self.executingTransaction && self.executingTransaction.phase != TUILayoutTransactionPhaseAnimating)) 
-        [self executeNextLayoutTransaction];
     [super layoutSubviews];
+    // don't interfere with active animating transactions
+    if (!self.executingTransaction || (self.executingTransaction && (self.executingTransaction.phase != TUILayoutTransactionPhaseAnimating))) {
+        [self executeNextLayoutTransaction];
+    }
 }
 
 -(void) executeNextLayoutTransaction {
@@ -750,11 +743,17 @@ typedef enum {
     }
     
     if (CGRectEqualToRect(CGRectZero, self.bounds)) {
-        NSAssert(false, @"Calling reloadData with empty bounds");
+        // NSAssert(false, @"Calling reloadData with empty bounds");
     }
     
     reloadedDate = [NSDate date];
-    
+    NSString *firstObjectIndex = nil;
+    if (objectViewsMap.allKeys && objectViewsMap.allKeys.count > 0) {
+        NSArray *sortedKeys = [[objectViewsMap allKeys] sortedArrayUsingSelector:@selector(compare:)];
+        if (sortedKeys && sortedKeys.count> 0) {
+            firstObjectIndex = [sortedKeys objectAtIndex:0];
+        }
+    }
     [objectViewsMap enumerateKeysAndObjectsUsingBlock:^(NSString *indexKey, TUIView *view, BOOL *stop) {
         [self enqueueReusableView:view];
         [view removeFromSuperview];
@@ -767,9 +766,9 @@ typedef enum {
         TUILayoutObject *object = [[TUILayoutObject alloc] init];
         [self.objects addObject:object];
         object.index = i;
-        object.indexString = [NSString stringWithFormat:@"%d", i];
+        object.indexString = [NSString stringWithFormat:@"%ld", i];
     }
-
+    
     if (self.executingTransaction) {
         self.executingTransaction = nil;
         defaultTransaction.phase = TUILayoutTransactionPhasePrelayout;
@@ -777,7 +776,20 @@ typedef enum {
         defaultTransaction = [[TUILayoutTransaction alloc] init];
         defaultTransaction.layout = self;
     }
-    [self layoutSubviews];
+    
+    //First do some calculation to maintain the content offset
+    CGPoint contentOffset = [defaultTransaction calculateNextContentOffset];
+    
+    // Now refine the contentOffset a bit more to make sure we scroll to the right object 
+    if (firstObjectIndex && firstObjectIndex.length && firstObjectIndex.integerValue < self.objects.count) {
+        TUILayoutObject *scrollToObject = [self.objects objectAtIndex:[firstObjectIndex integerValue]];
+        contentOffset = [defaultTransaction modifyContentOffset:contentOffset forRect:scrollToObject.calculatedFrame inVisibleRect:self.visibleRect horizontal:(self.typeOfLayout == TUILayoutHorizontal)];
+        contentOffset = [defaultTransaction fixContentOffset:contentOffset forSize:defaultTransaction.contentSize inBounds:self.bounds];            
+    }
+    self.contentOffset = contentOffset;
+    
+    [self executeNextLayoutTransaction];
+    
     if (reloadHandler) {
         reloadHandler(self);
     }
@@ -788,17 +800,21 @@ typedef enum {
     TUIView *v = [reusableViews lastObject];
     if(v) [reusableViews removeLastObject];
     if (!v) v = [self createView];
+    if (!v) {
+        NSLog(@"got here");
+    }
 	return v;
 }
 
 -(TUIView*) viewForIndex:(NSUInteger)index {
     if (!objects || ![objects count]) return nil;
-    NSString *indexKey = [NSString stringWithFormat:@"%d", index];
+    NSString *indexKey = [NSString stringWithFormat:@"%ld", index];
     
     TUIView *v = [objectViewsMap objectForKey:indexKey];
     if (!v && (index <= [objects count] - 1)) {
         TUILayoutObject *object = [objects objectAtIndex:index];
-        [self.executingTransaction addSubviewForObject:object atIndex:[NSString stringWithFormat:@"%d", index]];
+        NSAssert(self.executingTransaction, @"No executing transaction");
+        [self.executingTransaction addSubviewForObject:object atIndex:[NSString stringWithFormat:@"%ld", index]];
         v = [objectViewsMap objectForKey:indexKey];
     }
     return v;
@@ -819,6 +835,14 @@ typedef enum {
     return nil;
 }
 
+-(void) setScrollToObjectIndex:(NSUInteger)s {
+    self.updatingTransaction.scrollToObjectIndex = s;
+}
+
+-(NSUInteger) scrollToObjectIndex {
+    return self.updatingTransaction.scrollToObjectIndex;
+}
+
 
 - (CGRect) rectForObjectAtIndex:(NSUInteger) index {
     TUILayoutObject *object = [objects objectAtIndex:index];
@@ -829,7 +853,7 @@ typedef enum {
 {
 	CGRect v = [self visibleRect];
 	CGRect r = [self rectForObjectAtIndex:index];
-		
+    
 	switch(scrollPosition) {
 		case TUITableViewScrollPositionNone:
 			// do nothing
@@ -863,7 +887,7 @@ typedef enum {
     
     // This view has to already exist
     if (!objects || ![objects count]) return nil;
-    NSString *indexKey = [NSString stringWithFormat:@"%d", index];
+    NSString *indexKey = [NSString stringWithFormat:@"%ld", index];
     TUILayoutObject *object = [self.objects objectAtIndex:index];
     
     // Make sure the view exists
@@ -875,14 +899,15 @@ typedef enum {
         [reusableViews removeObject:v];
         //Add another one in it's place
         object.size = size;
-        return [self.executingTransaction addSubviewForObject:object atIndex:[NSString stringWithFormat:@"%d", index]];
+        return [self.executingTransaction addSubviewForObject:object atIndex:[NSString stringWithFormat:@"%ld", index]];
     }
     return nil;
 }
 
+
+
 - (void) resizeObjectAtIndexes:(NSArray*) objectIndexes sizes:(NSArray*) sizes animationBlock:(void (^)())animationBlock completion:(void (^)())completionBlock 
 {
-    [self beginUpdates];
     [objectIndexes enumerateObjectsUsingBlock:^(NSString *stringIndex, NSUInteger idx, BOOL *stop) {
         NSInteger index = [stringIndex integerValue];
         [self.updatingTransaction addCompletionBlock:completionBlock];
@@ -895,16 +920,13 @@ typedef enum {
         object.oldFrame = oldObject.calculatedFrame;
         object.markedForUpdate = YES;
         object.index = index;
-        object.indexString = [NSString stringWithFormat:@"%d", index];
+        object.indexString = [NSString stringWithFormat:@"%ld", index];
         [self.updatingTransaction.changeList addObject:object];
     }];
-    [self endUpdates];
-    
 }
 
 
 -(void) resizeObjectsToSize:(CGSize) size animationBlock:(void (^)())animationBlock completionBlock:(void (^)())completion {  
-    [self beginUpdates];
     [self.updatingTransaction addCompletionBlock:completion];
     self.updatingTransaction.animationBlock = animationBlock;
     self.updatingTransaction.animationDuration = 0.5;
@@ -914,14 +936,12 @@ typedef enum {
         object.oldFrame = obj.calculatedFrame;
         object.markedForUpdate = YES;
         object.index = obj.index;
-        object.indexString = [NSString stringWithFormat:@"%d", idx];
+        object.indexString = [NSString stringWithFormat:@"%ld", idx];
         [self.updatingTransaction.changeList addObject:object];
     }];
-    [self endUpdates];
 }
 
 - (void) resizeObjectAtIndex:(NSUInteger) index toSize:(CGSize) size animationBlock:(void (^)())animationBlock  completionBlock:(void (^)())completionBlock {
-    [self beginUpdates];
     [self.updatingTransaction addCompletionBlock:completionBlock];
     self.updatingTransaction.animationBlock = animationBlock;
     self.updatingTransaction.animationDuration = 0.5;
@@ -931,9 +951,8 @@ typedef enum {
     object.oldFrame = oldObject.calculatedFrame;
     object.markedForUpdate = YES;
     object.index = index;
-    object.indexString = [NSString stringWithFormat:@"%d", index];
+    object.indexString = [NSString stringWithFormat:@"%ld", index];
     [self.updatingTransaction.changeList addObject:object];
-    [self endUpdates];
 }    
 
 -(void) insertObjectAtIndex:(NSUInteger) index  {
@@ -949,12 +968,13 @@ typedef enum {
     object.size = [dataSource sizeOfObjectAtIndex:index];
     object.markedForInsertion = YES;
     object.index = index;
-    object.indexString = [NSString stringWithFormat:@"%d", index];
+    object.indexString = [NSString stringWithFormat:@"%ld", index];
     [self.updatingTransaction.changeList addObject:object];
     self.updatingTransaction.animationBlock = animationBlock;
     [self.updatingTransaction addCompletionBlock:completionBlock];
     [self endUpdates];
 }
+
 
 -(void) removeObjectsAtIndexes:(NSIndexSet *)indexes {
     [self beginUpdates];
@@ -992,6 +1012,18 @@ typedef enum {
     [self endUpdates];
 }
 
+-(void) prependNumOfObjects:(NSInteger) numOfObjects animationBlock:(void (^)())animationBlock  completionBlock:(void (^)())completionBlock {
+    for (int i = numOfObjects; i > 0; i--) {
+        TUILayoutObject *object = [[TUILayoutObject alloc] init];
+        object.size = [dataSource sizeOfObjectAtIndex:i];
+        object.markedForInsertion = YES;
+        object.index = i - 1;
+        object.indexString = [NSString stringWithFormat:@"%ld", object.index];
+        [self.objects insertObject:object atIndex:0];
+    }
+    
+}
+
 
 - (NSArray *)visibleViews
 {
@@ -1017,6 +1049,9 @@ typedef enum {
 
 
 - (TUIView *)createView {
+    if (!self.viewClass) {
+        self.viewClass = [TUIView class];
+    }
     TUIView *v = [[self.viewClass alloc] initWithFrame:CGRectZero];
     return v;
 }

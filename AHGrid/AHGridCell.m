@@ -30,6 +30,7 @@
 @synthesize resizing;
 @synthesize textFont, textColor;
 @synthesize displayLogInfo;
+@synthesize associatedObject;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -112,14 +113,17 @@
     }
     
     if (displayLogInfo) {
-        TUIAttributedString *logString = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"%d %@", index, NSStringFromRect(self.frame)]];
+        TUIAttributedString *logString = [TUIAttributedString stringWithString:[NSString stringWithFormat:@"%ld %@", index, NSStringFromRect(self.frame)]];
         if (textFont) logString.font = textFont;
         
         if (textColor)logString.color = textColor;
         textRenderer.attributedString = logString;
     }
     
-    textRenderer.frame = self.bounds;
+    CGRect textRendererFrame = self.bounds;
+    textRendererFrame.size.height = 50;
+    textRendererFrame.origin.y = self.bounds.size.height - 50;
+    textRenderer.frame = textRendererFrame;
     if (textRenderer) {
         [textRenderer draw];
     }

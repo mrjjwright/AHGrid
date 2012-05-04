@@ -10,6 +10,7 @@
 #import "AHGridCell.h"
 #import "AHGrid.h"
 
+
 @implementation AHGridRow {
 }
 
@@ -19,9 +20,9 @@
 @synthesize listView;
 @synthesize selected;
 @synthesize titleString;
-@synthesize numberOfCells;
 @synthesize associatedObject;
 @synthesize headerView;
+
 
 @synthesize logicalSize;
 @synthesize xLargeCell;
@@ -35,7 +36,6 @@
 }
 
 -(CGRect) frameForXLargeCell {
-    if (!xLargeCell) return CGRectZero;
     CGRect xlargeCellFrame = self.bounds;
     xlargeCellFrame.origin.y = (listView.frame.size.height + grid.rowHeaderHeight + 15);
     xlargeCellFrame.size.height -= xlargeCellFrame.origin.y;
@@ -53,21 +53,9 @@
 }
 
 
-- (id)initWithFrame:(CGRect)frame andGrid:(AHGrid*) g
+- (id)initWithFrame:(CGRect)frame 
 {
 	if((self = [super initWithFrame:frame])) {
-        grid = g;
-        self.backgroundColor = grid.backgroundColor;
-        listView = [[TUILayout alloc] initWithFrame:CGRectZero];
-        listView.backgroundColor = grid.backgroundColor;
-        listView.dataSource = self;
-        listView.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
-        listView.typeOfLayout = TUILayoutHorizontal;
-        listView.horizontalScrolling = YES;
-        listView.spaceBetweenViews = 15;
-        listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
-        self.logicalSize = AHGridLogicalSizeMedium;
-        [self addSubview:listView];  
     }
     return self;
 }
@@ -82,11 +70,29 @@
 
 -(void) setGrid:(AHGrid *)g {
     grid = g;
+    if (!listView) {
+        listView = [[TUILayout alloc] initWithFrame:CGRectZero];
+        listView.dataSource = self;
+        listView.autoresizingMask = TUIViewAutoresizingFlexibleWidth;
+        listView.typeOfLayout = TUILayoutHorizontal;
+        listView.horizontalScrolling = YES;
+        listView.spaceBetweenViews = 15;
+        listView.viewClass = grid.cellClass;
+        listView.horizontalScrollIndicatorVisibility = TUIScrollViewIndicatorVisibleNever;
+        self.logicalSize = AHGridLogicalSizeMedium;
+        [self addSubview:listView];  
+        listView.backgroundColor = grid.backgroundColor;
+        self.backgroundColor = grid.backgroundColor;
+    }
 }
 
 #pragma mark - Layout
 
 -(void) layoutSubviews {
+    if (CGRectEqualToRect(CGRectZero, self.bounds)) {
+        return [super layoutSubviews];
+    }
+    
     if (animating) {
         if(xLargeCell) {
             CGRect r = [self frameForXLargeCell];
@@ -108,14 +114,10 @@
         [self sendSubviewToBack:headerView];
     }
     
-    
-    if (!listView.reloadedDate) {
-        //In case the the list view hasn't been loaded yet
-        [listView reloadData];
-    }
     [listView setNeedsLayout];
     [super layoutSubviews];
 }
+
 
 #pragma mark  - TUILayout DataSource Methods
 
@@ -129,9 +131,8 @@
     cell.index = i;
     cell.logicalSize = self.logicalSize;
     if (self.logicalSize == AHGridLogicalSizeXLarge) cell.logicalSize = AHGridLogicalSizeSmall;
-    
     if (grid.configureCellBlock) {
-        grid.configureCellBlock(grid, self, cell, i);
+        grid.configureCellBlock(grid, self, cell);
     }
     return cell;
 }
@@ -140,7 +141,7 @@
     if (grid.numberOfCellsBlock) {
         return grid.numberOfCellsBlock(grid, self);
     };
-    return numberOfCells;
+    return 0;
 }
 
 - (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {

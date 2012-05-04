@@ -12,7 +12,6 @@
 
 @interface AHGrid()
 
--(void) selectCellInAdjacentRow:(AHGridRow*) row;
 
 @end
 
@@ -24,16 +23,16 @@
     CFAbsoluteTime lastSelectionTime; //used to space out actions on selection
 }
 
-@synthesize rowViews;
 @synthesize configureRowBlock;
-@synthesize reloadedBlock;
 @synthesize configureCellBlock;
+@synthesize numberOfCellsBlock;
+@synthesize loadAllHandler, loadNewHandler, loadOldHandler;
+
 @synthesize selectedRow;
 @synthesize selectedCell;
 @synthesize selectedRowIndex;
 @synthesize selectedCellIndex;
 @synthesize numberOfRowsBlock;
-@synthesize numberOfCellsBlock;
 @synthesize cellClass;
 @synthesize rowHeaderClass;
 @synthesize rowHeaderHeight;
@@ -55,6 +54,7 @@
         selectedRowIndex = -1;
         selectedCellIndex = -1;
         self.dataSource = self;
+        self.cellClass = [AHGridCell class];
         self.spaceBetweenViews = 15;
         self.viewClass = [AHGridRow class];
         lastSelectionTime = CFAbsoluteTimeGetCurrent();
@@ -69,41 +69,11 @@
     self.selectedCell = nil;
     self.selectedCellIndex = -1;
     self.selectedRowIndex = -1;
-    
-    
-    for (TUIView *row in self.rowViews) {
-        [row removeFromSuperview];
-    }
-    self.rowViews =  nil;
-    self.rowViews = [NSMutableArray array];
+
     numberOfRows = numberOfRowsBlock ? numberOfRowsBlock(self) : 0;
     
-    if (numberOfRows > 0) {
-        for (int i = 0; i < numberOfRows; i++) {
-            Class rowClass = self.viewClass ? self.viewClass : [AHGridRow class];
-            AHGridRow *rowView = (AHGridRow*) [[rowClass alloc] initWithFrame:CGRectZero andGrid:self];
-            rowView.logicalSize =  AHGridLogicalSizeMedium;
-            rowView.index = i;
-            if (rowHeaderClass) {
-                rowView.headerView = [[rowHeaderClass alloc] initWithFrame:CGRectZero];
-            }
-            rowView.listView.viewClass = cellClass ? cellClass : [AHGridCell class];
-            rowView.grid = self;
-            
-            if (configureRowBlock) {
-                configureRowBlock(self, rowView, i);
-            }
-            
-            [self.rowViews addObject:rowView];
-        }
-        
-        [super reloadData];
-        [self scrollToTopAnimated:NO];
-    }
-    
-    if (reloadedBlock) {
-        reloadedBlock(self);
-    }
+    [super reloadData];
+    [self scrollToTopAnimated:NO];
 }
 
 -(void) layoutSubviews {
@@ -124,14 +94,15 @@
 #pragma mark - TUILayoutDataSource methods
 
 -(TUIView*) layout:(TUILayout *)l viewForObjectAtIndex:(NSInteger)index {
-    if (!rowViews.count) {
-        return nil;
-    }
-    AHGridRow *rowView = [rowViews objectAtIndex:index];
+    AHGridRow *rowView = (AHGridRow*)[self dequeueReusableView];
+    rowView.logicalSize =  AHGridLogicalSizeMedium;
+    if (rowHeaderClass && !rowView.headerView) {
+        rowView.headerView = [[rowHeaderClass alloc] initWithFrame:CGRectZero];
+    }         
     rowView.index = index;
     rowView.grid = self;
     if (configureRowBlock) {
-        configureRowBlock(self, rowView, index);
+        configureRowBlock(self, rowView);
     }
     
     return rowView;
@@ -143,8 +114,7 @@
 }
 
 - (CGSize)sizeOfObjectAtIndex:(NSUInteger)index {
-    AHGridRow *rowView = [rowViews objectAtIndex:index];
-    CGSize size = [self rowSizeForLogicalSize:rowView.logicalSize];
+    CGSize size = [self rowSizeForLogicalSize:AHGridLogicalSizeMedium];
     return size;
 }
 
@@ -171,14 +141,14 @@
             newCellIndex -= 1;
             newCellIndex = MAX(newCellIndex, 0);
             if (oldCellIndex != newCellIndex && newCellIndex < numberOfCellsInSelectedRow) {
-                self.selectedCell = (AHGridCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
+                [self selectAndScrollToCellWithIndex:newCellIndex];
             }
             return YES;;
         }
         case NSRightArrowFunctionKey:  {
             newCellIndex +=1;
             if (oldCellIndex != newCellIndex && (newCellIndex < numberOfCellsInSelectedRow)) {
-                self.selectedCell = (AHGridCell*) [self.selectedRow.listView viewForIndex:newCellIndex];
+                [self selectAndScrollToCellWithIndex:newCellIndex];
             }
             return YES;
         }
@@ -189,7 +159,7 @@
             }
             newRowIndex += 1;
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
-                [self selectCellInAdjacentRow:(AHGridRow*) [self viewForIndex:newRowIndex]];
+                [self selectCellInAdjacentRow:(AHGridRow*) [self viewForIndex:newRowIndex] scrollTo:YES];
             }
             return YES;
         }
@@ -201,7 +171,7 @@
             newRowIndex -= 1;
             newRowIndex = MAX(newRowIndex, 0);
             if (oldRowIndex != newRowIndex && (newRowIndex < numberOfRows)) {
-                [self selectCellInAdjacentRow:(AHGridRow*) [self viewForIndex:newRowIndex]];
+                [self selectCellInAdjacentRow:(AHGridRow*) [self viewForIndex:newRowIndex] scrollTo:YES];
             }
             return YES;
         }
@@ -221,6 +191,12 @@
         }
     }    
     return [super performKeyAction:event];
+}
+
+-(void) selectAndScrollToCellWithIndex:(NSUInteger) cellIndex {
+    self.selectedCell = (AHGridCell*) [self.selectedRow.listView viewForIndex:cellIndex];
+    [self scrollRectToVisible:self.selectedRow.frame animated:YES];
+    [self.selectedRow.listView scrollRectToVisible:self.selectedCell.frame animated:YES];
 }
 
 
@@ -250,10 +226,7 @@
     
     if (self.selectedRow) {
         selectedRow.selected = YES;
-        [self.selectedRow  setNeedsDisplay];
-        
-        //Scroll to this object
-        [self scrollRectToVisible:self.selectedRow.frame animated:YES];
+        [self.selectedRow  setNeedsDisplay];        
     }
 }
 
@@ -270,22 +243,8 @@
     
     if (self.selectedCell) {
         self.selectedCell.selected = YES;
-        
-        //        double SELECTION_TIME_INTERVAL = 0.3;
-        //        double timeSinceLastSelection = CFAbsoluteTimeGetCurrent() -lastSelectionTime;
-        //        
-        //        if (timeSinceLastSelection > SELECTION_TIME_INTERVAL && lastSelectedAndExpandedCell  && selectedCell.logicalSize != lastSelectedAndExpandedCell.logicalSize) {
-        //            AHGridCellSize targetSize = oldSelectedCell.logicalSize;
-        //            [self downsizeCell:lastSelectedAndExpandedCell upsizeCell:selectedCell toSize:targetSize completionBlock:^{
-        //                lastSelectedAndExpandedCell = selectedCell;
-        //            }];
-        //        } 
-        //        
-        //        if (oldSelectedCell.logicalSize > AHGridCellSizeMedium) {
-        //            [self resizeCell:oldSelectedCell toSize:AHGridCellSizeMedium completionBlock:nil];
-        //        }
         //Scroll to this object
-        [self.selectedRow.listView scrollRectToVisible:self.selectedCell.frame animated:YES];
+        //[self.selectedRow.listView scrollRectToVisible:self.selectedCell.frame animated:YES];
         
         [self.nsWindow makeFirstResponderIfNotAlreadyInResponderChain:self.selectedCell];
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kAHGridChangedCellSelection object:nil]];        
@@ -294,7 +253,7 @@
 }
 
 
--(void) selectCellInAdjacentRow:(AHGridRow*) row {
+-(void) selectCellInAdjacentRow:(AHGridRow*) row scrollTo:(BOOL) scrollTo {
     CGRect v = self.selectedRow.listView.visibleRect;
     CGRect r = self.selectedCell.frame;
     // Adjust the point for the scroll position
@@ -302,6 +261,10 @@
     CGRect rowVisible = row.listView.visibleRect;
     CGPoint point = CGPointMake(NSMinX(rowVisible) + relativeOffset, 0);
     self.selectedCell = (AHGridCell*) [row.listView viewAtPoint:point];
+    if (scrollTo) {
+        [self scrollRectToVisible:self.selectedRow.frame animated:YES];
+        [self.selectedRow.listView scrollRectToVisible:self.selectedCell.frame animated:YES];
+    }
 }
 
 
@@ -325,7 +288,7 @@
     if (CGSizeEqualToSize(CGSizeZero, self.smallCellSize)) {
         smallCellSize = CGSizeMake(250, 100);
     }
-
+    
     switch (cellSize) {
         case AHGridLogicalSizeSmall:
             return self.smallCellSize;
@@ -349,6 +312,10 @@
 -(AHGridLogicalSize) nextCellSizeRelativeToSize:(AHGridLogicalSize) cellSize direction:(NSInteger) direction {
     AHGridLogicalSize targetCellSize = (cellSize + direction) % 4;
     targetCellSize = MAX(1, targetCellSize);
+    //Skip large for now
+    if (targetCellSize == AHGridLogicalSizeLarge) {
+        targetCellSize = AHGridLogicalSizeXLarge;
+    }
     return targetCellSize;
 }
 
@@ -365,13 +332,13 @@
 -(void) resizeSelectedCellToSize:(AHGridLogicalSize) targetCellSize {
     // __block AHGridCell *cell = (AHGridCell*) [self.selectedRow.listView viewForIndex:self.selectedCellIndex];
     if (targetCellSize == AHGridLogicalSizeLarge || (targetCellSize == AHGridLogicalSizeMedium && self.selectedRow.logicalSize == AHGridLogicalSizeLarge)) {
-        [self resizeRowToLogicalSize:targetCellSize animationBlock:^{
+        [self resizeRowAtIndex:self.selectedRowIndex toLogicalSize:targetCellSize animationBlock:^{
             [self resizeCellsOfRow:self.selectedRow toSize:targetCellSize]; 
         } completionBlock:nil];
         return;
     }
     if (targetCellSize == AHGridLogicalSizeXLarge || self.selectedRow.logicalSize == AHGridLogicalSizeXLarge) {
-        [self xLargeResize:targetCellSize];
+        [self resizeFadeInOutXLarge:targetCellSize];            
     }
 }
 
@@ -409,7 +376,7 @@
                     cell.logicalSize = logicalSize;
                 } completionBlock:myCompletionBlock];
             } // resize the row at the same time
-            else [self resizeRowToLogicalSize:logicalSize animationBlock:^{
+            else [self resizeRowAtIndex:self.selectedRowIndex toLogicalSize:logicalSize animationBlock:^{
                 [cell.row.listView resizeObjectAtIndex:self.selectedCellIndex toSize:targetSize animationBlock:^{
                     cell.logicalSize = logicalSize;
                 } completionBlock:nil];
@@ -423,8 +390,8 @@
 -(void) downsizeCell:(AHGridCell*) downCell upsizeCell:(AHGridCell*) upCell toSize:(AHGridLogicalSize) logicalSize completionBlock:(void (^)())completionBlock {
     if (!downCell || !upCell) return;
     animating = YES;
-    NSString *downIndex = [NSString stringWithFormat:@"%d", downCell.index];
-    NSString *upIndex = [NSString stringWithFormat:@"%d", upCell.index];
+    NSString *downIndex = [NSString stringWithFormat:@"%ld", downCell.index];
+    NSString *upIndex = [NSString stringWithFormat:@"%ld", upCell.index];
     NSArray *indexes = [NSArray arrayWithObjects:downIndex, upIndex, nil];
     AHGridLogicalSize downLogicalSize = [self nextCellSizeRelativeToSize:logicalSize direction:-1];
     CGSize downSize = [self cellSizeForLogicalSize:downLogicalSize];
@@ -451,19 +418,22 @@
 }
 
 
--(void) resizeRowToLogicalSize:(AHGridLogicalSize) logicalSize animationBlock:(void (^)())animationBlock completionBlock:(void (^)())completionBlock {
+-(void) resizeRowAtIndex:(NSInteger) index toLogicalSize:(AHGridLogicalSize) logicalSize animationBlock:(void (^)())animationBlock completionBlock:(void (^)())completionBlock {
+    
+    AHGridRow *row = (AHGridRow*)[self viewForIndex:index];
     
     animating = YES;
-    self.selectedRow.animating = YES;
+    row.animating = YES;
     
     CGFloat height = [self rowSizeForLogicalSize:logicalSize].height;
     
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kAHGridWillResizeRow object:[NSNumber numberWithInteger:logicalSize]]];
+    [self beginUpdates];
+    self.scrollToObjectIndex = self.selectedRowIndex;
     //resize the row to be able to hold the size of the cell
     [self resizeObjectAtIndex:self.selectedRow.index toSize:CGSizeMake(self.bounds.size.width, height) animationBlock:^{
-        [self scrollRectToVisible:self.selectedRow.frame animated:YES];
-        self.selectedRow.logicalSize = logicalSize;  
-        [self.selectedRow layoutSubviews];
+        row.logicalSize = logicalSize;  
+        [row layoutSubviews];
         if (animationBlock) animationBlock();
     } completionBlock:^{
         if (self.selectedRow.logicalSize == AHGridLogicalSizeXLarge) {
@@ -474,16 +444,18 @@
             self. scrollEnabled = YES;
         }
         animating = NO;
-        self.selectedRow.animating = NO;
+        row.animating = NO;
         if (completionBlock) completionBlock();
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kAHGridDidResizeRow object:[NSNumber numberWithInteger:logicalSize]]];
         
-    }];    
+    }];
+    [self endUpdates];
 }
 
 -(void) resizeCellsOfRow:(AHGridRow*) row toSize:(AHGridLogicalSize) logicalSize {
     CGSize size = [self cellSizeForLogicalSize:logicalSize];
-    [CATransaction begin];
+    [row.listView beginUpdates];
+    row.listView.scrollToObjectIndex = self.selectedCellIndex;
     [row.listView.visibleViews enumerateObjectsUsingBlock:^(AHGridCell *cell, NSUInteger idx, BOOL *stop) {
         cell.resizing = YES;
     }];
@@ -498,7 +470,7 @@
             cell.resizing = NO;
         }];        
     }];
-    [CATransaction commit];
+    [row.listView endUpdates];
 }
 
 // When moving to the xlarge state
@@ -510,19 +482,24 @@
         // This change ownerships of the cell being resized to fill the whole window to the row
         // so that the animation of the cell growing above the scrolling list looks ok
         AHGridCell *newCell = (AHGridCell*) [self.selectedRow.listView replaceViewForObjectAtIndex:cell.index withSize:[self cellSizeForLogicalSize:AHGridLogicalSizeLarge]];
+        NSAssert(newCell, @"Didnt get a replacment cell in xlarge resize");
+        NSAssert(CGRectContainsRect(self.selectedRow.listView.visibleRect, newCell.frame), @"The selected cell needs to be visible for this animation.  Trigger this animation from a mouse click on the selected cell.");
+        
         newCell.logicalSize = AHGridLogicalSizeLarge;
         self.selectedCell = newCell;
+        cell.selected = NO;
         
-        // Adjust the cell that will be animated position relatively for scroll position
+        // Adjust the cell so that it will be animated position relatively for scroll position
         CGRect f = cell.frame;
         f.origin.x +=  -NSMinX(self.selectedRow.listView.visibleRect);
         cell.frame = f;
-        self.selectedRow.animating = YES;
-        // Let the current runloop finish so that visual changes needed for resizing, e.g. adding a subview,
+        
         animating = YES;
+        
+        // Let the current runloop finish so that visual changes needed for resizing, e.g. adding a subview,
         //can be applied after the last call.
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0), dispatch_get_current_queue(), ^{
-            [self resizeRowToLogicalSize:AHGridLogicalSizeXLarge animationBlock:^{
+            [self resizeRowAtIndex:self.selectedRowIndex toLogicalSize:AHGridLogicalSizeXLarge animationBlock:^{
                 [self resizeCellsOfRow:self.selectedRow toSize:AHGridLogicalSizeSmall];
                 self.selectedRow.xLargeCell = cell;
                 self.selectedRow.logicalSize = AHGridLogicalSizeXLarge;
@@ -530,7 +507,6 @@
                 self.selectedRow.xLargeCell.logicalSize = AHGridLogicalSizeXLarge;
                 [self.selectedRow layoutSubviews];
             } completionBlock:^{
-                self.selectedRow.animating = NO;
                 animating = NO;
             }];
         });
@@ -539,7 +515,7 @@
         animating = YES;
         self.selectedRow.animating = YES;
         // remove the xlarge cell and resize the row
-        [self resizeRowToLogicalSize:AHGridLogicalSizeMedium animationBlock:^{
+        [self resizeRowAtIndex:self.selectedRowIndex toLogicalSize:AHGridLogicalSizeMedium animationBlock:^{
             [self resizeCellsOfRow:self.selectedRow toSize:AHGridLogicalSizeMedium];
             //fade out the xlarge cell
             [self.selectedRow layoutSubviews];
@@ -554,6 +530,51 @@
     }
     
     return YES;
+}
+
+// When moving to the xlarge state
+-(void) resizeFadeInOutXLarge:(AHGridLogicalSize) targetLogicalSize {
+    
+    if (targetLogicalSize == AHGridLogicalSizeXLarge) {
+        
+        animating = YES;
+        
+        // Create an xlarge cell for the row
+        CGRect f = CGRectZero;
+        f.origin.y = [self cellSizeForLogicalSize:AHGridLogicalSizeSmall].height + 100;
+        f.size.height = self.bounds.size.height - f.origin.y -100;
+        Class cellClassToUse = self.cellClass ? self.cellClass : [AHGridCell class];
+        AHGridCell *xlargeCell = [[cellClassToUse alloc] initWithFrame:f];
+        xlargeCell.alpha = 0;
+        [self.selectedRow addSubview:xlargeCell];
+        self.selectedRow.xLargeCell = xlargeCell;
+        self.selectedRow.logicalSize = AHGridLogicalSizeXLarge;
+        
+        [self resizeRowAtIndex:self.selectedRowIndex toLogicalSize:AHGridLogicalSizeXLarge animationBlock:^{
+            [self resizeCellsOfRow:self.selectedRow toSize:AHGridLogicalSizeSmall];
+            xlargeCell.alpha = 1;
+            self.selectedRow.xLargeCell.logicalSize = AHGridLogicalSizeXLarge;
+            [self.selectedRow layoutSubviews];
+        } completionBlock:^{
+            animating = NO;
+        }];
+    } else if (self.selectedRow.logicalSize == AHGridLogicalSizeXLarge && self.selectedRow.xLargeCell && self.selectedRow.xLargeCell.superview) {
+        animating = YES;
+        self.selectedRow.animating = YES;
+        // remove the xlarge cell and resize the row
+        [self resizeRowAtIndex:self.selectedRowIndex toLogicalSize:AHGridLogicalSizeMedium animationBlock:^{
+            [self resizeCellsOfRow:self.selectedRow toSize:AHGridLogicalSizeMedium];
+            //fade out the xlarge cell
+            [self.selectedRow layoutSubviews];
+            self.selectedRow.xLargeCell.alpha = 0;
+        } completionBlock:^{
+            [self.selectedRow.xLargeCell removeFromSuperview];
+            animating = NO;
+            self.selectedRow.animating = YES;
+            [self.selectedRow.xLargeCell removeFromSuperview];
+            self.selectedRow.xLargeCell = nil;
+        }];
+    }
 }
 
 

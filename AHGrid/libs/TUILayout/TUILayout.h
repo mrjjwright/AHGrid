@@ -20,6 +20,7 @@
 #define kTUILayoutAnimation @"TUILayoutAnimation"
 
 @class TUILayout;
+@class TUILayoutObject;
 typedef void(^TUILayoutHandler)(TUILayout *layout);
 
 typedef enum {
@@ -51,6 +52,7 @@ typedef enum {
 @property (nonatomic, strong) NSDate *reloadedDate;
 @property (nonatomic, copy) TUILayoutHandler reloadHandler;
 @property (nonatomic, readonly) NSArray *visibleViews;
+@property (nonatomic) NSUInteger scrollToObjectIndex;
 
 #pragma mark - General
 
@@ -74,6 +76,8 @@ typedef enum {
 #pragma mark - Adding and removing views
 -(void) insertObjectAtIndex:(NSUInteger) index;
 -(void) insertObjectAtIndex:(NSUInteger) index  animationBlock:(void (^)())animationBlock  completionBlock:(void (^)())completionBlock;
+-(void) prependNumOfObjects:(NSInteger) numOfObjects animationBlock:(void (^)())animationBlock  completionBlock:(void (^)())completionBlock;
+
 -(void) removeObjectsAtIndexes:(NSIndexSet *)indexes;
 
 # pragma mark - Scrolling

@@ -25,7 +25,6 @@
     grid.autoresizingMask = TUIViewAutoresizingFlexibleSize;
     nsView.rootView = containerView;
     nsView.scrollingInterceptor = (id<TUIScrollingInterceptor>) grid;    
-
     
     textFont = [TUIFont fontWithName:@"HelveticaNeue-Medium" size:28];
     textColor = [TUIColor redColor];
@@ -54,8 +53,9 @@
 
     // Setup grid properties
     
-    grid.configureRowBlock = ^(AHGrid* grid, AHGridRow *row, NSUInteger index) {
+    grid.configureRowBlock = ^(AHGrid* grid, AHGridRow *row) {
         row.titleString = [NSString stringWithFormat:@"Example Row %d", index];
+        [row.listView reloadData];
     };
     
     grid.numberOfRowsBlock = ^(AHGrid *grid) {
@@ -67,11 +67,10 @@
     };
     
     // Configure cells
-    grid.configureCellBlock = ^(AHGrid *grid, AHGridRow* row, AHGridCell *cell, NSUInteger index) {
-        NSMutableArray *rows = [gridModel objectForKey:[NSNumber numberWithInteger:row.index]];
-        NSMutableDictionary *cellModel = [rows objectAtIndex:index];
+    grid.configureCellBlock = ^(AHGrid *grid, AHGridRow* row, AHGridCell *cell) {
+        //NSMutableArray *rows = [gridModel objectForKey:[NSNumber numberWithInteger:row.index]];
         //cell.image = [TUIImage imageNamed:[cellModel objectForKey:@"image"] cache:YES];
-        cell.backgroundColor = [TUIColor whiteColor];
+        cell.backgroundColor = [TUIColor redColor];
         cell.textColor = textColor;
         cell.textFont = textFont;
         cell.displayLogInfo = YES;

@@ -11,11 +11,12 @@
 #import "TUILayout.h"
 #import "AHGridTypes.h"
 
+
+
 @class AHGrid;
 @class AHGridCell;
 @interface AHGridRow : TUIView <TUILayoutDataSource>
 
-@property (nonatomic) NSInteger numberOfCells;
 @property (nonatomic) AHGridLogicalSize logicalSize;
 @property (nonatomic, strong) AHGridCell *xLargeCell;
 @property (nonatomic) BOOL animating;
@@ -23,10 +24,8 @@
 @property (nonatomic) NSUInteger index;
 @property (nonatomic, strong) TUILayout *listView;
 @property (nonatomic) BOOL selected;
-@property (nonatomic, weak) id associatedObject;
+@property (nonatomic, strong) id associatedObject;
 @property (nonatomic, strong) NSString * titleString;
 @property (nonatomic, strong) TUIView *headerView;
-
-- (id)initWithFrame:(CGRect)frame andGrid:(AHGrid*) g;
 
 @end
